@@ -9,9 +9,10 @@ export default function Layout() {
   return (
     <View
       className="flex-1 "
-      style={{  paddingBottom: insets.bottom  }}
+      style={{  paddingBottom: insets.bottom   }}
     >
-      <Stack />
+      <Stack 
+      />
     </View>
   );
 }

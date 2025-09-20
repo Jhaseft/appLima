@@ -1,9 +1,5 @@
-import { View, Text } from "react-native";
+import Home from "../components/Home";
 
-export default function Home() {
-  return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-2xl font-bold text-black">Página autenticada ✅</Text>
-    </View>
-  );
+export default function Homes() {
+  return <Home />;
 }
