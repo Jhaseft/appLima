@@ -1,7 +1,13 @@
 import { View, TextInput, Pressable } from "react-native";
-import { Eye, EyeOff } from "lucide-react-native";
+import { Feather } from "@expo/vector-icons";
 
-export default function PasswordInput({ value, onChange, show, toggleShow, placeholder }) {
+export default function PasswordInput({
+  value,
+  onChange,
+  show,
+  toggleShow,
+  placeholder,
+}) {
   return (
     <View className="relative w-full">
       <TextInput
@@ -16,8 +22,16 @@ export default function PasswordInput({ value, onChange, show, toggleShow, place
         textContentType="password"
         placeholderTextColor="#9CA3AF"
       />
-      <Pressable onPress={toggleShow} className="absolute right-3 top-3" hitSlop={10}>
-        {show ? <EyeOff size={20} color="gray" /> : <Eye size={20} color="gray" />}
+      <Pressable
+        onPress={toggleShow}
+        className="absolute right-3 top-3"
+        hitSlop={10}
+      >
+        <Feather
+          name={show ? "eye-off" : "eye"}
+          size={20}
+          color="gray"
+        />
       </Pressable>
     </View>
   );

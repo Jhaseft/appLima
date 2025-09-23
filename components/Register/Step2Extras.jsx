@@ -15,9 +15,6 @@ const countries = [
 const nationalities = [
   { value: "boliviano", label: "Boliviano" },
   { value: "peruano", label: "Peruano" },
-  { value: "argentino", label: "Argentino" },
-  { value: "chileno", label: "Chileno" },
-  { value: "colombiano", label: "Colombiano" },
 ];
 
 export default function Step2Extras({ data, setData, errors }) {
@@ -26,7 +23,6 @@ export default function Step2Extras({ data, setData, errors }) {
   const [phoneCode, setPhoneCode] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
-  // Inicializa phoneCode y phoneNumber desde data.phone
   // Inicializa phoneCode y phoneNumber desde data.phone
 useEffect(() => {
   if (data.phone) {
@@ -57,6 +53,7 @@ const updatePhone = (code, number) => {
 
   return (
     <View className="space-y-5">
+
       {/* Teléfono */}
       <FieldWrapper label="Número de teléfono *" error={errors.phone}>
         <View className="flex-row space-x-2 items-center">

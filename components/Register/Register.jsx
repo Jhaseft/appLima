@@ -95,6 +95,7 @@ export default function Register() {
 
   return (
     <KeyboardAwareScrollView className="flex-1 bg-white px-6 py-10" extraScrollHeight={20} enableOnAndroid>
+      
 <Stack.Screen
         options={{
           headerShown: true,          // Mostrar el header
