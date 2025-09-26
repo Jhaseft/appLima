@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useRouter,Stack } from "expo-router";
+import { useRouter, Stack } from "expo-router";
 import Step1Personal from "./Step1Personal";
 import Step2Extras from "./Step2Extras";
 import Step3Security from "./Step3Security";
@@ -33,15 +33,66 @@ export default function Register() {
   const validateStep = () => {
     const tempErrors = {};
     if (step === 1) {
-      if (!form.first_name.trim()) tempErrors.first_name = "Requerido";
-      if (!form.last_name.trim()) tempErrors.last_name = "Requerido";
-      if (!form.email.trim()) tempErrors.email = "Requerido";
-    }
-    if (step === 2) {
-      if (!form.phone || form.phone.length < 8) tempErrors.phone = "Teléfono inválido";
-      if (!form.nationality.trim()) tempErrors.nationality = "Seleccione una nacionalidad";
-      if (!form.document_number.trim()) tempErrors.document_number = "Documento requerido";
-    }
+  // Limpiar errores previos
+  const maxLengthName = 20;
+  const maxLengthEmail = 50;
+
+  // Validar nombre
+  if (!form.first_name.trim()) {
+    tempErrors.first_name = "Requerido";
+  } else if (form.first_name.length > maxLengthName) {
+    tempErrors.first_name = `Máximo ${maxLengthName} caracteres`;
+  } else if (/[^a-zA-ZÀ-ÿ\s]/.test(form.first_name)) {
+    tempErrors.first_name = "Solo letras y espacios";
+  }
+
+  // Validar apellido
+  if (!form.last_name.trim()) {
+    tempErrors.last_name = "Requerido";
+  } else if (form.last_name.length > maxLengthName) {
+    tempErrors.last_name = `Máximo ${maxLengthName} caracteres`;
+  } else if (/[^a-zA-ZÀ-ÿ\s]/.test(form.last_name)) {
+    tempErrors.last_name = "Solo letras y espacios";
+  }
+
+  // Validar email
+  if (!form.email.trim()) {
+    tempErrors.email = "Requerido";
+  } else if (form.email.length > maxLengthEmail) {
+    tempErrors.email = `Máximo ${maxLengthEmail} caracteres`;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+    tempErrors.email = "Email inválido";
+  }
+}
+
+
+   if (step === 2) {
+  const maxPhoneLength = 15;        // límite de dígitos del teléfono
+  const maxDocumentLength = 20;     // límite de caracteres del documento
+
+  // Validar teléfono
+  if (!form.phone || form.phone.trim().length < 8) {
+    tempErrors.phone = "Teléfono inválido";
+  } else if (form.phone.length > maxPhoneLength) {
+    tempErrors.phone = `Máximo ${maxPhoneLength} dígitos`;
+  } else if (!/^\+?[0-9]+$/.test(form.phone)) {
+    tempErrors.phone = "Solo números y + al inicio permitidos";
+  }
+
+  // Validar nacionalidad
+  if (!form.nationality.trim()) {
+    tempErrors.nationality = "Seleccione una nacionalidad";
+  }
+
+  // Validar documento
+  if (!form.document_number.trim()) {
+    tempErrors.document_number = "Documento requerido";
+  } else if (form.document_number.length > maxDocumentLength) {
+    tempErrors.document_number = `Máximo ${maxDocumentLength} caracteres`;
+  }
+}
+
+
     if (step === 3) {
       if (!form.password) tempErrors.password = "Contraseña requerida";
       if (!form.password_confirmation) tempErrors.password_confirmation = "Confirmación requerida";
@@ -95,8 +146,8 @@ export default function Register() {
 
   return (
     <KeyboardAwareScrollView className="flex-1 bg-white px-6 py-10" extraScrollHeight={20} enableOnAndroid>
-      
-<Stack.Screen
+
+      <Stack.Screen
         options={{
           headerShown: true,          // Mostrar el header
           headerTitle: "Transfer Cash", // Título del header

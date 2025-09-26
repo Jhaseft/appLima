@@ -69,6 +69,7 @@ const updatePhone = (code, number) => {
             value={phoneNumber}
             onChangeText={handlePhoneNumberChange}
             placeholder="76543210"
+            placeholderTextColor="#888"
             keyboardType="numeric"
             className="flex-1 rounded-xl border border-gray-300 px-4 py-2 text-sm"
           />

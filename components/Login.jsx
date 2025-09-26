@@ -1,12 +1,34 @@
 // app/Login.jsx
 import "../global.css";
-import { useState, useRef } from "react";
+import { useState, useRef, memo } from "react";
 import { View, Text, TextInput, Pressable, Image, Alert, ActivityIndicator, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter, Stack } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useUser } from "../components/ContextUser/UserContext";
+
+// Componente memoizado para evitar re-renders innecesarios
+const PasswordInput = memo(({ password, setPassword, showPassword, setShowPassword, focused, setFocused, passwordRef }) => (
+  <View className={`flex-row items-center border-2 rounded-2xl px-5 mb-6 bg-white shadow-md ${focused === "password" ? "border-blue-500" : "border-black"}`}>
+    <TextInput
+      ref={passwordRef}
+      value={password}
+      onChangeText={setPassword}
+      placeholder="Contraseña"
+      placeholderTextColor="#888"
+      secureTextEntry={!showPassword}
+      autoCapitalize="none"
+      returnKeyType="done"
+      onFocus={() => setFocused("password")}
+      onBlur={() => setFocused("")}
+      className="flex-1 py-4 text-black"
+    />
+    <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+      <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color={focused === "password" ? "#2563EB" : "#555"} />
+    </TouchableOpacity>
+  </View>
+));
 
 export default function Login() {
   const router = useRouter();
@@ -30,21 +52,13 @@ export default function Login() {
       });
 
       const text = await res.text();
-    
-
       let data;
       try { data = JSON.parse(text); } 
       catch (e) { throw new Error("Servidor no devolvió JSON"); }
 
       if (res.ok) {
         await AsyncStorage.setItem("token", data.token);
-        
-        /////////////////inposrtantisimo/////////////////////////////////
-        // PASAR EL USUARIO AL CONTEXTO DIRECTAMENTE SE VA AL CONTEXTO PARA PODER SER USADO POR TODA LA APP
         await fetchUser(data.user);
-        /////////////////inposrtantisimo/////////////////////////////////
-
-
         router.replace("/Home");
       } else {
         Alert.alert("Error", data.message || "Credenciales inválidas");
@@ -62,27 +76,33 @@ export default function Login() {
         <Image source={{ uri: "https://res.cloudinary.com/dnbklbswg/image/upload/v1756305635/logo_n6nqqr.jpg" }} className="w-32 h-32 mb-6 self-center" resizeMode="contain" />
         <Text className="text-4xl font-extrabold text-center text-black mb-8">Bienvenido</Text>
 
+        {/* Input de email */}
         <TextInput
-          value={email} onChangeText={setEmail} placeholder="Correo electrónico"
-          placeholderTextColor="#888" keyboardType="email-address" autoCapitalize="none"
-          returnKeyType="next" onFocus={() => setFocused("email")} onBlur={() => setFocused("")}
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Correo electrónico"
+          placeholderTextColor="#888"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          returnKeyType="next"
+          onFocus={() => setFocused("email")}
+          onBlur={() => setFocused("")}
           onSubmitEditing={() => passwordRef.current.focus()}
           className={`w-full bg-white border-2 rounded-2xl px-5 py-4 mb-4 text-black shadow-md ${focused === "email" ? "border-blue-500" : "border-black"}`}
         />
 
-        <View className={`flex-row items-center border-2 rounded-2xl px-5 mb-6 bg-white shadow-md ${focused === "password" ? "border-blue-500" : "border-black"}`}>
-          <TextInput
-            ref={passwordRef} value={password} onChangeText={setPassword}
-            placeholder="Contraseña" placeholderTextColor="#888"
-            secureTextEntry={!showPassword} autoCapitalize="none" returnKeyType="done"
-            onFocus={() => setFocused("password")} onBlur={() => setFocused("")}
-            onSubmitEditing={handleLogin} className="flex-1 py-4 text-black"
-          />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color={focused === "password" ? "#2563EB" : "#555"} />
-          </TouchableOpacity>
-        </View>
+        {/* Input de contraseña */}
+        <PasswordInput
+          password={password}
+          setPassword={setPassword}
+          showPassword={showPassword}
+          setShowPassword={setShowPassword}
+          focused={focused}
+          setFocused={setFocused}
+          passwordRef={passwordRef}
+        />
 
+        {/* Botón de login */}
         <Pressable onPress={handleLogin} disabled={loading} className={`w-full py-4 rounded-2xl shadow-lg ${loading ? "bg-gray-400" : "bg-black"}`}>
           {loading ? <ActivityIndicator size="small" color="#fff" /> : <Text className="text-center text-white font-bold text-lg">Iniciar sesión</Text>}
         </Pressable>

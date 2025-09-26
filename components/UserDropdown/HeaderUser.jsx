@@ -22,8 +22,8 @@ export default function HeaderUser({ title }) {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      await AsyncStorage.removeItem("token");
-      await AsyncStorage.removeItem("user");
+      // 🔥 Limpiar todo el AsyncStorage
+      await AsyncStorage.clear();
       setUser(null);
 
       router.replace("/"); // redirige al login
