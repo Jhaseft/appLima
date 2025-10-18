@@ -4,7 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native";
 import { UserProvider } from "../components/ContextUser/UserContext";
-import NetworkGuard from "../components/NetworkGuard/NetworkGuard"; // 👈 nuevo componente
+import NetworkGuard from "../components/NetworkGuard/NetworkGuard"; //  nuevo componente
 
 export default function Layout() {
   const insets = useSafeAreaInsets();
@@ -13,7 +13,7 @@ export default function Layout() {
     <UserProvider>
       <View className="flex-1" style={{ paddingBottom: insets.bottom }}>
         <StatusBar style="dark" />
-        <NetworkGuard>  {/* 🚀 protege TODA la app */}
+        <NetworkGuard>  
           <Stack />
         </NetworkGuard>
       </View>

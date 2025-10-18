@@ -19,7 +19,7 @@ export default function GraficoLineas() {
         setData(JSON.parse(cached));
       } else {
         // Pedir a la API y guardar
-        const res = await fetch("https://transfers.elchangarrodelima.com/api/tipo-cambio/historial");
+        const res = await fetch("https://panel.transfercash.click/api/tipo-cambio/historial");
         const json = await res.json();
         const sliced = json.slice(-4); // últimos 4
 

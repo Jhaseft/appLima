@@ -33,7 +33,7 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
         setTasas(JSON.parse(cached));
       } else {
         const res = await fetch(
-          "https://transfers.elchangarrodelima.com/api/tipo-cambio/historial"
+          "https://panel.transfercash.click/api/tipo-cambio/historial"
         );
         const json = await res.json();
         const ultima = json[json.length - 1];
