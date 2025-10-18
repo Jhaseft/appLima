@@ -1,14 +1,26 @@
 // app/Login.jsx
 import "../global.css";
 import { useState, useRef, memo } from "react";
-import { View, Text, TextInput, Pressable, Image, Alert, ActivityIndicator, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  Image,
+  Alert,
+  ActivityIndicator,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  Linking
+} from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter, Stack } from "expo-router";
+import { useRouter, Stack, Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useUser } from "../components/ContextUser/UserContext";
 
-// Componente memoizado para evitar re-renders innecesarios
+// Componente memoizado para el input de contraseña
 const PasswordInput = memo(({ password, setPassword, showPassword, setShowPassword, focused, setFocused, passwordRef }) => (
   <View className={`flex-row items-center border-2 rounded-2xl px-5 mb-6 bg-white shadow-md ${focused === "password" ? "border-blue-500" : "border-black"}`}>
     <TextInput
@@ -103,9 +115,34 @@ export default function Login() {
         />
 
         {/* Botón de login */}
-        <Pressable onPress={handleLogin} disabled={loading} className={`w-full py-4 rounded-2xl shadow-lg ${loading ? "bg-gray-400" : "bg-black"}`}>
-          {loading ? <ActivityIndicator size="small" color="#fff" /> : <Text className="text-center text-white font-bold text-lg">Iniciar sesión</Text>}
+        <Pressable
+          onPress={handleLogin}
+          disabled={loading}
+          className={`w-full py-4 rounded-2xl shadow-lg ${loading ? "bg-gray-400" : "bg-black"}`}
+        >
+          {loading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text className="text-center text-white font-bold text-lg">Iniciar sesión</Text>
+          )}
         </Pressable>
+
+        {/* Enlaces adicionales */}
+        <View className="mt-4 w-full flex-row justify-center">
+          {/* Olvidé mi contraseña al lado derecho */}
+          <TouchableOpacity onPress={() => Linking.openURL("https://panel.transfercash.click/forgot-password")}>
+            <Text className="text-blue-600 font-semibold ">Olvidé mi contraseña</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Texto de registro en línea */}
+        <View className="mt-6 flex-row justify-center">
+          <Text className="text-black mr-1">¿No tienes cuenta?</Text>
+          <Link asChild href="/Register">
+            <Text className="text-blue-600 font-semibold">Regístrate aquí</Text>
+          </Link>
+        </View>
+
       </KeyboardAwareScrollView>
     </KeyboardAvoidingView>
   );

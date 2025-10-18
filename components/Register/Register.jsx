@@ -156,7 +156,7 @@ export default function Register() {
         }}
       />
 
-      <Text className="text-2xl font-bold mb-6 text-center">Crear una cuenta</Text>
+      <Text className="text-2xl font-bold mb-6 text-center">Crear Una Cuenta Nueva</Text>
       <ProgressBar step={step} totalSteps={3} />
 
       <View className="space-y-6">

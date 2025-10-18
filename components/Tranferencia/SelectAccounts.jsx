@@ -45,6 +45,7 @@ export default function SelectAccounts({ onNext, onBack, operacion, setOperacion
         if (!res.ok) throw new Error("Error al cargar cuentas");
 
         const data = await res.json();
+
         setCuentas(data);
 
         await AsyncStorage.setItem("cuentasUsuario", JSON.stringify(data));
@@ -59,13 +60,32 @@ export default function SelectAccounts({ onNext, onBack, operacion, setOperacion
     fetchCuentas();
   }, [user]);
 
-  const cuentasOrigen = cuentas.filter((c) => c.account_type === "origin");
-  const cuentasDestino = cuentas.filter((c) => c.account_type === "destination");
+  const cuentasOrigen = cuentas.filter((c) => {
+  if (operacion.modo === "PENtoBOB") {
+    // origen → Perú
+    return c.account_type === "origin" && c.bank_country === "peru";
+  } else if (operacion.modo === "BOBtoPEN") {
+    // origen → Bolivia
+    return c.account_type === "origin" && c.bank_country === "bolivia";
+  }
+  return false;
+});
+
+const cuentasDestino = cuentas.filter((c) => {
+  if (operacion.modo === "PENtoBOB") {
+    // destino → Bolivia
+    return c.account_type === "destination" && c.bank_country === "bolivia";
+  } else if (operacion.modo === "BOBtoPEN") {
+    // destino → Perú
+    return c.account_type === "destination" && c.bank_country === "peru";
+  }
+  return false;
+});
 
   const handleNext = () => {
     if (!operacion.cuentaOrigen || !operacion.cuentaDestino) return;
 
-    console.log("➡️ Payload listo:", operacion);
+    
     onNext();
   };
   

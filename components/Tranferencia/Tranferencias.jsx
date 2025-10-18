@@ -27,8 +27,6 @@ export default function Cambiar() {
 
   
   const nextStep = () => {
-    console.log("➡️ Avanzando al paso:", step + 1);
-    console.log("📊 Estado global actual:", operacion);
     setStep((prev) => Math.min(prev + 1, 4));
   };
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));

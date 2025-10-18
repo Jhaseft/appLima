@@ -63,11 +63,8 @@ export default function HeaderUser({ title }) {
         onClose={() => setMenuVisible(false)}
         user={user}
         onLogout={handleLogout}
-        onViewOperations={() => {
-          Alert.alert(
-            "Operaciones",
-            "Aquí podrías redirigir a la pantalla de operaciones"
-          );
+        onViewOperations={() => { 
+         router.replace("/TransfersHistory"); // redirige al historial de transferencias
           setMenuVisible(false);
         }}
       />

@@ -9,7 +9,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/logo.jpg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,12 +18,18 @@
       "supportsTablet": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "icon": "./assets/logo.jpg",
+      "splash": {
+        "image": "./assets/logo.jpg",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
       }
     },
     "android": {
       "package": "com.transfercash.lima",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo.jpg",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
