@@ -31,7 +31,7 @@ export default function Transfiere({ onNext, onBack, operacion, setOperacion }) 
       {
         type: "InterBank",
         title: "InterBank Perú",
-        number: "00222000706362203721",
+        number: "4403006144735",
         image: "https://res.cloudinary.com/dnbklbswg/image/upload/v1756305466/download_zxsiny.png",
       },
       {

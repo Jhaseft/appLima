@@ -31,7 +31,7 @@ const buttons = [
     icon: "whatsapp",
     colors: { icon: "#16A34A" },
     whatsappMessage: "Hola, necesito ayuda con mis transferencias",
-    whatsappNumber: "59165359695", // tu número con código de país
+    whatsappNumber: "59177958109", // tu número con código de país
   },
 ];
 
