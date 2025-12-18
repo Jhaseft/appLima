@@ -9,7 +9,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "../ContextUser/UserContext";
 import CuentaSelect from "../Cuentas/CuentasSelect";
-
+import API_BASE_URL from "../api";
 export default function SelectAccounts({ onNext, onBack, operacion, setOperacion }) {
   const { user } = useUser();
   const [cuentas, setCuentas] = useState([]);
@@ -33,7 +33,7 @@ export default function SelectAccounts({ onNext, onBack, operacion, setOperacion
         }
 
         const res = await fetch(
-          `https://panel.transfercash.click/api/listar-cuentas?user_id=${user?.id}`,
+          `${API_BASE_URL}/api/listar-cuentas?user_id=${user?.id}`,
           {
             method: "GET",
             headers: {

@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RefreshCw } from "lucide-react-native";
-
+import API_BASE_URL from "../api";
 export default function Cotiza({ onNext, operacion, setOperacion }) {
   const [monto, setMonto] = useState("");
   const [conversion, setConversion] = useState("");
@@ -33,7 +33,7 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
         setTasas(JSON.parse(cached));
       } else {
         const res = await fetch(
-          "https://panel.transfercash.click/api/tipo-cambio/historial"
+          `${API_BASE_URL}/api/tipo-cambio/historial`
         );
         const json = await res.json();
         const ultima = json[json.length - 1];

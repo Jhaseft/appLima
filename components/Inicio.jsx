@@ -44,7 +44,7 @@ export default function Inicio() {
     <View className="flex-1 bg-white px-6">
       <Stack.Screen options={{ headerShown: false }} />
 
-      {/* Logo */}
+     
       <View className="flex-1 items-center justify-center">
         <Image
           source={{
@@ -61,7 +61,7 @@ export default function Inicio() {
         </Text>
       </View>
 
-      {/* Botones */}
+   
       <View className="mb-2">
         <Text className="text-black text-center font-bold text-lg">
           Para iniciar tu operación

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Svg, { Line, Circle, Text as SvgText, Rect } from "react-native-svg";
-
+import API_BASE_URL from "../api";
 export default function GraficoLineas() {
   const [data, setData] = useState(null);
 
@@ -19,7 +19,7 @@ export default function GraficoLineas() {
         setData(JSON.parse(cached));
       } else {
         // Pedir a la API y guardar
-        const res = await fetch("https://panel.transfercash.click/api/tipo-cambio/historial");
+        const res = await fetch(`${API_BASE_URL}/api/tipo-cambio/historial`);
         const json = await res.json();
         const sliced = json.slice(-4); // últimos 4
 

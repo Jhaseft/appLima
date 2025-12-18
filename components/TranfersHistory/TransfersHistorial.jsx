@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "../ContextUser/UserContext";
 import FooterLayout from "../FooterLayout/FooterLayout";
 import HeaderUser from "../UserDropdown/HeaderUser";
-
+import API_BASE_URL from "../api";
 export default function SelectTransfers() {
   const { user } = useUser();
   const [transfers, setTransfers] = useState([]);
@@ -51,7 +51,7 @@ export default function SelectTransfers() {
 
         // Hacer fetch de la API
         const res = await fetch(
-          `https://panel.transfercash.click/api/transfers/historymobile?user_id=${user?.id}`,
+          `${API_BASE_URL}/api/transfers/historymobile?user_id=${user?.id}`,
           {
             method: "GET",
             headers: {

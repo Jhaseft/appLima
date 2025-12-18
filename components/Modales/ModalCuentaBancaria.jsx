@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import BankSelect from "./BankSelect";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import API_BASE_URL from "../api";
 let bancosCache = null;
 
 export default function ModalCuentaBancaria({
@@ -44,7 +44,7 @@ export default function ModalCuentaBancaria({
       try {
         let data = bancosCache || bancosProp;
         if (!data || data.length === 0) {
-          const res = await fetch("https://panel.transfercash.click/operacion/listar-bancos");
+          const res = await fetch(`${API_BASE_URL}/operacion/listar-bancos`);
           if (!res.ok) return;
           data = await res.json();
         }
@@ -76,7 +76,7 @@ export default function ModalCuentaBancaria({
     setLoading(true);
     try {
       const token = await AsyncStorage.getItem("token");
-      const res = await fetch("https://panel.transfercash.click/api/operacion/guardar-cuenta", {
+      const res = await fetch(`${API_BASE_URL}/api/operacion/guardar-cuenta`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -95,7 +95,7 @@ export default function ModalCuentaBancaria({
       if (!res.ok) throw new Error(data.message || "Error en el servidor");
 
       // Fetch actualizado de cuentas
-      const cuentasRes = await fetch(`https://panel.transfercash.click/api/listar-cuentas?user_id=${user.id}`, {
+      const cuentasRes = await fetch(`${API_BASE_URL}/api/listar-cuentas?user_id=${user.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const cuentasData = await cuentasRes.json();
@@ -220,7 +220,7 @@ export default function ModalCuentaBancaria({
                 Acepto los{" "}
                 <Text
                   className="text-blue-600 underline"
-                  onPress={() => Linking.openURL("https://panel.transfercash.click/politicas")}
+                  onPress={() => Linking.openURL(`${API_BASE_URL}/politicas`)}
                 >
                   Términos y Política de privacidad
                 </Text>

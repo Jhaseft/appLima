@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { View, ScrollView, Switch, Text, Linking, Pressable } from "react-native";
 import FieldWrapper from "./FieldWrapper";
 import PasswordInput from "./PasswordInput";
-
+import API_BASE_URL from "../api";
 function PasswordRules({ rules }) {
   const list = [
     { label: "Mínimo 8 caracteres", valid: rules.length },
@@ -52,7 +52,7 @@ export default function Step3Security({ data, setData, errors }) {
 
   const handlePasswordChange = (text) => { setPassword(text); setData("password", text); };
   const handleConfirmChange = (text) => { setConfirmPassword(text); setData("password_confirmation", text); };
-  const openTerms = () => Linking.openURL("https://panel.transfercash.click/politicas");
+  const openTerms = () => Linking.openURL(`${API_BASE_URL}/politicas`);
   return (
     <ScrollView contentContainerStyle={{ paddingBottom: 20 }} className="px-3 ">
       {/* Contraseña */}

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
-
+import API_BASE_URL from "../api";
 export default function ConfirmarRegistro() {
   const router = useRouter();
   const { email } = useLocalSearchParams(); // Aquí ya funciona en móvil
@@ -12,7 +12,7 @@ export default function ConfirmarRegistro() {
     if (code.length !== 6) return Alert.alert("Código inválido", "El código debe tener 6 dígitos");
     setLoading(true);
     try {
-      const res = await fetch("https://panel.transfercash.click/api/verify-code", {
+      const res = await fetch(`${API_BASE_URL}/api/verify-code`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ code }),

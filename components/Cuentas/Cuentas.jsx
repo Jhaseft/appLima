@@ -6,7 +6,7 @@ import HeaderUser from "../UserDropdown/HeaderUser";
 import CuentaSelect from "../Cuentas/CuentasSelect";
 import { useUser } from "../ContextUser/UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import API_BASE_URL from "../api";
 // Importar modales
 import ModalCuentaBancaria from "../Modales/ModalCuentaBancaria";
 import ModalCuentaDestino from "../Modales/ModalCuentaDestino";
@@ -25,56 +25,70 @@ export default function Cuentas() {
   const [tipoAgregar, setTipoAgregar] = useState("origin"); // origin o destination
   const [bancos, setBancos] = useState([]);
 
-  // Cargar cuentas del usuario
-  useEffect(() => {
-    if (!user?.id) return;
+useEffect(() => {
+  if (!user?.id) return;
 
-    const fetchCuentas = async () => {
-      setLoadingCuentas(true);
-      try {
-        const token = await AsyncStorage.getItem("token");
-        const cache = await AsyncStorage.getItem("cuentasUsuario");
-        const lastFetch = await AsyncStorage.getItem("cuentasUsuario_lastFetch");
-        const now = Date.now();
+  const fetchCuentas = async () => {
+    setLoadingCuentas(true);
 
-        if (cache && lastFetch && now - parseInt(lastFetch) < 5 * 60 * 1000) {
-          setCuentasUsuario(JSON.parse(cache));
-          setLoadingCuentas(false);
-          return;
+    try {
+      const token = await AsyncStorage.getItem("token");
+      console.log("🔐 Token obtenido:", token);
+
+      // Mostrar cache mientras llega la nueva info
+      const cache = await AsyncStorage.getItem("cuentasUsuario");
+      console.log("📦 Cache actual de cuentas:", cache);
+      if (cache) setCuentasUsuario(JSON.parse(cache));
+
+      // Traer siempre desde backend
+      console.log(`➡️ Enviando request a ${API_BASE_URL}/api/listar-cuentas?user_id=${user.id}`);
+      const res = await fetch(
+        `${API_BASE_URL}/api/listar-cuentas?user_id=${user?.id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
+      );
 
-        const res = await fetch(
-          `https://panel.transfercash.click/api/listar-cuentas?user_id=${user?.id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+      console.log("⬅️ Status HTTP:", res.status);
+      console.log("⬅️ Headers:", res.headers); // devuelve un Headers object
 
-        if (!res.ok) throw new Error("Error al cargar cuentas");
-        const data = await res.json();
+      const text = await res.text();
+      console.log("📦 Respuesta cruda del backend:", text);
 
-        // Asociar objeto banco completo a cada cuenta
-        const cuentasConBanco = data.map((c) => ({
-          ...c,
-          bank: bancos.find((b) => b.id === c.bank_id) || null,
-        }));
-
-        setCuentasUsuario(cuentasConBanco);
-        await AsyncStorage.setItem("cuentasUsuario", JSON.stringify(cuentasConBanco));
-        await AsyncStorage.setItem("cuentasUsuario_lastFetch", now.toString());
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoadingCuentas(false);
+      let data;
+      try {
+        data = JSON.parse(text);
+        console.log("✅ JSON parseado correctamente:", data);
+      } catch (e) {
+        console.log("❌ Error parseando JSON:", e.message);
+        throw new Error("Respuesta inválida del backend");
       }
-    };
 
-    fetchCuentas();
-  }, [user, bancos]);
+      const cuentasConBanco = data.map((c) => ({
+        ...c,
+        bank: bancos.find((b) => b.id === c.bank_id) || null,
+      }));
+      console.log("💠 Cuentas con info del banco:", cuentasConBanco);
+
+      setCuentasUsuario(cuentasConBanco);
+
+      // Guardar cache temporal
+      await AsyncStorage.setItem("cuentasUsuario", JSON.stringify(cuentasConBanco));
+      await AsyncStorage.setItem("cuentasUsuario_lastFetch", Date.now().toString());
+
+    } catch (err) {
+      console.error("Error cargando cuentas:", err);
+    } finally {
+      setLoadingCuentas(false);
+    }
+  };
+
+  fetchCuentas();
+}, [user, bancos]);
 
   const cuentasOrigen = cuentasUsuario.filter((c) => c.account_type === "origin");
   const cuentasDestino = cuentasUsuario.filter((c) => c.account_type === "destination");

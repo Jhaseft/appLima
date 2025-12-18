@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import BankSelect from "./BankSelect";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import API_BASE_URL from "../api";
 let bancosCache = null;
 
 export default function ModalCuentaDestino({
@@ -47,7 +47,7 @@ export default function ModalCuentaDestino({
       try {
         let data = bancosCache || bancosProp;
         if (!data || data.length === 0) {
-          const res = await fetch("https://panel.transfercash.click/operacion/listar-bancos");
+          const res = await fetch(`${API_BASE_URL}/operacion/listar-bancos`);
           if (!res.ok) return;
           data = await res.json();
         }
@@ -93,7 +93,7 @@ export default function ModalCuentaDestino({
       const token = await AsyncStorage.getItem("token");
 
       // Guardar cuenta en backend
-      const res = await fetch("https://panel.transfercash.click/api/operacion/guardar-cuenta", {
+      const res = await fetch(`${API_BASE_URL}/api/operacion/guardar-cuenta`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -115,7 +115,7 @@ export default function ModalCuentaDestino({
       if (!res.ok) throw new Error(data.message || "Error en el servidor");
 
       // Al final de handleSave, después de guarsadar en backend:
-      const cuentasRes = await fetch(`https://panel.transfercash.click/api/listar-cuentas?user_id=${user.id}`, {
+      const cuentasRes = await fetch(`${API_BASE_URL}/api/listar-cuentas?user_id=${user.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const cuentasData = await cuentasRes.json();
@@ -212,7 +212,7 @@ export default function ModalCuentaDestino({
               {renderSwitch(animTerminos)}
               <Text className="text-gray-700 text-sm flex-shrink">
                 Acepto los{" "}
-                <Text className="text-blue-600 underline" onPress={() => Linking.openURL("https://panel.transfercash.click/politicas")}>
+                <Text className="text-blue-600 underline" onPress={() => Linking.openURL(`${API_BASE_URL}/politicas`)}>
                   Términos y Política de privacidad
                 </Text>
               </Text>

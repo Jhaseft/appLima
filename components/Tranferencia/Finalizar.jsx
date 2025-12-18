@@ -12,7 +12,7 @@ import * as DocumentPicker from "expo-document-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useUser } from "../ContextUser/UserContext";
-
+import API_BASE_URL from "../api";
 export default function Paso4({ onBack, setOperacion, operacion }) {
   const [comprobante, setComprobante] = useState(null);
   const [error, setError] = useState("");
@@ -68,7 +68,7 @@ export default function Paso4({ onBack, setOperacion, operacion }) {
 
   const openKycInBrowser = async () => {
     if (!user?.id || !token) return;
-    const url = `https://panel.transfercash.click/mobile-face-view?token=${encodeURIComponent(token)}`;
+    const url = `${API_BASE_URL}/mobile-face-view?token=${encodeURIComponent(token)}`;
     try {
       const supported = await Linking.canOpenURL(url);
       if (supported) {
@@ -122,7 +122,7 @@ export default function Paso4({ onBack, setOperacion, operacion }) {
       });
 
       const response = await fetch(
-        "https://panel.transfercash.click/api/operacion/crear-transferencia",
+        `${API_BASE_URL}/api/operacion/crear-transferencia`,
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },

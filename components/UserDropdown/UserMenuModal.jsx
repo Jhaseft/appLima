@@ -33,7 +33,7 @@ export default function UserMenuModal({ visible, onClose, user, onLogout, onView
               <Text className="text-black font-bold mb-2">👤 {user.first_name}</Text>
               <Text className="text-black mb-4">📧 {user.email}</Text>
 
-              {/* Ver operaciones */}
+              
               <Pressable
                 onPress={onViewOperations}
                 className="flex-row items-center border border-black px-4 gap-2 py-2 rounded-2xl mb-2"

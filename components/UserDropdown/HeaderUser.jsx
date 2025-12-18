@@ -6,7 +6,7 @@ import { useUser } from "../ContextUser/UserContext";
 import UserMenuModal from "../UserDropdown/UserMenuModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-
+import API_BASE_URL from "../api";
 export default function HeaderUser({ title }) {
   const { user, setUser, loading } = useUser();
   const [menuVisible, setMenuVisible] = useState(false);
@@ -17,12 +17,12 @@ export default function HeaderUser({ title }) {
       const token = await AsyncStorage.getItem("token");
       if (!token) return;
 
-      await fetch("https://panel.transfercash.click/api/logoutapp", {
+      await fetch(`${API_BASE_URL}/api/logoutapp`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // 🔥 Limpiar todo el AsyncStorage
+      //  Limpiar todo el AsyncStorage
       await AsyncStorage.clear();
       setUser(null);
 

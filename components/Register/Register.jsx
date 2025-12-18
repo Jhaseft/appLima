@@ -6,7 +6,7 @@ import Step1Personal from "./Step1Personal";
 import Step2Extras from "./Step2Extras";
 import Step3Security from "./Step3Security";
 import ProgressBar from "./ProgressBar";
-
+import API_BASE_URL from "../api";
 export default function Register() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -106,7 +106,7 @@ export default function Register() {
     if (!validateStep()) return;
     setLoading(true);
     try {
-      const res = await fetch("https://panel.transfercash.click/api/register", {
+      const res = await fetch(`${API_BASE_URL}/api/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

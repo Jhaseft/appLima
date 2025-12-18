@@ -19,7 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter, Stack, Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useUser } from "../components/ContextUser/UserContext";
-
+import API_BASE_URL from "./api";
 // Componente memoizado para el input de contraseña
 const PasswordInput = memo(({ password, setPassword, showPassword, setShowPassword, focused, setFocused, passwordRef }) => (
   <View className={`flex-row items-center border-2 rounded-2xl px-5 mb-6 bg-white shadow-md ${focused === "password" ? "border-blue-500" : "border-black"}`}>
@@ -52,34 +52,51 @@ export default function Login() {
   const [focused, setFocused] = useState("");
   const passwordRef = useRef(null);
 
-  const handleLogin = async () => {
-    if (!email || !password) return Alert.alert("Atención", "Completa todos los campos");
+const handleLogin = async () => {
+  if (!email || !password) {
+    Alert.alert("Atención", "Completa todos los campos");
+    return;
+  }
 
-    try {
-      setLoading(true);
-      const res = await fetch("https://panel.transfercash.click/api/loginapp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    setLoading(true);
 
+    const res = await fetch(`${API_BASE_URL}/api/loginapp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const contentType = res.headers.get("content-type");
+
+    if (!contentType || !contentType.includes("application/json")) {
       const text = await res.text();
-      let data;
-      try { data = JSON.parse(text); } 
-      catch (e) { throw new Error("Servidor no devolvió JSON"); }
+      console.log("HTML DEVUELTO:", text);
+      throw new Error("El servidor devolvió HTML en lugar de JSON");
+    }
 
-      if (res.ok) {
-        await AsyncStorage.setItem("token", data.token);
-        await fetchUser(data.user);
-        router.replace("/Home");
-      } else {
-        Alert.alert("Error", data.message || "Credenciales inválidas");
-      }
-    } catch (error) {
-      console.log("Error login:", error);
-      Alert.alert("Error", "No se pudo conectar al servidor");
-    } finally { setLoading(false); }
-  };
+    const data = await res.json();
+
+    if (!res.ok) {
+      Alert.alert("Error", data.message || "Credenciales inválidas");
+      return;
+    }
+
+    await AsyncStorage.setItem("token", data.token);
+    await fetchUser(data.user);
+    router.replace("/Home");
+
+  } catch (error) {
+    console.log("Error login:", error.message);
+    Alert.alert("Error", error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <KeyboardAvoidingView className="flex-1 bg-white" behavior={Platform.OS === "ios" ? "padding" : undefined}>
@@ -88,7 +105,7 @@ export default function Login() {
         <Image source={{ uri: "https://res.cloudinary.com/dnbklbswg/image/upload/v1756305635/logo_n6nqqr.jpg" }} className="w-32 h-32 mb-6 self-center" resizeMode="contain" />
         <Text className="text-4xl font-extrabold text-center text-black mb-8">Bienvenido</Text>
 
-        {/* Input de email */}
+      
         <TextInput
           value={email}
           onChangeText={setEmail}
@@ -103,7 +120,7 @@ export default function Login() {
           className={`w-full bg-white border-2 rounded-2xl px-5 py-4 mb-4 text-black shadow-md ${focused === "email" ? "border-blue-500" : "border-black"}`}
         />
 
-        {/* Input de contraseña */}
+       
         <PasswordInput
           password={password}
           setPassword={setPassword}
@@ -114,7 +131,7 @@ export default function Login() {
           passwordRef={passwordRef}
         />
 
-        {/* Botón de login */}
+       
         <Pressable
           onPress={handleLogin}
           disabled={loading}
@@ -127,9 +144,9 @@ export default function Login() {
           )}
         </Pressable>
 
-        {/* Enlaces adicionales */}
+     
         <View className="mt-4 w-full flex-row justify-center">
-          {/* Olvidé mi contraseña al lado derecho */}
+          
           <TouchableOpacity onPress={() => Linking.openURL("https://panel.transfercash.click/forgot-password")}>
             <Text className="text-blue-600 font-semibold ">Olvidé mi contraseña</Text>
           </TouchableOpacity>
