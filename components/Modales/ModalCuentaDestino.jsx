@@ -219,7 +219,7 @@ export default function ModalCuentaDestino({
             </TouchableOpacity>
           </View>
 
-          <View className="flex-row justify-end space-x-3 mt-5 w-full">
+          <View className="flex-row justify-end space-x-3 mt-5 mb-20 w-full">
             <TouchableOpacity className="bg-red-600 px-6 py-3 rounded-2xl shadow-md" onPress={onClose}>
               <Text className="text-white font-semibold text-base text-center">Cancelar</Text>
             </TouchableOpacity>
