@@ -3,7 +3,7 @@
     "name": "TransferCash",
     "slug": "Lima",
     "scheme": "transfercash",
-    "version": "3.1.4",
+    "version": "4.0",
     "orientation": "portrait",
     "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
