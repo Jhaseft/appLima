@@ -14,7 +14,7 @@ export default function Cambiar() {
   const { user } = useUser(); 
   const [step, setStep] = useState(1);
 
-  // 🔥 Estado central de la operación
+  //  Estado central de la operación
   const [operacion, setOperacion] = useState({
     monto: "",
     conversion: "",

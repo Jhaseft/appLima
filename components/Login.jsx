@@ -7,7 +7,6 @@ import {
   TextInput,
   Pressable,
   Image,
-  Alert,
   ActivityIndicator,
   TouchableOpacity,
   KeyboardAvoidingView,
@@ -15,11 +14,11 @@ import {
   Linking
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter, Stack, Link } from "expo-router";
+import { Stack, Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useUser } from "../components/ContextUser/UserContext";
-import API_BASE_URL from "./api";
+import GoogleBotoon from "./GoogleBoton";
+import { useLoginHandlers } from "./hooks/useLoginHandlers";
+
 // Componente memoizado para el input de contraseña
 const PasswordInput = memo(({ password, setPassword, showPassword, setShowPassword, focused, setFocused, passwordRef }) => (
   <View className={`flex-row items-center border-2 rounded-2xl px-5 mb-6 bg-white shadow-md ${focused === "password" ? "border-blue-500" : "border-black"}`}>
@@ -43,59 +42,13 @@ const PasswordInput = memo(({ password, setPassword, showPassword, setShowPasswo
 ));
 
 export default function Login() {
-  const router = useRouter();
-  const { fetchUser } = useUser();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [focused, setFocused] = useState("");
   const passwordRef = useRef(null);
 
-const handleLogin = async () => {
-  if (!email || !password) {
-    Alert.alert("Atención", "Completa todos los campos");
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    const res = await fetch(`${API_BASE_URL}/api/loginapp`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const contentType = res.headers.get("content-type");
-
-    if (!contentType || !contentType.includes("application/json")) {
-      const text = await res.text();
-      console.log("HTML DEVUELTO:", text);
-      throw new Error("El servidor devolvió HTML en lugar de JSON");
-    }
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      Alert.alert("Error", data.message || "Credenciales inválidas");
-      return;
-    }
-
-    await AsyncStorage.setItem("token", data.token);
-    await fetchUser(data.user);
-    router.replace("/Home");
-
-  } catch (error) {
-    console.log("Error login:", error.message);
-    Alert.alert("Error", error.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  const { handleLogin, handleGoogleLogin, loading } = useLoginHandlers(email, password);
 
 
   return (
@@ -144,15 +97,16 @@ const handleLogin = async () => {
           )}
         </Pressable>
 
-     
+          <GoogleBotoon handleGoogleLogin={handleGoogleLogin}/>
+
         <View className="mt-4 w-full flex-row justify-center">
           
-          <TouchableOpacity onPress={() => Linking.openURL("https://panel.transfercash.click/forgot-password")}>
+          <TouchableOpacity onPress={() => Linking.openURL("https://transfercash.click/forgot-password")}>
             <Text className="text-blue-600 font-semibold ">Olvidé mi contraseña</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Texto de registro en línea */}
+
         <View className="mt-6 flex-row justify-center">
           <Text className="text-black mr-1">¿No tienes cuenta?</Text>
           <Link asChild href="/Register">

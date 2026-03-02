@@ -40,7 +40,14 @@
     "plugins": [
       "expo-dev-client",
       "expo-router",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.269848220574-u1nncraprer9mf731ibf7j77dsjp2r47"
+        }
+      ],
+      "expo-font"
     ],
     "extra": {
       "router": {},

@@ -27,9 +27,9 @@ export default function Home() {
             </Text>
           )}
         </View>
-        {/* 3 Botones de redireccion */}
+        
         <Botons />
-        {/* Grafico */}
+      
         <GraficoLineas />
         <Horarios />
 

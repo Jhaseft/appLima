@@ -33,15 +33,14 @@ useEffect(() => {
 
     try {
       const token = await AsyncStorage.getItem("token");
-      console.log("🔐 Token obtenido:", token);
 
       // Mostrar cache mientras llega la nueva info
       const cache = await AsyncStorage.getItem("cuentasUsuario");
-      console.log("📦 Cache actual de cuentas:", cache);
+
       if (cache) setCuentasUsuario(JSON.parse(cache));
 
       // Traer siempre desde backend
-      console.log(`➡️ Enviando request a ${API_BASE_URL}/api/listar-cuentas?user_id=${user.id}`);
+
       const res = await fetch(
         `${API_BASE_URL}/api/listar-cuentas?user_id=${user?.id}`,
         {
@@ -53,16 +52,14 @@ useEffect(() => {
         }
       );
 
-      console.log("⬅️ Status HTTP:", res.status);
-      console.log("⬅️ Headers:", res.headers); // devuelve un Headers object
 
       const text = await res.text();
-      console.log("📦 Respuesta cruda del backend:", text);
+  
 
       let data;
       try {
         data = JSON.parse(text);
-        console.log("✅ JSON parseado correctamente:", data);
+
       } catch (e) {
         console.log("❌ Error parseando JSON:", e.message);
         throw new Error("Respuesta inválida del backend");
@@ -72,7 +69,6 @@ useEffect(() => {
         ...c,
         bank: bancos.find((b) => b.id === c.bank_id) || null,
       }));
-      console.log("💠 Cuentas con info del banco:", cuentasConBanco);
 
       setCuentasUsuario(cuentasConBanco);
 

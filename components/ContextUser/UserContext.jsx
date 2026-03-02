@@ -20,8 +20,6 @@ export const UserProvider = ({ children }) => {
   };
 
   const fetchUser = async (initialUser = null) => {
-  console.log("🟡 fetchUser iniciado");
-
   try {
     if (initialUser) {
       console.log("🟢 Usuario recibido desde login:", initialUser);
@@ -31,7 +29,7 @@ export const UserProvider = ({ children }) => {
     }
 
     const token = await AsyncStorage.getItem("token");
-    console.log("🔐 Token obtenido:", token);
+
 
     if (!token) {
       console.log("🔴 No hay token, cerrando sesión");
@@ -40,7 +38,7 @@ export const UserProvider = ({ children }) => {
       return null;
     }
 
-    console.log("➡️ Enviando request a /api/userapp");
+
 
     const res = await fetch(`${API_BASE_URL}/api/userapp`, {
       headers: {
@@ -49,23 +47,21 @@ export const UserProvider = ({ children }) => {
       },
     });
 
-    console.log("⬅️ Status HTTP:", res.status);
-    console.log("⬅️ Headers:", Object.fromEntries(res.headers.entries()));
 
     const text = await res.text();
-    console.log("📦 Respuesta cruda del backend:\n", text);
+
 
     let data;
     try {
       data = JSON.parse(text);
-      console.log("✅ JSON parseado correctamente:", data);
+
     } catch (e) {
       console.log("❌ ERROR: la respuesta NO es JSON");
       throw new Error("Respuesta no JSON");
     }
 
     if (res.ok && data?.id) {
-      console.log("🟢 Usuario válido, guardando en estado y storage");
+ 
       setUser(data);
       await AsyncStorage.setItem("user", JSON.stringify(data));
       return data;
