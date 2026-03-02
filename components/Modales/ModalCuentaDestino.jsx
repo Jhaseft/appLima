@@ -162,36 +162,44 @@ export default function ModalCuentaDestino({
     );
   };
 
+  const canSave = juramento && terminos && banco && numeroCuenta && nombrePropietario && dniPropietario && contacto;
+  const inputStyle = "border border-gray-200 rounded-xl p-4 text-base bg-gray-50 w-full";
+
   return (
-    <Modal visible={isOpen} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal visible={isOpen} transparent animationType="slide" onRequestClose={onClose}>
       <KeyboardAvoidingView
-        className="flex-1 justify-center items-center bg-black/50 px-4"
+        className="flex-1 justify-end bg-black/50"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         {loading && (
-          <View className="absolute inset-0 flex justify-center items-center bg-black/60 z-50">
+          <View className="absolute inset-0 justify-center items-center bg-black/60 z-50">
             <ActivityIndicator size="large" color="white" />
-            <Text className="text-white mt-3 text-lg">Guardando cuenta...</Text>
+            <Text className="text-white mt-3 text-base font-medium">Guardando cuenta...</Text>
           </View>
         )}
 
         <ScrollView
-          contentContainerStyle={{ width: "100%", alignItems: "center" }}
-          className="bg-white py-10 px-3 rounded-3xl shadow-xl max-w-md mt-40 mb-52"
+          contentContainerStyle={{ alignItems: "center", paddingHorizontal: 24, paddingBottom: 36 }}
+          className="bg-white rounded-t-3xl max-h-[92%]"
         >
-          <Text className="text-2xl font-bold mb-6 text-center text-gray-800">Registrar nueva cuenta destino</Text>
+          <View className="w-10 h-1 bg-gray-300 rounded-full mt-4 mb-6" />
 
-          <BankSelect options={bancosDisponibles} value={banco} onChange={setBanco} loading={bancosDisponibles.length === 0} />
+          <Text className="text-xl font-bold text-gray-900 mb-1">Registrar cuenta destino</Text>
+          <Text className="text-sm text-gray-400 mb-6">Cuenta de un tercero</Text>
 
-          <View className="border p-3 rounded-lg w-full">
-            <Text className="text-sm font-semibold mb-2">Datos del propietario</Text>
-            <TextInput placeholder="Nombre completo" placeholderTextColor="#9ca3af" value={nombrePropietario} onChangeText={setNombrePropietario} className="border rounded-lg p-2 mb-2 w-full" />
-            <TextInput placeholder="CI o DNI" placeholderTextColor="#9ca3af" value={dniPropietario} onChangeText={setDniPropietario} keyboardType="number-pad" className="border rounded-lg p-2 mb-2 w-full" />
-            <TextInput placeholder="Número de contacto" placeholderTextColor="#9ca3af" value={contacto} onChangeText={setContacto} keyboardType="phone-pad" className="border rounded-lg p-2 w-full" />
+          <View className="w-full">
+            <BankSelect options={bancosDisponibles} value={banco} onChange={setBanco} loading={bancosDisponibles.length === 0} />
+          </View>
+
+          <View className="w-full mt-4 mb-1 bg-gray-50 border border-gray-200 rounded-2xl p-4 gap-3">
+            <Text className="text-xs font-semibold text-gray-400 uppercase">Datos del propietario</Text>
+            <TextInput className={inputStyle} placeholder="Nombre completo" placeholderTextColor="#9ca3af" value={nombrePropietario} onChangeText={setNombrePropietario} />
+            <TextInput className={inputStyle} placeholder="CI o DNI" placeholderTextColor="#9ca3af" value={dniPropietario} onChangeText={setDniPropietario} keyboardType="number-pad" />
+            <TextInput className={inputStyle} placeholder="Número de contacto" placeholderTextColor="#9ca3af" value={contacto} onChangeText={setContacto} keyboardType="phone-pad" />
           </View>
 
           <TextInput
-            className="border border-gray-300 rounded-2xl p-4 my-4 text-base bg-gray-50 w-full"
+            className={`${inputStyle} my-4`}
             placeholder={cuentaPlaceholder || "Número de cuenta"}
             placeholderTextColor="#9ca3af"
             keyboardType={cuentaType}
@@ -199,18 +207,17 @@ export default function ModalCuentaDestino({
             onChangeText={setNumeroCuenta}
           />
 
-          <View className="mb-6 space-y-3">
-            <TouchableOpacity onPress={() => toggleSwitch("juramento")} className="flex-row items-start gap-3">
+          <View className="mb-7 w-full gap-4">
+            <TouchableOpacity onPress={() => toggleSwitch("juramento")} className="flex-row items-center gap-3">
               {renderSwitch(animJuramento)}
-              <Text className="text-gray-700 text-sm flex-shrink">
-                Declaro bajo juramento que soy responsable{"\n"}de la cuenta registrada.
+              <Text className="text-gray-600 text-sm flex-1">
+                Declaro bajo juramento que soy responsable de la cuenta registrada.
               </Text>
             </TouchableOpacity>
 
-
-            <TouchableOpacity onPress={() => toggleSwitch("terminos")} className="flex-row items-start gap-3">
+            <TouchableOpacity onPress={() => toggleSwitch("terminos")} className="flex-row items-center gap-3">
               {renderSwitch(animTerminos)}
-              <Text className="text-gray-700 text-sm flex-shrink">
+              <Text className="text-gray-600 text-sm flex-1">
                 Acepto los{" "}
                 <Text className="text-blue-600 underline" onPress={() => Linking.openURL(`${API_BASE_URL}/politicas`)}>
                   Términos y Política de privacidad
@@ -219,14 +226,14 @@ export default function ModalCuentaDestino({
             </TouchableOpacity>
           </View>
 
-          <View className="flex-row justify-end space-x-3 mt-5 mb-20 w-full">
-            <TouchableOpacity className="bg-red-600 px-6 py-3 rounded-2xl shadow-md" onPress={onClose}>
-              <Text className="text-white font-semibold text-base text-center">Cancelar</Text>
+          <View className="flex-row gap-3 w-full">
+            <TouchableOpacity className="flex-1 border border-gray-200 py-3.5 rounded-2xl" onPress={onClose}>
+              <Text className="text-gray-700 font-semibold text-base text-center">Cancelar</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className={`px-6 py-3 rounded-2xl shadow-md ${juramento && terminos && banco && numeroCuenta && nombrePropietario && dniPropietario && contacto ? "bg-blue-600" : "bg-blue-400"}`}
+              className={`flex-1 py-3.5 rounded-2xl ${canSave ? "bg-blue-600" : "bg-blue-300"}`}
               onPress={handleSave}
-              disabled={!(juramento && terminos && banco && numeroCuenta && nombrePropietario && dniPropietario && contacto)}
+              disabled={!canSave}
             >
               <Text className="text-white font-semibold text-base text-center">Guardar</Text>
             </TouchableOpacity>

@@ -72,8 +72,11 @@ export default function GraficoLineas() {
   const latestVenta = data[data.length - 1].venta;
 
   return (
-    <View className="items-center mt-6">
-      <Text className="text-2xl font-bold text-black mb-4">Compra vs Venta</Text>
+    <View className="mt-8 bg-white rounded-3xl border border-gray-100 p-4 items-center">
+      <View className="w-full mb-4">
+        <Text className="text-xs text-gray-400 font-semibold uppercase mb-1">Historial</Text>
+        <Text className="text-lg font-bold text-gray-900">Compra vs Venta</Text>
+      </View>
       <Svg height={chartHeight + padding + 30} width={chartWidth}>
         <Rect
           x={0}
@@ -186,24 +189,24 @@ export default function GraficoLineas() {
 
       {/* Leyenda */}
       <View className="flex-row justify-center gap-6 mt-3">
-        <View className="flex-row items-center space-x-1">
-          <View className="w-4 h-4 bg-blue-500 rounded" />
-          <Text className="text-gray-700">Compra</Text>
+        <View className="flex-row items-center gap-2">
+          <View className="w-3 h-3 bg-blue-500 rounded-full" />
+          <Text className="text-gray-600 text-sm">Compra</Text>
         </View>
-        <View className="flex-row items-center space-x-1">
-          <View className="w-4 h-4 bg-yellow-500 rounded" />
-          <Text className="text-gray-700">Venta</Text>
+        <View className="flex-row items-center gap-2">
+          <View className="w-3 h-3 bg-yellow-400 rounded-full" />
+          <Text className="text-gray-600 text-sm">Venta</Text>
         </View>
       </View>
 
       {/* Valores actuales */}
-      <View className="flex-row justify-center mt-4 space-x-6 gap-6 bg-white p-4 rounded-xl shadow">
-        <View className="items-center">
-          <Text className="text-gray-500 text-sm">Compra actual</Text>
+      <View className="flex-row w-full mt-4 gap-3">
+        <View className="flex-1 items-center bg-blue-50 py-3 rounded-2xl">
+          <Text className="text-gray-400 text-xs mb-1">Compra actual</Text>
           <Text className="text-blue-600 font-bold text-lg">{latestCompra}</Text>
         </View>
-        <View className="items-center">
-          <Text className="text-gray-500 text-sm">Venta actual</Text>
+        <View className="flex-1 items-center bg-yellow-50 py-3 rounded-2xl">
+          <Text className="text-gray-400 text-xs mb-1">Venta actual</Text>
           <Text className="text-yellow-600 font-bold text-lg">{latestVenta}</Text>
         </View>
       </View>

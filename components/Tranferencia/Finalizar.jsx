@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,9 +10,12 @@ import {
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter, useFocusEffect } from "expo-router";
+import { useRouter } from "expo-router";
 import { useUser } from "../ContextUser/UserContext";
 import API_BASE_URL from "../api";
+
+const KYC_DEEP_LINK = "transfercash://kyc-resultado?status=approved";
+
 export default function Paso4({ onBack, setOperacion, operacion }) {
   const [comprobante, setComprobante] = useState(null);
   const [error, setError] = useState("");
@@ -20,66 +23,35 @@ export default function Paso4({ onBack, setOperacion, operacion }) {
   const [token, setToken] = useState(null);
 
   const router = useRouter();
-  const { user, fetchUser } = useUser();
-  const pollingRef = useRef(null);
+  const { user } = useUser();
 
-  // Cargar token al inicio
   useEffect(() => {
     (async () => {
       const savedToken = await AsyncStorage.getItem("token");
       setToken(savedToken);
     })();
-
-    return () => {
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current);
-      }
-    };
   }, []);
 
-  // Auto-refresh KYC si viene del navegador
-  useFocusEffect(
-    React.useCallback(() => {
-      (async () => {
-        const needsRefresh = await AsyncStorage.getItem("needsKycRefresh");
-        if (needsRefresh === "true") {
-          const updatedUser = await fetchUser();
-          await AsyncStorage.removeItem("needsKycRefresh");
-          if (updatedUser?.kyc_status === "verified") {
-            Alert.alert("KYC Completo", "Tu identidad fue verificada correctamente.");
-          }
-        }
-      })();
-    }, [])
-  );
-
-  // Polling seguro
-  const startKycPolling = () => {
-    if (pollingRef.current) return;
-    pollingRef.current = setInterval(async () => {
-      const updatedUser = await fetchUser();
-      if (updatedUser?.kyc_status === "verified") {
-        clearInterval(pollingRef.current);
-        pollingRef.current = null;
-        Alert.alert("KYC Completo", "¡Tu identidad fue verificada!");
-      }
-    }, 3000);
-  };
-
   const openKycInBrowser = async () => {
-    if (!user?.id || !token) return;
-    const url = `${API_BASE_URL}/mobile-face-view?token=${encodeURIComponent(token)}`;
+    if (!token) return;
+    console.log('token:',token);
+    console.log('Url::',token);
     try {
-      const supported = await Linking.canOpenURL(url);
-      if (supported) {
-        await AsyncStorage.setItem("needsKycRefresh", "true");
-        startKycPolling();
-        await Linking.openURL(url);
-      } else {
-        Alert.alert("Error", "No se puede abrir el navegador.");
-      }
-    } catch {
-      Alert.alert("Error", "Hubo un problema al abrir el KYC.");
+      const response = await fetch(`${API_BASE_URL}/api/kyc/session`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ next_url: KYC_DEEP_LINK }),
+      });
+      const data = await response.json();
+      console.log('data:',data);
+      if (!data.redirect_url) throw new Error("No se recibió redirect_url");
+      await Linking.openURL(data.redirect_url);
+    } catch (err) {
+      console.error("❌ Error KYC:", err);
+      Alert.alert("Error", "Hubo un problema al iniciar la verificación KYC.");
     }
   };
 
@@ -112,8 +84,6 @@ export default function Paso4({ onBack, setOperacion, operacion }) {
       formData.append("origin_account_id", operacion.cuentaOrigen.id);
       formData.append("destination_account_id", operacion.cuentaDestino.id);
       formData.append("amount", operacion.monto);
-      formData.append("exchange_rate", operacion.tasa);
-      formData.append("converted_amount", operacion.conversion);
       formData.append("modo", operacion.modo);
       formData.append("comprobante", {
         uri: comprobante.uri,
@@ -131,7 +101,6 @@ export default function Paso4({ onBack, setOperacion, operacion }) {
       );
 
       const data = await response.json();
-
       if (!response.ok) {
         setError(data.message || "Error al crear la transferencia");
         setLoading(false);
@@ -142,7 +111,7 @@ export default function Paso4({ onBack, setOperacion, operacion }) {
       setLoading(false);
       Alert.alert(
         "Operación Registrada",
-        "La transferencia se registró correctamente.",
+        `Tu transferencia fue registrada correctamente.\nN° de operación: ${data.transfer_number}`,
         [{ text: "OK", onPress: () => router.replace("/") }]
       );
     } catch (err) {

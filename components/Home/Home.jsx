@@ -10,6 +10,15 @@ import Horarios from "./Horarios";
 export default function Home() {
   const { user, loading } = useUser();
 
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center bg-white">
+        <ActivityIndicator size="large" color="#6366F1" />
+        <Text className="text-gray-400 mt-4 text-base font-medium">Cargando...</Text>
+      </View>
+    );
+  }
+
   return (
     <FooterLayout>
       <ScrollView
@@ -17,22 +26,14 @@ export default function Home() {
         contentContainerStyle={{ paddingBottom: 40 }}
       >
         <HeaderUser title="Transfer Cash" />
-
         <View className="my-7">
-          {loading ? (
-            <ActivityIndicator size="large" color="#6366F1" />
-          ) : (
-            <Text className="text-2xl font-bold text-black">
-              Bienvenido(a) {user?.first_name || "Usuario"}
-            </Text>
-          )}
+          <Text className="text-2xl font-bold text-black">
+            Bienvenido(a) {user?.first_name || "Usuario"}
+          </Text>
         </View>
-        
         <Botons />
-      
         <GraficoLineas />
         <Horarios />
-
       </ScrollView>
     </FooterLayout>
   );

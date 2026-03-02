@@ -8,22 +8,19 @@ export default function Horarios() {
   ];
 
   return (
-    <View className="mt-10 bg-indigo-50 rounded-2xl p-5 shadow-md">
-      <Text className="text-xl font-bold text-indigo-700 text-center mb-4">
-        Horarios de Atención
-      </Text>
+    <View className="mt-6 mb-4 bg-indigo-50 rounded-3xl p-5">
+      <Text className="text-xs text-indigo-400 font-semibold uppercase mb-1">Atención</Text>
+      <Text className="text-lg font-bold text-indigo-800 mb-4">Horarios</Text>
       {horarios.map((item, i) => (
         <View
           key={i}
-          className="flex-row justify-between border-b border-indigo-200 py-2"
+          className={`flex-row justify-between py-3 ${i < horarios.length - 1 ? "border-b border-indigo-100" : ""}`}
         >
-          <Text className="text-base font-semibold text-gray-700">{item.dia}</Text>
-          <Text className="text-base text-gray-600">{item.hora}</Text>
+          <Text className="text-sm font-semibold text-gray-700">{item.dia}</Text>
+          <Text className={`text-sm font-medium ${item.hora === "Cerrado" ? "text-red-400" : "text-indigo-600"}`}>{item.hora}</Text>
         </View>
       ))}
-      <Text className="text-sm text-gray-500 text-center mt-3">
-        📍 Atención en sucursal central · Cochabamba, Bolivia
-      </Text>
+      <Text className="text-xs text-gray-400 text-center mt-3">Sucursal central · Cochabamba, Bolivia</Text>
     </View>
   );
 }

@@ -15,23 +15,26 @@ const buttons = [
     route: "/Cambiar",
     iconType: "fa5",
     icon: RepeatIcon,
-    colors: { icon: "" },
+    bg: "bg-indigo-50",
+    colors: { icon: "#341BDE" },
   },
   {
     label: "Cuentas Bancarias",
     route: "/Cuentas",
     iconType: "material",
     icon: CreditCardIcon,
-    colors: { icon: "#000000" },
+    bg: "bg-gray-100",
+    colors: { icon: "#1f2937" },
   },
   {
     label: "Recibe Ayuda",
-    route: "", // No hace navegación interna
+    route: "",
     iconType: "fa",
     icon: "whatsapp",
+    bg: "bg-green-50",
     colors: { icon: "#16A34A" },
     whatsappMessage: "Hola, necesito ayuda con mis transferencias",
-    whatsappNumber: "59177958109", // tu número con código de país
+    whatsappNumber: "59177958109",
   },
 ];
 
@@ -69,7 +72,7 @@ export default function Botons() {
               onPress={() => navigateTo(btn)}
               onPressIn={handlePressIn}
               onPressOut={handlePressOut}
-              className="w-28 h-28 rounded-xl items-center justify-center border"
+              className={`w-28 h-28 rounded-2xl items-center justify-center ${btn.bg}`}
             >
               {btn.iconType === "fa" ? (
                 <FontAwesome name={btn.icon} size={32} color={btn.colors.icon} />
