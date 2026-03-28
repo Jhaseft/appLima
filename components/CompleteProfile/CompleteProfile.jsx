@@ -130,7 +130,7 @@ export default function CompleteProfile() {
         disabled={loading || !canSubmit}
         className={`py-4 rounded-2xl mt-2 shadow-lg ${loading || !canSubmit ? "bg-gray-400" : "bg-black"}`}
       >
-        <Text className="text-center text-white font-bold text-lg">
+        <Text className="text-center text-white font-bold text-lg mb-20">
           {loading ? "Procesando..." : "Completar perfil"}
         </Text>
       </TouchableOpacity>

@@ -3,13 +3,13 @@
     "name": "TransferCash",
     "slug": "Lima",
     "scheme": "transfercash",
-    "version": "4.0",
+    "version": "4.7",
     "orientation": "portrait",
-    "icon": "./assets/logo.png",
+    "icon": "./assets/logopro.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/logo-splash.png",
+      "image": "./assets/logopro.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,24 +18,14 @@
       "supportsTablet": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      },
-      "icon": "./assets/logo.png",
-      "splash": {
-        "image": "./assets/logo.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#ffffff"
       }
     },
     "android": {
       "package": "com.transfercash.lima",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/logo.png",
-        "backgroundColor": "#ffffff"
-      },
       "edgeToEdgeEnabled": true
     },
     "web": {
-      "favicon": "./assets/logo.png"
+      "favicon": "./assets/logopro.png"
     },
     "plugins": [
       "expo-dev-client",

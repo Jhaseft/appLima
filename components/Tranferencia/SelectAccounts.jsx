@@ -104,7 +104,7 @@ const cuentasDestino = cuentas.filter((c) => {
         Selección de Cuentas
       </Text>
 
-      {/* Cuenta Origen */}
+
       <Text className="text-black font-semibold mb-2">Cuenta Origen</Text>
       <CuentaSelect
         options={cuentasOrigen.map((c) => ({
@@ -120,7 +120,7 @@ const cuentasDestino = cuentas.filter((c) => {
         }
         placeholder="Selecciona una cuenta de origen"
       />
-      {/* Cuenta Destino */}
+  
       <Text className="text-black font-semibold mt-6 mb-2">Cuenta Destino</Text>
       <CuentaSelect
         options={cuentasDestino.map((c) => ({
@@ -137,7 +137,7 @@ const cuentasDestino = cuentas.filter((c) => {
         placeholder="Selecciona una cuenta de destino"
       />
 
-      {/* Botones */}
+   
       <View className="flex-row justify-between mt-10">
         <TouchableOpacity
           onPress={onBack}

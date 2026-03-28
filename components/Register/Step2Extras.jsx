@@ -54,7 +54,7 @@ const updatePhone = (code, number) => {
   return (
     <View className="space-y-5">
 
-      {/* Teléfono */}
+    
       <FieldWrapper label="Número de teléfono *" error={errors.phone}>
         <View className="flex-row space-x-2 items-center">
           <TouchableOpacity
@@ -96,7 +96,6 @@ const updatePhone = (code, number) => {
         </Modal>
       </FieldWrapper>
 
-      {/* Nacionalidad */}
       <FieldWrapper label="Nacionalidad *" error={errors.nationality}>
         <TouchableOpacity
           className="flex-row items-center border border-gray-300 rounded-xl px-4 py-2"
@@ -131,7 +130,7 @@ const updatePhone = (code, number) => {
         </Modal>
       </FieldWrapper>
 
-      {/* Documento */}
+   
       <FieldWrapper label="Documento *" error={errors.document_number}>
         <TextInput
           value={data.document_number || ""}

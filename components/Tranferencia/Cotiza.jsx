@@ -8,10 +8,16 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
+  Alert,
+  Linking,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RefreshCw } from "lucide-react-native";
 import API_BASE_URL from "../api";
+import { useUser } from "../ContextUser/UserContext";
+
+const KYC_DEEP_LINK = "transfercash://kyc-resultado?status=approved";
+
 export default function Cotiza({ onNext, operacion, setOperacion }) {
   const [monto, setMonto] = useState("");
   const [conversion, setConversion] = useState("");
@@ -19,6 +25,15 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
   const [error, setError] = useState("");
   const [tasas, setTasas] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(null);
+  const { user } = useUser();
+
+  useEffect(() => {
+    (async () => {
+      const savedToken = await AsyncStorage.getItem("token");
+      setToken(savedToken);
+    })();
+  }, []);
 
   // Carga y cacheo de tasas
   const loadTasas = async () => {
@@ -112,7 +127,39 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
     }
   };
 
+  const openKycInBrowser = async () => {
+    if (!token) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/kyc/session`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ next_url: KYC_DEEP_LINK }),
+      });
+      const data = await response.json();
+      if (!data.redirect_url) throw new Error("No se recibió redirect_url");
+      await Linking.openURL(data.redirect_url);
+    } catch (err) {
+      console.error("❌ Error KYC:", err);
+      Alert.alert("Error", "Hubo un problema al iniciar la verificación KYC.");
+    }
+  };
+
   const handleNext = () => {
+    if (user?.kyc_status !== "verified") {
+      Alert.alert(
+        "KYC Pendiente",
+        "Debes completar tu verificación KYC antes de realizar operaciones.",
+        [
+          { text: "Ir a KYC", onPress: openKycInBrowser },
+          { text: "Cancelar", style: "cancel" },
+        ]
+      );
+      return;
+    }
+
     const valor = parseFloat(monto.replace(",", "."));
     const data = {
       monto: valor,
@@ -124,6 +171,8 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
     setOperacion((prev) => ({
       ...prev,
       ...data,
+      cuentaOrigen: null,
+      cuentaDestino: null,
     }));
 
     onNext();

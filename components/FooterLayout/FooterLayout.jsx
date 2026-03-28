@@ -19,10 +19,10 @@ export default function FooterLayout({ children }) {
 
   return (
     <View className="flex-1 bg-white">
-      {/* Contenido principal */}
+    
       <View className="flex-1  mb-24">{children}</View>
 
-      {/* Barra inferior */}
+
       <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex-row items-center justify-between" style={{ height: 80 }}>
         {tabs.map((tab, idx) => {
           const active = pathname === tab.route;

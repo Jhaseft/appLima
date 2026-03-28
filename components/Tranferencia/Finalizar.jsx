@@ -6,15 +6,11 @@ import {
   Image,
   Alert,
   ActivityIndicator,
-  Linking,
 } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { useUser } from "../ContextUser/UserContext";
 import API_BASE_URL from "../api";
-
-const KYC_DEEP_LINK = "transfercash://kyc-resultado?status=approved";
 
 export default function Paso4({ onBack, setOperacion, operacion }) {
   const [comprobante, setComprobante] = useState(null);
@@ -23,7 +19,6 @@ export default function Paso4({ onBack, setOperacion, operacion }) {
   const [token, setToken] = useState(null);
 
   const router = useRouter();
-  const { user } = useUser();
 
   useEffect(() => {
     (async () => {
@@ -32,49 +27,14 @@ export default function Paso4({ onBack, setOperacion, operacion }) {
     })();
   }, []);
 
-  const openKycInBrowser = async () => {
-    if (!token) return;
-    console.log('token:',token);
-    console.log('Url::',token);
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/kyc/session`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ next_url: KYC_DEEP_LINK }),
-      });
-      const data = await response.json();
-      console.log('data:',data);
-      if (!data.redirect_url) throw new Error("No se recibió redirect_url");
-      await Linking.openURL(data.redirect_url);
-    } catch (err) {
-      console.error("❌ Error KYC:", err);
-      Alert.alert("Error", "Hubo un problema al iniciar la verificación KYC.");
-    }
-  };
-
   const handleEnviarTransferencia = async () => {
-    if (user?.kyc_status !== "verified") {
-      Alert.alert(
-        "KYC Pendiente",
-        "Debes completar tu verificación KYC antes de realizar operaciones.",
-        [
-          { text: "Ir a KYC", onPress: openKycInBrowser },
-          { text: "Cancelar", style: "cancel" },
-        ]
-      );
-      return;
-    }
-
     if (!comprobante) {
-      setError("❌ Debes seleccionar un comprobante antes de continuar.");
+      setError(" Debes seleccionar un comprobante antes de continuar.");
       return;
     }
 
     if (!operacion.cuentaOrigen || !operacion.cuentaDestino) {
-      setError("❌ Debes seleccionar la cuenta de origen y destino.");
+      setError(" Debes seleccionar la cuenta de origen y destino.");
       return;
     }
 
