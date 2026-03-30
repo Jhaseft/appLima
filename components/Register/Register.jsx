@@ -139,12 +139,8 @@ export default function Register() {
   };
 
   const passwordRules = {
-    length: form.password.length >= 8,
-    upper: /[A-Z]/.test(form.password),
-    lower: /[a-z]/.test(form.password),
-    number: /\d/.test(form.password),
-    special: /[!@#$%]/.test(form.password),
-    match: form.password === form.password_confirmation,
+    digits: /^\d{4}$/.test(form.password),
+    match: form.password.length > 0 && form.password === form.password_confirmation,
   };
 
   const canSubmit = Object.values(passwordRules).every(Boolean) && form.accepted_terms;

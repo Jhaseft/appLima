@@ -18,7 +18,8 @@ export default function PasswordInput({
         className="w-full border border-gray-300 rounded-xl px-4 py-3 pr-10 text-gray-900 text-sm"
         autoCapitalize="none"
         autoCorrect={false}
-        keyboardType="default"
+        keyboardType="numeric"
+        maxLength={4}
         textContentType="password"
         placeholderTextColor="#9CA3AF"
       />

@@ -22,7 +22,8 @@
     },
     "android": {
       "package": "com.transfercash.lima",
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "versionCode": 30
     },
     "web": {
       "favicon": "./assets/logopro2.png"

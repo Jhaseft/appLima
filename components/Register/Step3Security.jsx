@@ -5,11 +5,7 @@ import PasswordInput from "./PasswordInput";
 import API_BASE_URL from "../api";
 function PasswordRules({ rules }) {
   const list = [
-    { label: "Mínimo 8 caracteres", valid: rules.length },
-    { label: "Una letra mayúscula", valid: rules.upper },
-    { label: "Una letra minúscula", valid: rules.lower },
-    { label: "Al menos un número", valid: rules.number },
-    { label: "Al menos un carácter especial (!@#$%)", valid: rules.special },
+    { label: "Exactamente 4 dígitos", valid: rules.digits },
   ];
 
   return (
@@ -31,21 +27,13 @@ export default function Step3Security({ data, setData, errors }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [rules, setRules] = useState({
-    length: false,
-    upper: false,
-    lower: false,
-    number: false,
-    special: false,
+    digits: false,
     match: false,
   });
 
   useEffect(() => {
     setRules({
-      length: password.length >= 8,
-      upper: /[A-Z]/.test(password),
-      lower: /[a-z]/.test(password),
-      number: /\d/.test(password),
-      special: /[!@#$%]/.test(password),
+      digits: /^\d{4}$/.test(password),
       match: password.length > 0 && password === confirmPassword,
     });
   }, [password, confirmPassword]);

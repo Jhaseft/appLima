@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,8 @@ import {
   Platform,
   Alert,
   Linking,
+  Keyboard,
+  RefreshControl,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RefreshCw } from "lucide-react-native";
@@ -24,9 +26,12 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
   const [modo, setModo] = useState("PENtoBOB");
   const [error, setError] = useState("");
   const [tasas, setTasas] = useState(null);
+  const [transferConfig, setTransferConfig] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [token, setToken] = useState(null);
   const { user } = useUser();
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -35,8 +40,28 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
     })();
   }, []);
 
+  useEffect(() => {
+    const sub = Keyboard.addListener("keyboardDidShow", () => {
+      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
+    });
+    return () => sub.remove();
+  }, []);
+
+  // Carga configuración de límites desde el backend
+  const loadConfig = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/config/transfer`);
+      const json = await res.json();
+      setTransferConfig(json);
+    } catch (err) {
+      console.error("Error cargando config:", err);
+      // Fallback a valores por defecto si falla
+      setTransferConfig({ min_pen: 20, min_bob: 60, kyc_limit_pen: 300, kyc_limit_bob: 1000 });
+    }
+  };
+
   // Carga y cacheo de tasas
-  const loadTasas = async () => {
+  const loadTasas = async (force = false) => {
     try {
       setLoading(true);
       const cached = await AsyncStorage.getItem("ultimaTasa");
@@ -44,12 +69,10 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
       const now = Date.now();
       const fiveMinutes = 5 * 60 * 1000;
 
-      if (cached && lastUpdate && now - parseInt(lastUpdate) < fiveMinutes) {
+      if (!force && cached && lastUpdate && now - parseInt(lastUpdate) < fiveMinutes) {
         setTasas(JSON.parse(cached));
       } else {
-        const res = await fetch(
-          `${API_BASE_URL}/api/tipo-cambio/historial`
-        );
+        const res = await fetch(`${API_BASE_URL}/api/tipo-cambio/historial`);
         const json = await res.json();
         const ultima = json[json.length - 1];
         setTasas(ultima);
@@ -65,6 +88,7 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
   };
 
   useEffect(() => {
+    loadConfig();
     loadTasas();
   }, []);
 
@@ -150,9 +174,8 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
   const handleNext = () => {
     const valor = parseFloat(monto.replace(",", "."));
 
-    // Mínimo: 20 soles o 60 bs
-    const minPEN = 20;
-    const minBOB = 60;
+    const minPEN = transferConfig?.min_pen ?? 20;
+    const minBOB = transferConfig?.min_bob ?? 60;
     if (modo === "PENtoBOB" && valor < minPEN) {
       setError(` El monto mínimo es S/ ${minPEN}.`);
       return;
@@ -162,9 +185,8 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
       return;
     }
 
-    // KYC solo requerido si supera 300 soles o 1000 bs
-    const limitePEN = 300;
-    const limiteBOB = 1000;
+    const limitePEN = transferConfig?.kyc_limit_pen ?? 300;
+    const limiteBOB = transferConfig?.kyc_limit_bob ?? 1000;
     const requiereKyc =
       (modo === "PENtoBOB" && valor > limitePEN) ||
       (modo === "BOBtoPEN" && valor > limiteBOB);
@@ -203,13 +225,26 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView
+        ref={scrollRef}
         contentContainerStyle={{
           flexGrow: 1,
           justifyContent: "center",
           alignItems: "center",
-          padding: 20,
+          padding: 50,
         }}
         keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={async () => {
+              setRefreshing(true);
+              await loadTasas(true);
+              await loadConfig();
+              setRefreshing(false);
+            }}
+            tintColor="#FACC15"
+          />
+        }
       >
         <Text className="text-2xl font-bold text-black">TransferCash</Text>
         <Text className="text-sm text-gray-600 text-center mb-4">

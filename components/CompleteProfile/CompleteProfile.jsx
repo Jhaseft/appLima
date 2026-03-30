@@ -25,12 +25,8 @@ export default function CompleteProfile() {
   const setData = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
 
   const passwordRules = {
-    length:  form.password.length >= 8,
-    upper:   /[A-Z]/.test(form.password),
-    lower:   /[a-z]/.test(form.password),
-    number:  /\d/.test(form.password),
-    special: /[!@#$%]/.test(form.password),
-    match:   form.password.length > 0 && form.password === form.password_confirmation,
+    digits: /^\d{4}$/.test(form.password),
+    match:  form.password.length > 0 && form.password === form.password_confirmation,
   };
 
   const canSubmit = Object.values(passwordRules).every(Boolean) && form.accepted_terms;
@@ -128,9 +124,9 @@ export default function CompleteProfile() {
       <TouchableOpacity
         onPress={canSubmit ? handleSubmit : null}
         disabled={loading || !canSubmit}
-        className={`py-4 rounded-2xl mt-2 shadow-lg ${loading || !canSubmit ? "bg-gray-400" : "bg-black"}`}
+        className={`py-4 rounded-2xl mt-2 mb-10 shadow-lg ${loading || !canSubmit ? "bg-gray-400" : "bg-black"}`}
       >
-        <Text className="text-center text-white font-bold text-lg mb-20">
+        <Text className="text-center text-white font-bold text-lg ">
           {loading ? "Procesando..." : "Completar perfil"}
         </Text>
       </TouchableOpacity>

@@ -4,6 +4,8 @@ import { Plus } from "lucide-react-native";
 import FooterLayout from "../FooterLayout/FooterLayout";
 import HeaderUser from "../UserDropdown/HeaderUser";
 import CuentaSelect from "../Cuentas/CuentasSelect";
+import InfoTooltip from "../Cuentas/InfoTooltip";
+import SinCuentas from "../Cuentas/SinCuentas";
 import { useUser } from "../ContextUser/UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import API_BASE_URL from "../api";
@@ -93,36 +95,69 @@ useEffect(() => {
 
   const renderCuentas = (cuentas, selectedCuenta, setSelectedCuenta, tipo) => (
     <View className="mb-6">
-      <Text className="font-bold text-lg mb-3 text-black">
-        {tipo === "origin" ? "Cuentas de Origen" : "Cuentas de Destino"}
-      </Text>
+      <View className="flex-row items-center mb-3">
+        <Text className="font-bold text-lg text-black">
+          {tipo === "origin" ? "Cuentas de Origen" : "Cuentas de Destino"}
+        </Text>
+        <InfoTooltip
+          texto={
+            tipo === "origin"
+              ? "Esta es tu cuenta bancaria en Perú (o Bolivia). Desde aquí nos envías el dinero que quieres transferir."
+              : "Esta es la cuenta del destinatario en Perú (o Bolivia). A esta cuenta le haremos llegar el dinero."
+          }
+        />
+      </View>
 
       {loadingCuentas ? (
         <ActivityIndicator color="black" />
       ) : (
         <View>
-          <View className="flex-row items-center gap-3">
-            <CuentaSelect
-              options={cuentas.map(c => ({
-                ...c,
-                logo_url: c.bank?.logo_url, // usamos la info del banco completo
-                name: c.bank?.name || c.account_number
-              }))}
-              value={selectedCuenta}
-              onChange={setSelectedCuenta}
-              placeholder="Selecciona cuenta"
-            />
-            <TouchableOpacity
-              className="bg-black rounded-xl justify-center items-center"
-              style={{ width: 48, height: 48 }}
-              onPress={() => {
-                setTipoAgregar(tipo);
-                setOpenModal(true);
-              }}
-            >
-              <Plus size={24} color="#fff" />
-            </TouchableOpacity>
-          </View>
+          {cuentas.length === 0 ? (
+            <View className="flex-row items-center gap-3">
+              <View className="flex-1">
+                <SinCuentas
+                  mensaje={
+                    tipo === "origin"
+                      ? "Aún no tienes cuentas de origen. Agrega una cuenta de un banco (peruano o boliviano) desde la que nos enviarás el dinero."
+                      : "Aún no tienes cuentas de destino. Agrega la cuenta del banco (peruano o boliviano) al que quieres enviar el dinero."
+                  }
+                />
+              </View>
+              <TouchableOpacity
+                className="bg-black rounded-xl justify-center items-center"
+                style={{ width: 48, height: 48 }}
+                onPress={() => {
+                  setTipoAgregar(tipo);
+                  setOpenModal(true);
+                }}
+              >
+                <Plus size={24} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View className="flex-row items-center gap-3">
+              <CuentaSelect
+                options={cuentas.map(c => ({
+                  ...c,
+                  logo_url: c.bank?.logo_url,
+                  name: c.bank?.name || c.account_number
+                }))}
+                value={selectedCuenta}
+                onChange={setSelectedCuenta}
+                placeholder="Selecciona cuenta"
+              />
+              <TouchableOpacity
+                className="bg-black rounded-xl justify-center items-center"
+                style={{ width: 48, height: 48 }}
+                onPress={() => {
+                  setTipoAgregar(tipo);
+                  setOpenModal(true);
+                }}
+              >
+                <Plus size={24} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          )}
 
           {tipo === "destination" && selectedCuenta && (
             <View className="mt-5 bg-black/90 p-4 rounded-xl">
@@ -153,7 +188,7 @@ useEffect(() => {
   return (
     <FooterLayout>
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 60 }} className="bg-white">
-        <HeaderUser title="Cuentas Bancarias" />
+        <HeaderUser title="Cuentas Bancarias" tabKey="Cuentas" />
 
         {/* Información del usuario */}
         <View className="bg-black/90 p-5 rounded-xl mb-6">

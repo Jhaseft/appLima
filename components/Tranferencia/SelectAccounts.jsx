@@ -9,6 +9,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "../ContextUser/UserContext";
 import CuentaSelect from "../Cuentas/CuentasSelect";
+import SinCuentas from "../Cuentas/SinCuentas";
 import API_BASE_URL from "../api";
 export default function SelectAccounts({ onNext, onBack, operacion, setOperacion }) {
   const { user } = useUser();
@@ -106,36 +107,56 @@ const cuentasDestino = cuentas.filter((c) => {
 
 
       <Text className="text-black font-semibold mb-2">Cuenta Origen</Text>
-      <CuentaSelect
-        options={cuentasOrigen.map((c) => ({
-          id: c.id,
-          bank_name: c.bank?.name || "Banco",
-          account_number: c.account_number,
-          bank_logo: c.bank?.logo, // ajusta el nombre del campo real en tu BD/API
-          ...c,
-        }))}
-        value={operacion.cuentaOrigen}
-        onChange={(cuenta) =>
-          setOperacion((prev) => ({ ...prev, cuentaOrigen: cuenta }))
-        }
-        placeholder="Selecciona una cuenta de origen"
-      />
-  
+      {cuentasOrigen.length === 0 ? (
+        <SinCuentas
+          mensaje={
+            operacion.modo === "PENtoBOB"
+              ? "No tienes cuentas de origen peruanas. Ve a 'Cuentas' y agrega una cuenta de un banco de Perú desde la que nos enviarás el dinero."
+              : "No tienes cuentas de origen bolivianas. Ve a 'Cuentas' y agrega una cuenta de un banco de Bolivia desde la que nos enviarás el dinero."
+          }
+        />
+      ) : (
+        <CuentaSelect
+          options={cuentasOrigen.map((c) => ({
+            id: c.id,
+            bank_name: c.bank?.name || "Banco",
+            account_number: c.account_number,
+            bank_logo: c.bank?.logo,
+            ...c,
+          }))}
+          value={operacion.cuentaOrigen}
+          onChange={(cuenta) =>
+            setOperacion((prev) => ({ ...prev, cuentaOrigen: cuenta }))
+          }
+          placeholder="Selecciona una cuenta de origen"
+        />
+      )}
+
       <Text className="text-black font-semibold mt-6 mb-2">Cuenta Destino</Text>
-      <CuentaSelect
-        options={cuentasDestino.map((c) => ({
-          id: c.id,
-          bank_name: c.bank?.name || "Banco",
-          account_number: c.account_number,
-          bank_logo: c.bank?.logo,
-          ...c,
-        }))}
-        value={operacion.cuentaDestino}
-        onChange={(cuenta) =>
-          setOperacion((prev) => ({ ...prev, cuentaDestino: cuenta }))
-        }
-        placeholder="Selecciona una cuenta de destino"
-      />
+      {cuentasDestino.length === 0 ? (
+        <SinCuentas
+          mensaje={
+            operacion.modo === "PENtoBOB"
+              ? "No tienes cuentas de destino bolivianas. Ve a 'Cuentas' y agrega la cuenta del banco de Bolivia al que quieres enviar el dinero."
+              : "No tienes cuentas de destino peruanas. Ve a 'Cuentas' y agrega la cuenta del banco de Perú al que quieres enviar el dinero."
+          }
+        />
+      ) : (
+        <CuentaSelect
+          options={cuentasDestino.map((c) => ({
+            id: c.id,
+            bank_name: c.bank?.name || "Banco",
+            account_number: c.account_number,
+            bank_logo: c.bank?.logo,
+            ...c,
+          }))}
+          value={operacion.cuentaDestino}
+          onChange={(cuenta) =>
+            setOperacion((prev) => ({ ...prev, cuentaDestino: cuenta }))
+          }
+          placeholder="Selecciona una cuenta de destino"
+        />
+      )}
 
    
       <View className="flex-row justify-between mt-10">

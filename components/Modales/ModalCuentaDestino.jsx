@@ -11,7 +11,6 @@ import {
   Linking,
   Modal,
   KeyboardAvoidingView,
-  Platform,
   Alert,
 } from "react-native";
 import BankSelect from "./BankSelect";
@@ -169,7 +168,7 @@ export default function ModalCuentaDestino({
     <Modal visible={isOpen} transparent animationType="slide" onRequestClose={onClose}>
       <KeyboardAvoidingView
         className="flex-1 justify-end bg-black/50"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior="padding"
       >
         {loading && (
           <View className="absolute inset-0 justify-center items-center bg-black/60 z-50">
@@ -181,6 +180,7 @@ export default function ModalCuentaDestino({
         <ScrollView
           contentContainerStyle={{ alignItems: "center", paddingHorizontal: 24, paddingBottom: 36 }}
           className="bg-white rounded-t-3xl max-h-[92%]"
+          keyboardShouldPersistTaps="handled"
         >
           <View className="w-10 h-1 bg-gray-300 rounded-full mt-4 mb-6" />
 
