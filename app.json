@@ -3,13 +3,13 @@
     "name": "TransferCash",
     "slug": "Lima",
     "scheme": "transfercash",
-    "version": "4.7",
+    "version": "5.1",
     "orientation": "portrait",
-    "icon": "./assets/logopro.png",
+    "icon": "./assets/logopro2.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/logopro.png",
+      "image": "./assets/logopro2.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -25,7 +25,7 @@
       "edgeToEdgeEnabled": true
     },
     "web": {
-      "favicon": "./assets/logopro.png"
+      "favicon": "./assets/logopro2.png"
     },
     "plugins": [
       "expo-dev-client",
@@ -44,6 +44,7 @@
       "eas": {
         "projectId": "c896182e-bb15-4c0e-96ca-1037184c0576"
       }
-    }
+    },
+    "owner": "jhaseft"
   }
 }

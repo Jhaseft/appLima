@@ -142,16 +142,37 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
       if (!data.redirect_url) throw new Error("No se recibió redirect_url");
       await Linking.openURL(data.redirect_url);
     } catch (err) {
-      console.error("❌ Error KYC:", err);
+      console.error(" Error KYC:", err);
       Alert.alert("Error", "Hubo un problema al iniciar la verificación KYC.");
     }
   };
 
   const handleNext = () => {
-    if (user?.kyc_status !== "verified") {
+    const valor = parseFloat(monto.replace(",", "."));
+
+    // Mínimo: 20 soles o 60 bs
+    const minPEN = 20;
+    const minBOB = 60;
+    if (modo === "PENtoBOB" && valor < minPEN) {
+      setError(` El monto mínimo es S/ ${minPEN}.`);
+      return;
+    }
+    if (modo === "BOBtoPEN" && valor < minBOB) {
+      setError(` El monto mínimo es Bs ${minBOB}.`);
+      return;
+    }
+
+    // KYC solo requerido si supera 300 soles o 1000 bs
+    const limitePEN = 300;
+    const limiteBOB = 1000;
+    const requiereKyc =
+      (modo === "PENtoBOB" && valor > limitePEN) ||
+      (modo === "BOBtoPEN" && valor > limiteBOB);
+
+    if (requiereKyc && user?.kyc_status !== "verified") {
       Alert.alert(
-        "KYC Pendiente",
-        "Debes completar tu verificación KYC antes de realizar operaciones.",
+        "KYC Requerido",
+        "Para operar montos mayores a S/ 300 o Bs 1,000 debes completar tu verificación KYC.",
         [
           { text: "Ir a KYC", onPress: openKycInBrowser },
           { text: "Cancelar", style: "cancel" },
@@ -159,8 +180,6 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
       );
       return;
     }
-
-    const valor = parseFloat(monto.replace(",", "."));
     const data = {
       monto: valor,
       conversion,
