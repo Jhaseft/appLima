@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Linking,
   Platform,
-  StyleSheet,
   Image,
   ActivityIndicator,
 } from "react-native";
@@ -14,7 +13,7 @@ import API_BASE_URL from "../api";
 
 const STORE_URL = {
   android: "https://play.google.com/store/apps/details?id=com.transfercash.lima",
-  ios: "https://apps.apple.com/app/id000000000", // reemplaza con tu App Store ID
+  ios: "https://apps.apple.com/app/id000000000",
 };
 
 function parseVersion(v = "0") {
@@ -34,7 +33,7 @@ function isOutdated(current, minimum) {
 }
 
 export default function VersionGuard({ children }) {
-  const [status, setStatus] = useState("checking"); // "checking" | "ok" | "outdated"
+  const [status, setStatus] = useState("checking");
 
   useEffect(() => {
     checkVersion();
@@ -50,14 +49,17 @@ export default function VersionGuard({ children }) {
       const { version_minima } = await res.json();
       setStatus(isOutdated(current, version_minima) ? "outdated" : "ok");
     } catch {
-      setStatus("ok"); // si falla el endpoint, no bloquear
+      setStatus("ok");
     }
   };
 
   if (status === "checking") {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#6366F1" />
+      <View className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator size="large" color="#000000" />
+        <Text className="mt-4 text-sm text-neutral-400 tracking-widest uppercase font-medium">
+          Verificando versión...
+        </Text>
       </View>
     );
   }
@@ -65,35 +67,61 @@ export default function VersionGuard({ children }) {
   if (status === "outdated") {
     const storeUrl = Platform.OS === "ios" ? STORE_URL.ios : STORE_URL.android;
     return (
-      <View style={styles.container}>
-        <Image
-          source={require("../../assets/logo.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+      <View className="flex-1 bg-black items-center justify-center px-9">
 
-        <Text style={styles.title}>Actualización requerida</Text>
-        <Text style={styles.subtitle}>
-          Hay una nueva versión de Transfer Cash disponible.{"\n"}
-          Actualiza para seguir usando la app.
-        </Text>
+        {/* Logo con borde blanco sutil */}
+        <View className="w-24 h-24 rounded-3xl bg-white items-center justify-center mb-10 shadow-lg">
+          <Image
+            source={require("../../assets/logo.png")}
+            className="w-20 h-20 rounded-2xl"
+            resizeMode="contain"
+          />
+        </View>
 
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>
-            v{Constants.expoConfig?.version} → Nueva versión
+        
+        <View className="bg-neutral-800 border border-neutral-700 rounded-full px-4 py-1.5 mb-6">
+          <Text className="text-neutral-400 text-xs font-semibold tracking-widest uppercase">
+            Actualización requerida
           </Text>
         </View>
 
+       
+        <Text className="text-white text-3xl font-bold text-center mb-4 leading-tight">
+          Nueva versión{"\n"}disponible
+        </Text>
+
+       
+        <Text className="text-neutral-400 text-base text-center leading-relaxed mb-8">
+          Para seguir usando Transfer Cash necesitas instalar la última versión de la app.
+        </Text>
+
+       
+        <View className="flex-row items-center bg-neutral-900 border border-neutral-800 rounded-full px-5 py-2 mb-10">
+          <View className="w-2 h-2 rounded-full bg-neutral-500 mr-2" />
+          <Text className="text-neutral-500 text-xs font-mono">
+            v{Constants.expoConfig?.version}
+          </Text>
+          <Text className="text-neutral-600 mx-2">→</Text>
+          <View className="w-2 h-2 rounded-full bg-white mr-2" />
+          <Text className="text-white text-xs font-mono font-semibold">
+            Nueva versión
+          </Text>
+        </View>
+
+      
         <TouchableOpacity
-          style={styles.button}
+          className="bg-white w-full py-4 rounded-2xl items-center mb-4 active:opacity-80"
           onPress={() => Linking.openURL(storeUrl)}
           activeOpacity={0.85}
         >
-          <Text style={styles.buttonText}>Actualizar ahora</Text>
+          <Text className="text-black font-bold text-base tracking-wide">
+            Actualizar ahora
+          </Text>
         </TouchableOpacity>
 
-        <Text style={styles.footer}>
-          No puedes continuar sin actualizar.
+      
+        <Text className="text-neutral-700 text-xs text-center mt-2">
+          No puedes continuar sin actualizar
         </Text>
       </View>
     );
@@ -101,71 +129,3 @@ export default function VersionGuard({ children }) {
 
   return children;
 }
-
-const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "#6366F1",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 36,
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    borderRadius: 24,
-    backgroundColor: "#fff",
-    marginBottom: 36,
-  },
-  title: {
-    color: "#fff",
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  subtitle: {
-    color: "rgba(255,255,255,0.85)",
-    fontSize: 16,
-    textAlign: "center",
-    lineHeight: 24,
-    marginBottom: 28,
-  },
-  badge: {
-    backgroundColor: "rgba(255,255,255,0.15)",
-    borderRadius: 100,
-    paddingVertical: 6,
-    paddingHorizontal: 16,
-    marginBottom: 40,
-  },
-  badgeText: {
-    color: "rgba(255,255,255,0.9)",
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  button: {
-    backgroundColor: "#fff",
-    paddingVertical: 16,
-    paddingHorizontal: 48,
-    borderRadius: 16,
-    width: "100%",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: "#6366F1",
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  footer: {
-    color: "rgba(255,255,255,0.5)",
-    fontSize: 12,
-    textAlign: "center",
-  },
-});
