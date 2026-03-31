@@ -100,7 +100,7 @@ export default function SelectTransfers() {
               key={t.id} 
               className="bg-white p-5 rounded-2xl shadow-lg border border-gray-200 mb-5"
             >
-              {/* Fecha y Estado */}
+             
               <View className="flex-row justify-between items-center mb-3">
                 <Text className="text-gray-600 text-sm">{t.fecha}</Text>
                 <Text className="px-3 py-1 rounded-full font-semibold text-sm" style={{ color: getStatusColor(t.estado) }}>
@@ -108,20 +108,20 @@ export default function SelectTransfers() {
                 </Text>
               </View>
 
-              {/* Montos y modo */}
+       
               <View className="bg-gray-50 p-3 rounded-lg mb-3 space-y-1">
-                <Text className="text-gray-700">Monto: {t.monto} Bs</Text>
-                <Text className="text-gray-700">Monto Conv: {t.converted_amount} Bs</Text>
+                <Text className="text-gray-700">Monto: {t.monto} {t.modo === "PENtoBOB" ? "S/" : "Bs"}</Text>
+                <Text className="text-gray-700">Monto Conv: {t.converted_amount} {t.modo === "PENtoBOB" ? "Bs" : "S/"}</Text>
                 <Text className="text-gray-700">Modo: {t.modo}</Text>
               </View>
 
-              {/* Origen y Destino */}
+           
               <View className="bg-gray-50 p-3 rounded-lg mb-3 space-y-1">
                 <Text className="text-gray-700">Origen: {t.origen?.numero} - {t.origen?.banco}</Text>
                 <Text className="text-gray-700">Destino: {t.destino?.numero} - {t.destino?.banco}</Text>
               </View>
 
-              {/* Propietarios */}
+              
               <View className="bg-gray-50 p-3 rounded-lg space-y-2">
                 <Text className="text-gray-800 font-semibold mt-2">Propietario Destino:</Text>
                 {renderOwnerInfo(t.destino?.owner)}
