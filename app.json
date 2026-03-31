@@ -3,7 +3,7 @@
     "name": "TransferCash",
     "slug": "Lima",
     "scheme": "transfercash",
-    "version": "5.1",
+    "version": "5.1.1",
     "orientation": "portrait",
     "icon": "./assets/logopro2.png",
     "userInterfaceStyle": "light",
@@ -22,8 +22,7 @@
     },
     "android": {
       "package": "com.transfercash.lima",
-      "edgeToEdgeEnabled": true,
-      "versionCode": 30
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/logopro2.png"
