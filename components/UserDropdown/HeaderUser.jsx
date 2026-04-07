@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, Alert } from "react-native";
+import { Pressable, Alert, Image } from "react-native";
 import { Stack } from "expo-router";
 import { Feather } from "@expo/vector-icons"; // <--- reemplazo
 import { useUser } from "../ContextUser/UserContext";
@@ -7,7 +7,7 @@ import UserMenuModal from "../UserDropdown/UserMenuModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import API_BASE_URL from "../api";
-export default function HeaderUser({ title }) {
+export default function HeaderUser({ title, image }) {
   const { user, setUser, loading } = useUser();
   const [menuVisible, setMenuVisible] = useState(false);
   const router = useRouter();
@@ -37,7 +37,17 @@ export default function HeaderUser({ title }) {
     <>
       <Stack.Screen
         options={{
-          headerTitle: loading ? "Cargando..." : title,
+          headerTitle: loading
+            ? "Cargando..."
+            : image
+            ? () => (
+                <Image
+                  source={image}
+                  style={{ width: 130, height: 32 }}
+                  resizeMode="contain"
+                />
+              )
+            : title,
           headerTitleAlign: "center",
           headerTintColor: "black",
           headerStyle: { backgroundColor: "white" },

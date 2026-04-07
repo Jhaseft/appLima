@@ -4,6 +4,7 @@ import { Check } from "lucide-react-native";
 export default function ProgressBar({ step }) {
   const steps = [
     "Cotiza",
+    "Metodo de Pago",
     "Seleccion de Cuentas",
     "Transfiere",
     "Adjunta y finaliza operacion",
@@ -11,7 +12,7 @@ export default function ProgressBar({ step }) {
 
   return (
     <View className="w-full my-5">
-      {/* Fila superior: bolitas + líneas */}
+     
       <View className="flex-row items-center justify-between w-full px-3">
         {steps.map((_, index) => {
           const current = index + 1;
@@ -38,7 +39,7 @@ export default function ProgressBar({ step }) {
                 )}
               </View>
 
-              {/* Línea hacia la derecha (excepto última) */}
+               
               {index < steps.length - 1 && (
                 <View
                   className={`absolute top-1/2 left-1/2 h-1 w-full -z-10
@@ -50,7 +51,6 @@ export default function ProgressBar({ step }) {
         })}
       </View>
 
-      {/* Fila inferior: etiquetas */}
       <View className="flex-row justify-between mt-2 px-2">
         {steps.map((label, index) => (
           <View key={index} className="flex-1 items-center px-1">

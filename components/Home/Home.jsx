@@ -25,7 +25,7 @@ export default function Home() {
         className="flex-1 bg-white px-6"
         contentContainerStyle={{ paddingBottom: 40 }}
       >
-        <HeaderUser title="Transfer Cash" />
+        <HeaderUser title="TransferCash" />
         <View className="my-7">
           <Text className="text-2xl font-bold text-black">
             Bienvenido(a) {user?.first_name || "Usuario"}

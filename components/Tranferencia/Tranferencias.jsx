@@ -6,30 +6,47 @@ import { useUser } from "../ContextUser/UserContext";
 
 import ProgressBar from "./ProgressBar";
 import Cotiza from "./Cotiza";
+import MetodoPago from "./MetodoPago";
 import SelectAccounts from "./SelectAccounts";
 import Transfiere from "./Transfiere";
 import Finalizar from "./Finalizar";
+import FinalizarEfectivo from "./FinalizarEfectivo";
 
 export default function Cambiar() {
-  const { user } = useUser(); 
+  const { user } = useUser();
   const [step, setStep] = useState(1);
 
-  //  Estado central de la operación
+  // Estado central de la operación
   const [operacion, setOperacion] = useState({
     monto: "",
     conversion: "",
     modo: "PENtoBOB",
     tasa: null,
+    metodo: null, // "transferencia" | "efectivo"
     cuentaOrigen: null,
     cuentaDestino: null,
     comprobante: null,
   });
 
-  
-  const nextStep = () => {
-    setStep((prev) => Math.min(prev + 1, 4));
+  // nextStep recibe el metodo solo cuando viene del paso 2 (MetodoPago)
+  const nextStep = (metodo) => {
+    if (step === 2) {
+      const m = metodo || operacion.metodo;
+      if (m === "efectivo") {
+        setStep(5); // saltar directo al paso de efectivo
+        return;
+      }
+    }
+    setStep((prev) => Math.min(prev + 1, 5));
   };
-  const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
+
+  const prevStep = () => {
+    if (step === 5 && operacion.metodo === "efectivo") {
+      setStep(2); // volver a selección de método
+      return;
+    }
+    setStep((prev) => Math.max(prev - 1, 1));
+  };
 
   return (
     <FooterLayout>
@@ -51,7 +68,7 @@ export default function Cambiar() {
           />
         )}
         {step === 2 && (
-          <SelectAccounts
+          <MetodoPago
             onNext={nextStep}
             onBack={prevStep}
             operacion={operacion}
@@ -59,7 +76,7 @@ export default function Cambiar() {
           />
         )}
         {step === 3 && (
-          <Transfiere
+          <SelectAccounts
             onNext={nextStep}
             onBack={prevStep}
             operacion={operacion}
@@ -67,11 +84,25 @@ export default function Cambiar() {
           />
         )}
         {step === 4 && (
-          <Finalizar
-          
+          <Transfiere
+            onNext={nextStep}
             onBack={prevStep}
             operacion={operacion}
-             setOperacion={setOperacion}
+            setOperacion={setOperacion}
+          />
+        )}
+        {step === 5 && operacion.metodo === "efectivo" && (
+          <FinalizarEfectivo
+            onBack={prevStep}
+            operacion={operacion}
+            setOperacion={setOperacion}
+          />
+        )}
+        {step === 5 && operacion.metodo === "transferencia" && (
+          <Finalizar
+            onBack={prevStep}
+            operacion={operacion}
+            setOperacion={setOperacion}
           />
         )}
       </ScrollView>
