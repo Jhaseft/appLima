@@ -25,10 +25,19 @@ export default function MetodoPago({ onNext, onBack, operacion, setOperacion }) 
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={() => handleSelect("efectivo")}
+        onPress={() => handleSelect("qr")}
         className="w-full py-4 rounded-2xl border-2 border-yellow-400 mb-4"
       >
         <Text className="text-yellow-600 font-bold text-center text-base">
+          📷 Pago por QR
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => handleSelect("efectivo")}
+        className="w-full py-4 rounded-2xl border-2 border-gray-300 mb-4"
+      >
+        <Text className="text-gray-600 font-bold text-center text-base">
           💵 Efectivo
         </Text>
       </TouchableOpacity>
