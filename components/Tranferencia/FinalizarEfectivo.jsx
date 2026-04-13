@@ -13,8 +13,9 @@ import * as DocumentPicker from "expo-document-picker";
 import * as Clipboard from "expo-clipboard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { Copy, MapPin, ExternalLink } from "lucide-react-native";
+import { Copy } from "lucide-react-native";
 import API_BASE_URL from "../api";
+import { useTransferMethods } from "../hooks/useTransferMethods";
 
 const OFICINAS = [
   {
@@ -29,53 +30,14 @@ const OFICINAS = [
   },
 ];
 
-const CUENTAS_DESTINO = {
-  PENtoBOB: [
-    {
-      type: "Yape",
-      title: "Yape Perú",
-      number: "947847817",
-      image:
-        "https://res.cloudinary.com/dnbklbswg/image/upload/v1756359619/yape-logo-png_seeklogo-504685_tns3su.png",
-    },
-    {
-      type: "Plin",
-      title: "Plin Perú",
-      number: "947847817",
-      image:
-        "https://res.cloudinary.com/dnbklbswg/image/upload/v1756359595/plin_fi3i8u.png",
-    },
-    {
-      type: "InterBank",
-      title: "InterBank Perú",
-      number: "4403006144735",
-      image:
-        "https://res.cloudinary.com/dnbklbswg/image/upload/v1756305466/download_zxsiny.png",
-    },
-    {
-      type: "BCP",
-      title: "BCP Perú",
-      number: "2207063622037",
-      image:
-        "https://res.cloudinary.com/dnbklbswg/image/upload/v1756304903/bcp_mtkdyl.png",
-    },
-  ],
-  BOBtoPEN: [
-    {
-      type: "qr",
-      title: "QR Bolivia",
-      image:
-        "https://res.cloudinary.com/dnbklbswg/image/upload/v1756359417/qr_hgokvi.jpg",
-    },
-  ],
-};
-
 export default function FinalizarEfectivo({ onBack, operacion, setOperacion }) {
   const [comprobante, setComprobante] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState(null);
   const router = useRouter();
+
+  const { methods: opciones, loading: loadingMethods } = useTransferMethods(operacion.modo);
 
   useEffect(() => {
     (async () => {
@@ -91,7 +53,6 @@ export default function FinalizarEfectivo({ onBack, operacion, setOperacion }) {
   const conversionTexto = isBOBtoPEN
     ? `${operacion.conversion} PEN`
     : `${operacion.conversion} BOB`;
-  const opciones = CUENTAS_DESTINO[operacion.modo] || [];
 
   const handlePickComprobante = async () => {
     try {
@@ -212,11 +173,16 @@ export default function FinalizarEfectivo({ onBack, operacion, setOperacion }) {
         ))}
       </View>
 
-      {/* Cuentas o QR */}
+    
       <View className="mb-4">
         <Text className="text-black font-semibold mb-2">
           {isBOBtoPEN ? "Escanea el QR para transferir" : "Realiza el depósito a:"}
         </Text>
+        {loadingMethods ? (
+          <ActivityIndicator size="small" color="#000" />
+        ) : opciones.length === 0 ? (
+          <Text className="text-gray-400 text-sm text-center">Sin métodos disponibles</Text>
+        ) : null}
         {opciones.map((op, idx) => {
           if (op.type === "qr") {
             return (
