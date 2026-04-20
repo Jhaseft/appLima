@@ -8,7 +8,7 @@ export default function CuentaSelect({ options, value, onChange, placeholder = "
 
   // Ancho dinámico según pantalla
   const { width } = Dimensions.get("window");
-  const containerWidth = width * 0.75; // 90% del ancho de la pantalla
+  const containerWidth = width * 0.62; // 90% del ancho de la pantalla
 
   return (
     <View style={{ width: containerWidth }}>
