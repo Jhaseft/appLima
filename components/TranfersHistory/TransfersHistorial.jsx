@@ -20,14 +20,34 @@ export default function SelectTransfers() {
     }
   };
 
+  const getTypeLabel = (slug) => {
+    switch (slug) {
+      case "cash": return "Efectivo";
+      case "qr": return "QR";
+      case "bank_transfer": return "Transferencia bancaria";
+      default: return slug ? slug.replace(/_/g, " ") : "Transferencia";
+    }
+  };
+
   const renderOwnerInfo = (owner) => {
-    if (!owner) return <Text>-</Text>;
+    if (!owner) return <Text className="text-gray-500">-</Text>;
     return (
       <View className="mt-1 space-y-0.5">
         <Text className="text-gray-700">Nombre: {owner.full_name}</Text>
         <Text className="text-gray-700">Doc: {owner.document_number}</Text>
         <Text className="text-gray-700">Tel: {owner.phone}</Text>
       </View>
+    );
+  };
+
+  const renderAccountLine = (label, acc) => {
+    if (!acc) {
+      return <Text className="text-gray-500">{label}: No aplica</Text>;
+    }
+    return (
+      <Text className="text-gray-700">
+        {label}: {acc.numero ?? "-"} - {acc.banco ?? "-"}
+      </Text>
     );
   };
 
@@ -61,10 +81,13 @@ export default function SelectTransfers() {
           }
         );
 
-        if (!res.ok) throw new Error("Error cargando transferencias");
+        if (!res.ok) {
+          const errText = await res.text().catch(() => "");
+          throw new Error(`Error cargando transferencias (${res.status}): ${errText}`);
+        }
         const data = await res.json();
 
-        setTransfers(data);
+        setTransfers(Array.isArray(data) ? data : []);
 
         // Guardar en AsyncStorage
         await AsyncStorage.setItem("transfers", JSON.stringify(data));
@@ -95,39 +118,67 @@ export default function SelectTransfers() {
         {transfers.length === 0 ? (
           <Text className="text-gray-500 text-center">No hay transferencias</Text>
         ) : (
-          transfers.map((t) => (
-            <View 
-              key={t.id} 
-              className="bg-white p-5 rounded-2xl shadow-lg border border-gray-200 mb-5"
-            >
-             
-              <View className="flex-row justify-between items-center mb-3">
-                <Text className="text-gray-600 text-sm">{t.fecha}</Text>
-                <Text className="px-3 py-1 rounded-full font-semibold text-sm" style={{ color: getStatusColor(t.estado) }}>
-                  {t.estado}
-                </Text>
-              </View>
+          transfers.map((t) => {
+            const slug = t.payment_method?.slug ?? "bank_transfer";
+            const isCash = slug === "cash";
+            const isQR = slug === "qr";
+            const hasAccounts = !isCash && !isQR;
 
-       
-              <View className="bg-gray-50 p-3 rounded-lg mb-3 space-y-1">
-                <Text className="text-gray-700">Monto: {t.monto} {t.modo === "PENtoBOB" ? "S/" : "Bs"}</Text>
-                <Text className="text-gray-700">Monto Conv: {t.converted_amount} {t.modo === "PENtoBOB" ? "Bs" : "S/"}</Text>
-                <Text className="text-gray-700">Modo: {t.modo}</Text>
-              </View>
+            return (
+              <View
+                key={t.id}
+                className="bg-white p-5 rounded-2xl shadow-lg border border-gray-200 mb-5"
+              >
+                <View className="flex-row justify-between items-center mb-3">
+                  <Text className="text-gray-600 text-sm">{t.fecha}</Text>
+                  <Text
+                    className="px-3 py-1 rounded-full font-semibold text-sm"
+                    style={{ color: getStatusColor(t.estado) }}
+                  >
+                    {t.estado}
+                  </Text>
+                </View>
 
-           
-              <View className="bg-gray-50 p-3 rounded-lg mb-3 space-y-1">
-                <Text className="text-gray-700">Origen: {t.origen?.numero} - {t.origen?.banco}</Text>
-                <Text className="text-gray-700">Destino: {t.destino?.numero} - {t.destino?.banco}</Text>
-              </View>
+                <View className="bg-gray-50 p-3 rounded-lg mb-3 space-y-1">
+                  <Text className="text-gray-700">
+                    Tipo: {t.payment_method?.name ?? getTypeLabel(slug)}
+                  </Text>
+                  <Text className="text-gray-700">
+                    Monto: {t.monto} {t.modo === "PENtoBOB" ? "S/" : "Bs"}
+                  </Text>
+                  <Text className="text-gray-700">
+                    Monto Conv: {t.converted_amount}{" "}
+                    {t.modo === "PENtoBOB" ? "Bs" : "S/"}
+                  </Text>
+                  <Text className="text-gray-700">Modo: {t.modo}</Text>
+                </View>
 
-              
-              <View className="bg-gray-50 p-3 rounded-lg space-y-2">
-                <Text className="text-gray-800 font-semibold mt-2">Propietario Destino:</Text>
-                {renderOwnerInfo(t.destino?.owner)}
+                {hasAccounts ? (
+                  <>
+                    <View className="bg-gray-50 p-3 rounded-lg mb-3 space-y-1">
+                      {renderAccountLine("Origen", t.origen)}
+                      {renderAccountLine("Destino", t.destino)}
+                    </View>
+
+                    <View className="bg-gray-50 p-3 rounded-lg space-y-2">
+                      <Text className="text-gray-800 font-semibold mt-2">
+                        Propietario Destino:
+                      </Text>
+                      {renderOwnerInfo(t.destino?.owner)}
+                    </View>
+                  </>
+                ) : (
+                  <View className="bg-gray-50 p-3 rounded-lg space-y-1">
+                    <Text className="text-gray-700">
+                      {isCash
+                        ? "Operación en efectivo — sin cuentas bancarias asociadas."
+                        : "Operación por QR — sin cuentas bancarias asociadas."}
+                    </Text>
+                  </View>
+                )}
               </View>
-            </View>
-          ))
+            );
+          })
         )}
       </ScrollView>
     </FooterLayout>

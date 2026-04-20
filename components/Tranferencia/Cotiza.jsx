@@ -194,7 +194,7 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
     if (requiereKyc && user?.kyc_status !== "verified") {
       Alert.alert(
         "KYC Requerido",
-        "Para operar montos mayores a S/ 300 o Bs 1,000 debes completar tu verificación KYC.",
+        `Para operar montos mayores a S/${limitePEN} o Bs ${limiteBOB} debes completar tu verificación KYC.`,
         [
           { text: "Ir a KYC", onPress: openKycInBrowser },
           { text: "Cancelar", style: "cancel" },

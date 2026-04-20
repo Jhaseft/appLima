@@ -42,7 +42,7 @@ export default function UserMenuModal({ visible, onClose, user, onLogout, onView
                 <Text className="text-black font-bold">Ver operaciones</Text>
               </Pressable>
 
-              {/* Cerrar sesión */}
+             
               <Pressable
                 onPress={onLogout}
                 className="flex-row border border-black px-4 py-2 gap-2 rounded-2xl"

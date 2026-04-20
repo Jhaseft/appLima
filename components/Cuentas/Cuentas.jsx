@@ -6,8 +6,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
+  Dimensions,
+   Alert
 } from "react-native";
-import { Plus, RefreshCw } from "lucide-react-native";
+import { Plus, RefreshCw,Trash2 } from "lucide-react-native";
 import FooterLayout from "../FooterLayout/FooterLayout";
 import HeaderUser from "../UserDropdown/HeaderUser";
 import CuentaSelect from "../Cuentas/CuentasSelect";
@@ -36,6 +38,60 @@ export default function Cuentas() {
   const [openModal, setOpenModal] = useState(false);
   const [tipoAgregar, setTipoAgregar] = useState("origin");
   const [bancos, setBancos] = useState([]);
+  const [eliminandoCuenta, setEliminandoCuenta] = useState(false);
+
+  const eliminarCuenta = async (cuenta, tipo) => {
+    if (!cuenta?.id || eliminandoCuenta) return;
+
+    Alert.alert(
+      "Eliminar cuenta",
+      "¿Estás seguro de eliminar esta cuenta?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Eliminar",
+          style: "destructive",
+          onPress: async () => {
+            setEliminandoCuenta(true);
+            try {
+              const token = await AsyncStorage.getItem("token");
+              const res = await fetch(
+                `${API_BASE_URL}/api/eliminar/${cuenta.id}`,
+                {
+                  method: "DELETE",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+
+              const text = await res.text();
+              let data = {};
+              try { data = JSON.parse(text); } catch (e) {}
+
+              if (!res.ok) {
+                throw new Error(data.message || "Error al eliminar la cuenta");
+              }
+
+              const nuevas = cuentasUsuario.filter((c) => c.id !== cuenta.id);
+              setCuentasUsuario(nuevas);
+              await AsyncStorage.setItem("cuentasUsuario", JSON.stringify(nuevas));
+
+              if (tipo === "origin") setCuentaOrigen(null);
+              if (tipo === "destination") setCuentaDestino(null);
+            } catch (err) {
+              console.error("Error eliminando cuenta:", err);
+              Alert.alert("Error", err.message || "No se pudo eliminar la cuenta");
+            } finally {
+              setEliminandoCuenta(false);
+            }
+          },
+        },
+      ]
+    );
+  };
 
   // ── Cuentas QR ───────────────────────────────────────────────
   const [cuentasQR, setCuentasQR] = useState({ PE: null, BO: null });
@@ -190,6 +246,22 @@ export default function Cuentas() {
                 }}
               >
                 <Plus size={24} color="#fff" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="bg-red-600 rounded-xl justify-center items-center"
+                style={{
+                  width: 48,
+                  height: 48,
+                  opacity: !selectedCuenta || eliminandoCuenta ? 0.4 : 1,
+                }}
+                disabled={!selectedCuenta || eliminandoCuenta}
+                onPress={() => eliminarCuenta(selectedCuenta, tipo)}
+              >
+                {eliminandoCuenta ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Trash2 size={22} color="#fff" />
+                )}
               </TouchableOpacity>
             </View>
           )}

@@ -13,9 +13,11 @@ import * as DocumentPicker from "expo-document-picker";
 import * as Clipboard from "expo-clipboard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { Copy } from "lucide-react-native";
+import { Copy, X } from "lucide-react-native";
 import API_BASE_URL from "../api";
 import { useTransferMethods } from "../hooks/useTransferMethods";
+
+const MAX_COMPROBANTES = 5;
 
 const OFICINAS = [
   {
@@ -31,7 +33,7 @@ const OFICINAS = [
 ];
 
 export default function FinalizarEfectivo({ onBack, operacion, setOperacion }) {
-  const [comprobante, setComprobante] = useState(null);
+  const [comprobantes, setComprobantes] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState(null);
@@ -56,22 +58,37 @@ export default function FinalizarEfectivo({ onBack, operacion, setOperacion }) {
 
   const handlePickComprobante = async () => {
     try {
+      if (comprobantes.length >= MAX_COMPROBANTES) {
+        setError(`Solo puedes subir hasta ${MAX_COMPROBANTES} comprobantes.`);
+        return;
+      }
       const res = await DocumentPicker.getDocumentAsync({
         type: ["image/*", "application/pdf"],
         copyToCacheDirectory: true,
+        multiple: true,
       });
       if (res.canceled) return;
-      const file = res.assets?.[0] || res;
-      setComprobante(file);
-      setError("");
+      const picked = res.assets || (res.uri ? [res] : []);
+      const disponibles = MAX_COMPROBANTES - comprobantes.length;
+      const aAgregar = picked.slice(0, disponibles);
+      setComprobantes((prev) => [...prev, ...aAgregar]);
+      if (picked.length > disponibles) {
+        setError(`Solo se agregaron ${disponibles}. Máximo ${MAX_COMPROBANTES} comprobantes.`);
+      } else {
+        setError("");
+      }
     } catch (err) {
       setError("No se pudo seleccionar el comprobante.");
     }
   };
 
+  const handleRemove = (idx) => {
+    setComprobantes((prev) => prev.filter((_, i) => i !== idx));
+  };
+
   const handleEnviar = async () => {
-    if (!comprobante) {
-      setError("Por favor, sube un comprobante.");
+    if (!comprobantes.length) {
+      setError("Por favor, sube al menos un comprobante.");
       return;
     }
 
@@ -81,10 +98,12 @@ export default function FinalizarEfectivo({ onBack, operacion, setOperacion }) {
       formData.append("amount", operacion.monto);
       formData.append("modo", operacion.modo);
       formData.append("payment_method_slug", "cash");
-      formData.append("comprobante", {
-        uri: comprobante.uri,
-        name: comprobante.name || "comprobante.jpg",
-        type: comprobante.mimeType || "image/jpeg",
+      comprobantes.forEach((c, idx) => {
+        formData.append("comprobantes[]", {
+          uri: c.uri,
+          name: c.name || `comprobante_${idx + 1}.jpg`,
+          type: c.mimeType || "image/jpeg",
+        });
       });
 
       const response = await fetch(
@@ -218,26 +237,45 @@ export default function FinalizarEfectivo({ onBack, operacion, setOperacion }) {
         })}
       </View>
 
-      {/* Comprobante */}
+      {/* Comprobantes */}
       <TouchableOpacity
         onPress={handlePickComprobante}
-        className="bg-yellow-400 py-3 rounded-lg mb-3"
+        disabled={comprobantes.length >= MAX_COMPROBANTES}
+        className={`py-3 rounded-lg mb-3 ${
+          comprobantes.length >= MAX_COMPROBANTES ? "bg-gray-300" : "bg-yellow-400"
+        }`}
       >
         <Text className="text-black font-bold text-center">
-          {comprobante ? "Cambiar comprobante" : "Subir comprobante"}
+          {comprobantes.length
+            ? `Agregar otro comprobante (${comprobantes.length}/${MAX_COMPROBANTES})`
+            : "Subir comprobante"}
         </Text>
       </TouchableOpacity>
 
-      {comprobante && (
-        <View className="items-center mb-3">
-          {comprobante.mimeType?.startsWith("image/") ? (
-            <Image
-              source={{ uri: comprobante.uri }}
-              className="w-60 h-60 rounded-lg"
-            />
-          ) : (
-            <Text className="text-black">📄 {comprobante.name}</Text>
-          )}
+      {comprobantes.length > 0 && (
+        <View className="flex-row flex-wrap justify-center gap-3 mb-3">
+          {comprobantes.map((c, idx) => (
+            <View key={idx} className="relative">
+              {c.mimeType?.startsWith("image/") || c.uri?.match(/\.(jpg|jpeg|png)$/i) ? (
+                <Image
+                  source={{ uri: c.uri }}
+                  className="w-28 h-28 rounded-lg"
+                />
+              ) : (
+                <View className="w-28 h-28 rounded-lg bg-gray-100 items-center justify-center px-1">
+                  <Text className="text-black text-xs text-center" numberOfLines={3}>
+                    📄 {c.name}
+                  </Text>
+                </View>
+              )}
+              <TouchableOpacity
+                onPress={() => handleRemove(idx)}
+                className="absolute -top-2 -right-2 bg-red-500 rounded-full w-6 h-6 items-center justify-center"
+              >
+                <X size={14} color="white" />
+              </TouchableOpacity>
+            </View>
+          ))}
         </View>
       )}
 
@@ -252,10 +290,10 @@ export default function FinalizarEfectivo({ onBack, operacion, setOperacion }) {
         </TouchableOpacity>
 
         <TouchableOpacity
-          disabled={!comprobante || loading}
+          disabled={!comprobantes.length || loading}
           onPress={handleEnviar}
           className={`px-6 py-3 rounded-lg ${
-            comprobante && !loading ? "bg-black" : "bg-gray-300"
+            comprobantes.length && !loading ? "bg-black" : "bg-gray-300"
           }`}
         >
           {loading ? (
