@@ -4,7 +4,7 @@ export default function MetodoPago({ onNext, onBack, operacion, setOperacion }) 
   const handleSelect = (metodo) => {
     setOperacion((prev) => ({ ...prev, metodo }));
     onNext(metodo);
-  };
+  }; 
 
   return (
     <View className="flex-1 bg-white px-6 py-6">

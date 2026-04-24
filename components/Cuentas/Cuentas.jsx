@@ -107,7 +107,6 @@ export default function Cuentas() {
       setLoadingCuentas(true);
       try { 
         const token = await AsyncStorage.getItem("token");
-        console.log("token para thunder clinet ", token);
         const cache = await AsyncStorage.getItem("cuentasUsuario");
         if (cache) setCuentasUsuario(JSON.parse(cache));
 
@@ -138,7 +137,6 @@ export default function Cuentas() {
         setCuentasUsuario(cuentasConBanco);
         await AsyncStorage.setItem("cuentasUsuario", JSON.stringify(cuentasConBanco));
         await AsyncStorage.setItem("cuentasUsuario_lastFetch", Date.now().toString());
-        console.log("Cuentas bancarias cargadas:", cuentasConBanco);
       } catch (err) {
         console.error("Error cargando cuentas:", err);
       } finally {
@@ -157,17 +155,21 @@ export default function Cuentas() {
       setLoadingQR(true);
       try {
         const token = await AsyncStorage.getItem("token");
+        const cache = await AsyncStorage.getItem("cuentasQR");
+        if (cache) setCuentasQR(JSON.parse(cache));
+
         const res = await fetch(
           `${API_BASE_URL}/api/listar-cuentas?user_id=${user?.id}&type=qr`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!res.ok) throw new Error("Error al cargar QRs");
         const data = await res.json();
-
         const pe = data.find((c) => c.qr_country === "PE") || null;
         const bo = data.find((c) => c.qr_country === "BO") || null;
-        setCuentasQR({ PE: pe, BO: bo });
-        console.log("Cuentas QR cargadas:", { PE: pe, BO: bo });
+        const nuevos = { PE: pe, BO: bo };
+        setCuentasQR(nuevos);
+        await AsyncStorage.setItem("cuentasQR", JSON.stringify(nuevos));
+        await AsyncStorage.setItem("cuentasQR_lastFetch", Date.now().toString());
       } catch (err) {
         console.error("Error cargando QRs:", err);
       } finally {
@@ -452,10 +454,14 @@ export default function Cuentas() {
           user={user}
           qrCountry={qrCountryAgregar}
           onQRGuardado={(cuentaGuardada) => {
-            setCuentasQR((prev) => ({
-              ...prev,
-              [cuentaGuardada.qr_country]: cuentaGuardada,
-            }));
+            setCuentasQR((prev) => {
+              const nuevos = {
+                ...prev,
+                [cuentaGuardada.qr_country]: cuentaGuardada,
+              };
+              AsyncStorage.setItem("cuentasQR", JSON.stringify(nuevos)).catch(() => {});
+              return nuevos;
+            });
           }}
         />
       </ScrollView>

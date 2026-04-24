@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "../ContextUser/UserContext";
-import CuentaSelect from "../Cuentas/CuentasSelect";
+import CuentaSelect from "../Cuentas/CuentasSelectTransfenrecias";
 import SinCuentas from "../Cuentas/SinCuentas";
 import API_BASE_URL from "../api";
 export default function SelectAccounts({ onNext, onBack, operacion, setOperacion }) {
@@ -24,8 +24,8 @@ export default function SelectAccounts({ onNext, onBack, operacion, setOperacion
       setLoading(true);
       try {
         const token = await AsyncStorage.getItem("token");
-        const cache = await AsyncStorage.getItem("cuentasUsuario");
-        const lastFetch = await AsyncStorage.getItem("cuentasUsuario_lastFetch");
+        const cache = await AsyncStorage.getItem("cuentasUsuario_v2");
+        const lastFetch = await AsyncStorage.getItem("cuentasUsuario_v2_lastFetch");
         const now = Date.now();
 
         if (cache && lastFetch && now - parseInt(lastFetch) < 5 * 60 * 1000) {
@@ -34,7 +34,7 @@ export default function SelectAccounts({ onNext, onBack, operacion, setOperacion
         }
 
         const res = await fetch(
-          `${API_BASE_URL}/api/listar-cuentas?user_id=${user?.id}`,
+          `${API_BASE_URL}/api/listar-cuentas?user_id=${user?.id}&type=bank`,
           {
             method: "GET",
             headers: {
@@ -49,8 +49,8 @@ export default function SelectAccounts({ onNext, onBack, operacion, setOperacion
 
         setCuentas(data);
 
-        await AsyncStorage.setItem("cuentasUsuario", JSON.stringify(data));
-        await AsyncStorage.setItem("cuentasUsuario_lastFetch", now.toString());
+        await AsyncStorage.setItem("cuentasUsuario_v2", JSON.stringify(data));
+        await AsyncStorage.setItem("cuentasUsuario_v2_lastFetch", now.toString());
       } catch (err) {
         console.error("Error cargando cuentas:", err);
       } finally {

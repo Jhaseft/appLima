@@ -37,7 +37,14 @@ export default function Paso4({ onBack, setOperacion, operacion }) {
       return;
     }
 
-    if (!operacion.cuentaOrigen || !operacion.cuentaDestino) {
+    const esQR = operacion.metodo === "qr";
+
+    if (esQR) {
+      if (!operacion.cuentaQR) {
+        setError(" Debes seleccionar o subir tu QR antes de continuar.");
+        return;
+      }
+    } else if (!operacion.cuentaOrigen || !operacion.cuentaDestino) {
       setError(" Debes seleccionar la cuenta de origen y destino.");
       return;
     }
@@ -45,8 +52,13 @@ export default function Paso4({ onBack, setOperacion, operacion }) {
     try {
       setLoading(true);
       const formData = new FormData();
-      formData.append("origin_account_id", operacion.cuentaOrigen.id);
-      formData.append("destination_account_id", operacion.cuentaDestino.id);
+      if (esQR) {
+        formData.append("payment_method_slug", "qr");
+        formData.append("destination_account_id", operacion.cuentaQR.id);
+      } else {
+        formData.append("origin_account_id", operacion.cuentaOrigen.id);
+        formData.append("destination_account_id", operacion.cuentaDestino.id);
+      }
       formData.append("amount", operacion.monto);
       formData.append("modo", operacion.modo);
       comprobantes.forEach((c, idx) => {
@@ -82,9 +94,10 @@ export default function Paso4({ onBack, setOperacion, operacion }) {
       );
     } catch (err) {
       setError(`❌ No se pudo enviar la transferencia: ${err.message}`);
+      console.log(err);
       setLoading(false);
     }
-  };
+  }; 
 
   const handlePickComprobante = async () => {
     try {

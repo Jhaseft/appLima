@@ -95,15 +95,18 @@ export default function ModalCuentaBancaria({
       if (!res.ok) throw new Error(data.message || "Error en el servidor");
 
       // Fetch actualizado de cuentas
-      const cuentasRes = await fetch(`${API_BASE_URL}/api/listar-cuentas?user_id=${user.id}`, {
+      const cuentasRes = await fetch(`${API_BASE_URL}/api/listar-cuentas?user_id=${user.id}&type=bank`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const cuentasData = await cuentasRes.json();
+      if (!cuentasRes.ok || !Array.isArray(cuentasData)) {
+        throw new Error(cuentasData?.error || "No se pudo obtener la lista de cuentas");
+      }
 
       // Asociamos banco completo
       const cuentasConBanco = cuentasData.map(c => ({
         ...c,
-        bank: bancosCache.find(b => b.id === c.bank_id) || null,
+        bank: bancosCache?.find(b => b.id === c.bank_id) || null,
       }));
 
       // Actualizamos AsyncStorage

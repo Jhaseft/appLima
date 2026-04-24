@@ -8,6 +8,7 @@ import ProgressBar from "./ProgressBar";
 import Cotiza from "./Cotiza";
 import MetodoPago from "./MetodoPago";
 import SelectAccounts from "./SelectAccounts";
+import SelectAccountsQR from "./SelectAccountsQR";
 import Transfiere from "./Transfiere";
 import Finalizar from "./Finalizar";
 import FinalizarEfectivo from "./FinalizarEfectivo";
@@ -22,9 +23,10 @@ export default function Cambiar() {
     conversion: "",
     modo: "PENtoBOB",
     tasa: null,
-    metodo: null, // "transferencia" | "efectivo"
+    metodo: null, // "transferencia" | "qr" | "efectivo"
     cuentaOrigen: null,
     cuentaDestino: null,
+    cuentaQR: null,
     comprobante: null,
   });
 
@@ -75,7 +77,15 @@ export default function Cambiar() {
             setOperacion={setOperacion}
           />
         )}
-        {step === 3 && (
+        {step === 3 && operacion.metodo === "qr" && (
+          <SelectAccountsQR
+            onNext={nextStep}
+            onBack={prevStep}
+            operacion={operacion}
+            setOperacion={setOperacion}
+          />
+        )}
+        {step === 3 && operacion.metodo !== "qr" && (
           <SelectAccounts
             onNext={nextStep}
             onBack={prevStep}
@@ -98,7 +108,7 @@ export default function Cambiar() {
             setOperacion={setOperacion}
           />
         )}
-        {step === 5 && operacion.metodo === "transferencia" && (
+        {step === 5 && (operacion.metodo === "transferencia" || operacion.metodo === "qr") && (
           <Finalizar
             onBack={prevStep}
             operacion={operacion}
