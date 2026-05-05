@@ -26,9 +26,7 @@ export default function BankSelect({ options, value, onChange, placeholder = "Se
   return (
     <View className="w-full mb-2">
       
-      <Text className="text-xs font-semibold text-gray-400 uppercase mb-2">
-        ¿A qué país vas a enviar?
-      </Text>
+      
       
       <View className="flex-row gap-2 mb-4">
         {PAISES.map((p) => {

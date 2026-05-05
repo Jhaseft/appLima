@@ -4,10 +4,9 @@ import { Check } from "lucide-react-native";
 export default function ProgressBar({ step }) {
   const steps = [
     "Cotiza",
-    "Metodo de Pago",
-    "Seleccion de Cuentas",
+    "Operación",
     "Transfiere",
-    "Adjunta y finaliza operacion",
+    "Adjunta y finaliza",
   ];
 
   return (

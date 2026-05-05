@@ -190,6 +190,10 @@ export default function ModalCuentaBancaria({
           <Text className="text-xl font-bold text-gray-900 mb-1">Registrar cuenta</Text>
           <Text className="text-sm text-gray-400 mb-6">Cuenta de origen</Text>
 
+          <Text className="text-xs font-semibold text-gray-400 uppercase mb-2">
+            ¿Desde que cuenta enviaras el dinero ?
+          </Text>
+
           <View className="w-full">
             <BankSelect
               options={bancosDisponibles}

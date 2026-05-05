@@ -190,6 +190,10 @@ export default function ModalCuentaDestino({
           <Text className="text-xl font-bold text-gray-900 mb-1">Registrar cuenta destino</Text>
           <Text className="text-sm text-gray-400 mb-6">Cuenta de un tercero</Text>
 
+          <Text className="text-xs font-semibold text-gray-400 uppercase mb-2">
+            ¿A que cuenta enviaremos el dinero ?
+          </Text>
+
           <View className="w-full">
             <BankSelect options={bancosDisponibles} value={banco} onChange={setBanco} loading={bancosDisponibles.length === 0} />
           </View>

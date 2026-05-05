@@ -34,7 +34,7 @@ const buttons = [
     bg: "bg-green-50",
     colors: { icon: "#16A34A" },
     whatsappMessage: "Hola, necesito ayuda con mis transferencias",
-    whatsappNumber: "59177958109",
+    whatsappNumber: "59160759545",
   },
 ];
 

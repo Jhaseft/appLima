@@ -2,53 +2,31 @@ import { useState } from "react";
 import { ScrollView, Text } from "react-native";
 import FooterLayout from "../FooterLayout/FooterLayout";
 import HeaderUser from "../UserDropdown/HeaderUser";
-import { useUser } from "../ContextUser/UserContext";
 
 import ProgressBar from "./ProgressBar";
 import Cotiza from "./Cotiza";
-import MetodoPago from "./MetodoPago";
-import SelectAccounts from "./SelectAccounts";
-import SelectAccountsQR from "./SelectAccountsQR";
+import OperacionStep from "./OperacionStep";
 import Transfiere from "./Transfiere";
 import Finalizar from "./Finalizar";
-import FinalizarEfectivo from "./FinalizarEfectivo";
 
 export default function Cambiar() {
-  const { user } = useUser();
   const [step, setStep] = useState(1);
 
-  // Estado central de la operación
   const [operacion, setOperacion] = useState({
     monto: "",
     conversion: "",
     modo: "PENtoBOB",
     tasa: null,
-    metodo: null, // "transferencia" | "qr" | "efectivo"
+    metodo: null,           // 'transferencia' | 'qr' | 'cash' (derivado en OperacionStep)
+    nonBankMethod: null,    // 'cash' | 'qr' (lado no-banco)
     cuentaOrigen: null,
     cuentaDestino: null,
     cuentaQR: null,
-    comprobante: null,
+    comprobantes: [],
   });
 
-  // nextStep recibe el metodo solo cuando viene del paso 2 (MetodoPago)
-  const nextStep = (metodo) => {
-    if (step === 2) {
-      const m = metodo || operacion.metodo;
-      if (m === "efectivo") {
-        setStep(5); // saltar directo al paso de efectivo
-        return;
-      }
-    }
-    setStep((prev) => Math.min(prev + 1, 5));
-  };
-
-  const prevStep = () => {
-    if (step === 5 && operacion.metodo === "efectivo") {
-      setStep(2); // volver a selección de método
-      return;
-    }
-    setStep((prev) => Math.max(prev - 1, 1));
-  };
+  const nextStep = () => setStep((p) => Math.min(p + 1, 4));
+  const prevStep = () => setStep((p) => Math.max(p - 1, 1));
 
   return (
     <FooterLayout>
@@ -70,45 +48,22 @@ export default function Cambiar() {
           />
         )}
         {step === 2 && (
-          <MetodoPago
+          <OperacionStep
             onNext={nextStep}
             onBack={prevStep}
             operacion={operacion}
             setOperacion={setOperacion}
           />
         )}
-        {step === 3 && operacion.metodo === "qr" && (
-          <SelectAccountsQR
-            onNext={nextStep}
-            onBack={prevStep}
-            operacion={operacion}
-            setOperacion={setOperacion}
-          />
-        )}
-        {step === 3 && operacion.metodo !== "qr" && (
-          <SelectAccounts
-            onNext={nextStep}
-            onBack={prevStep}
-            operacion={operacion}
-            setOperacion={setOperacion}
-          />
-        )}
-        {step === 4 && (
+        {step === 3 && (
           <Transfiere
             onNext={nextStep}
             onBack={prevStep}
             operacion={operacion}
             setOperacion={setOperacion}
           />
-        )}
-        {step === 5 && operacion.metodo === "efectivo" && (
-          <FinalizarEfectivo
-            onBack={prevStep}
-            operacion={operacion}
-            setOperacion={setOperacion}
-          />
-        )}
-        {step === 5 && (operacion.metodo === "transferencia" || operacion.metodo === "qr") && (
+        )} 
+        {step === 4 && (
           <Finalizar
             onBack={prevStep}
             operacion={operacion}
