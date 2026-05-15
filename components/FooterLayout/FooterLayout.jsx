@@ -73,7 +73,7 @@ export default function FooterLayout({ children }) {
                     />
                   )}
 
-                  <View className="w-[60px] h-[60px] rounded-full bg-yellow-400 items-center justify-center shadow-md border-4 border-black">
+                  <View className="w-[60px] h-[60px] rounded-full bg-yellow-400 items-center justify-center shadow-md border-4 border-yellow-400">
                     <RefreshCcw size={28} color="black" />
                   </View>
                 </View>
@@ -105,7 +105,7 @@ export default function FooterLayout({ children }) {
 
               {Icon && (
                 <Icon
-                  size={25}
+                  size={28}
                   color={active ? "#EAB308" : "black"}
                 />
               )}

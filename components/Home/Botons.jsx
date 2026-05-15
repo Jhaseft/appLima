@@ -15,8 +15,8 @@ const buttons = [
     route: "/Cambiar",
     iconType: "fa5",
     icon: RepeatIcon,
-    bg: "bg-indigo-50",
-    colors: { icon: "#341BDE" },
+    bg: "bg-yellow-200",
+    colors: { icon: "#000000" },
   },
   {
     label: "Cuentas Bancarias",

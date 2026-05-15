@@ -4,8 +4,9 @@ import {
   Alert,
   View,
   Text,
+  Image,
 } from "react-native";
-
+import miLogo from "../../assets/Logo_web_03.png";
 import { Stack, useRouter } from "expo-router";
 
 import { Menu } from "lucide-react-native";
@@ -18,7 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import API_BASE_URL from "../api";
 
-export default function HeaderUser({ title, subtitle }) {
+export default function HeaderUser({ title, subtitle, image }) {
   const { user, setUser, loading } = useUser();
 
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -81,14 +82,23 @@ export default function HeaderUser({ title, subtitle }) {
 
           headerTitle: () => (
             <View className="items-center justify-center">
-              <Text className="text-black text-2xl font-bold">
-                {loading ? "Cargando..." : title}
-              </Text>
+              {image ? (
+                <Image
+                  source={miLogo}
+                  style={{ width: 190, height: 50, resizeMode: "contain" }}
+                />
+              ) : (
+                <>
+                  <Text className="text-black text-2xl font-bold">
+                    {loading ? "Cargando..." : title}
+                  </Text>
 
-              {!!subtitle && (
-                <Text className="text-yellow-500 text-xs font-semibold">
-                  {subtitle}
-                </Text>
+                  {!!subtitle && (
+                    <Text className="text-yellow-500 text-xs font-semibold">
+                      {subtitle}
+                    </Text>
+                  )}
+                </>
               )}
             </View>
           ),
