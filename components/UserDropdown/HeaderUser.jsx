@@ -1,34 +1,51 @@
 import { useState } from "react";
-import { Pressable, Alert, Image } from "react-native";
-import { Stack } from "expo-router";
-import { Feather } from "@expo/vector-icons"; // <--- reemplazo
+import {
+  Pressable,
+  Alert,
+  View,
+  Text,
+} from "react-native";
+
+import { Stack, useRouter } from "expo-router";
+
+import { Menu } from "lucide-react-native";
+
 import { useUser } from "../ContextUser/UserContext";
-import UserMenuModal from "../UserDropdown/UserMenuModal";
+
+import DrawerMenu from "../UserDropdown/DrawerMenu";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
+
 import API_BASE_URL from "../api";
-export default function HeaderUser({ title, image }) {
+
+export default function HeaderUser({ title, subtitle }) {
   const { user, setUser, loading } = useUser();
-  const [menuVisible, setMenuVisible] = useState(false);
+
+  const [drawerVisible, setDrawerVisible] = useState(false);
+
   const router = useRouter();
 
   const handleLogout = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
+
       if (!token) return;
 
       await fetch(`${API_BASE_URL}/api/logoutapp`, {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      //  Limpiar todo el AsyncStorage
       await AsyncStorage.clear();
+
       setUser(null);
 
-      router.replace("/"); // redirige al login
+      router.replace("/");
     } catch (err) {
       console.log("Error en logout:", err);
+
       Alert.alert("Error", "No se pudo cerrar la sesión");
     }
   };
@@ -37,46 +54,55 @@ export default function HeaderUser({ title, image }) {
     <>
       <Stack.Screen
         options={{
-          headerTitle: loading
-            ? "Cargando..."
-            : image
-            ? () => (
-                <Image
-                  source={image}
-                  style={{ width: 130, height: 32 }}
-                  resizeMode="contain"
-                />
-              )
-            : title,
-          headerTitleAlign: "center",
-          headerTintColor: "black",
-          headerStyle: { backgroundColor: "white" },
           headerBackVisible: false,
+
           gestureEnabled: false,
-          headerRight: () => (
+
+          headerShadowVisible: true,
+
+          headerStyle: {
+            backgroundColor: "white",
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 6,
+            elevation: 4,
+          },
+
+          headerLeft: () => (
             <Pressable
-              onPress={() => !loading && setMenuVisible(true)}
-              className="w-10 h-10 border-2 border-black rounded-full items-center justify-center"
+              onPress={() => !loading && setDrawerVisible(true)}
+              className="ml-3 p-2"
+              hitSlop={8}
             >
-              <Feather
-                name="user" // <--- reemplazo
-                size={20}
-                color={loading ? "gray" : "black"}
-              />
+              <Menu size={26} color="black" />
             </Pressable>
           ),
+
+          headerTitle: () => (
+            <View className="items-center justify-center">
+              <Text className="text-black text-2xl font-bold">
+                {loading ? "Cargando..." : title}
+              </Text>
+
+              {!!subtitle && (
+                <Text className="text-yellow-500 text-xs font-semibold">
+                  {subtitle}
+                </Text>
+              )}
+            </View>
+          ),
+
+          headerTitleAlign: "center",
         }}
       />
 
-      <UserMenuModal
-        visible={menuVisible}
-        onClose={() => setMenuVisible(false)}
+      <DrawerMenu
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
         user={user}
         onLogout={handleLogout}
-        onViewOperations={() => { 
-         router.replace("/TransfersHistory"); // redirige al historial de transferencias
-          setMenuVisible(false);
-        }}
+        router={router}
       />
     </>
   );

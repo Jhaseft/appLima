@@ -10,7 +10,7 @@ export default function ProgressBar({ step }) {
   ];
 
   return (
-    <View className="w-full my-5">
+    <View className="w-full mt-5">
      
       <View className="flex-row items-center justify-between w-full px-3">
         {steps.map((_, index) => {

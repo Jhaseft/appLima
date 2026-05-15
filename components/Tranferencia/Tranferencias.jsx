@@ -34,10 +34,8 @@ export default function Cambiar() {
         className="flex-1 bg-white px-6"
         contentContainerStyle={{ paddingBottom: 40 }}
       >
-        <HeaderUser title="Nueva Operación" />
-        <Text className="text-xl my-6 text-center">
-          Cambia de forma económica, fácil y segura
-        </Text>
+        <HeaderUser title="Nueva Operación" subtitle="Realiza transferencias de forma rápida y segura" />
+
         <ProgressBar step={step} />
 
         {step === 1 && (

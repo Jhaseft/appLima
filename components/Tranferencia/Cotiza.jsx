@@ -230,7 +230,8 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
           flexGrow: 1,
           justifyContent: "center",
           alignItems: "center",
-          padding: 50,
+          paddingHorizontal: 50,
+          paddingVertical: 30,
         }}
         keyboardShouldPersistTaps="handled"
         refreshControl={
