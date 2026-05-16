@@ -22,7 +22,6 @@ export const UserProvider = ({ children }) => {
   const fetchUser = async (initialUser = null) => {
   try {
     if (initialUser) {
-      console.log("🟢 Usuario recibido desde login:", initialUser);
       setUser(initialUser);
       await AsyncStorage.setItem("user", JSON.stringify(initialUser));
       return initialUser;
