@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ScrollView, Text } from "react-native";
+import { useState, useEffect } from "react";
+import { ScrollView, Text, BackHandler } from "react-native";
 import FooterLayout from "../FooterLayout/FooterLayout";
 import HeaderUser from "../UserDropdown/HeaderUser";
 
@@ -27,6 +27,17 @@ export default function Cambiar() {
 
   const nextStep = () => setStep((p) => Math.min(p + 1, 4));
   const prevStep = () => setStep((p) => Math.max(p - 1, 1));
+
+  useEffect(() => {
+    const handler = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (step > 1) {
+        prevStep();
+        return true;
+      }
+      return false;
+    });
+    return () => handler.remove();
+  }, [step]);
 
   return (
     <FooterLayout>

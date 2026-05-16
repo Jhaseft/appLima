@@ -1,38 +1,30 @@
 import { View, Text, TouchableOpacity, Animated, Linking } from "react-native";
-import { FontAwesome5, MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import { RefreshCw, CreditCard, MessageCircle } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useRef } from "react";
 
-// Iconos como componentes
-const RepeatIcon = (props) => (
-  <FontAwesome5 name="sync" {...props} solid={false} color="#341BDE" size={28} />
-);
-const CreditCardIcon = (props) => <MaterialIcons name="credit-card" {...props} />;
-
 const buttons = [
-  {
-    label: "Cambiar Soles",
-    route: "/Cambiar",
-    iconType: "fa5",
-    icon: RepeatIcon,
-    bg: "bg-yellow-200",
-    colors: { icon: "#000000" },
-  },
+  
   {
     label: "Cuentas Bancarias",
     route: "/Cuentas",
-    iconType: "material",
-    icon: CreditCardIcon,
+    Icon: CreditCard,
     bg: "bg-gray-100",
-    colors: { icon: "#1f2937" },
+    color: "#1f2937",
   },
   {
+    label: "Cambiar Soles",
+    route: "/Cambiar",
+    Icon: RefreshCw,
+    bg: "bg-yellow-400",
+    color: "#000000",
+  },
+  { 
     label: "Recibe Ayuda",
     route: "",
-    iconType: "fa",
-    icon: "whatsapp",
+    Icon: MessageCircle,
     bg: "bg-green-50",
-    colors: { icon: "#16A34A" },
+    color: "#16A34A",
     whatsappMessage: "Hola, necesito ayuda con mis transferencias",
     whatsappNumber: "59160759545",
   },
@@ -42,7 +34,6 @@ export default function Botons() {
   const router = useRouter();
 
   const navigateTo = (btn) => {
-    // Si tiene número de WhatsApp, abrir WhatsApp
     if (btn.whatsappNumber) {
       const url = `https://wa.me/${btn.whatsappNumber}?text=${encodeURIComponent(
         btn.whatsappMessage
@@ -74,11 +65,7 @@ export default function Botons() {
               onPressOut={handlePressOut}
               className={`w-28 h-28 rounded-2xl items-center justify-center ${btn.bg}`}
             >
-              {btn.iconType === "fa" ? (
-                <FontAwesome name={btn.icon} size={32} color={btn.colors.icon} />
-              ) : (
-                btn.icon && <btn.icon size={32} color={btn.colors.icon} />
-              )}
+              <btn.Icon size={32} color={btn.color} />
               <Text className="mt-2 text-sm font-medium text-gray-800 text-center">
                 {btn.label}
               </Text>

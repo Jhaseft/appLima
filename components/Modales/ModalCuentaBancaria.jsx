@@ -25,6 +25,7 @@ export default function ModalCuentaBancaria({
   onClose,
   user,
   accountType = "origin",
+  defaultCountry = null,
   onCuentaGuardada,
 }) {
   const [banco, setBanco] = useState(null);
@@ -200,6 +201,7 @@ export default function ModalCuentaBancaria({
               value={banco}
               onChange={setBanco}
               loading={bancosDisponibles.length === 0}
+              defaultCountry={defaultCountry}
             />
           </View>
 

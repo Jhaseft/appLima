@@ -7,9 +7,9 @@ const PAISES = [
   { key: "peru", label: "Perú", flag: "🇵🇪" },
 ];
 
-export default function BankSelect({ options, value, onChange, placeholder = "Seleccionar banco", loading = false }) {
+export default function BankSelect({ options, value, onChange, placeholder = "Seleccionar banco", loading = false, defaultCountry = null }) {
   const [open, setOpen] = useState(false);
-  const [paisSeleccionado, setPaisSeleccionado] = useState(null);
+  const [paisSeleccionado, setPaisSeleccionado] = useState(() => defaultCountry ?? null);
   const selected = value || null;
 
   const bancosFiltrados = paisSeleccionado
@@ -25,9 +25,8 @@ export default function BankSelect({ options, value, onChange, placeholder = "Se
 
   return (
     <View className="w-full mb-2">
-      
-      
-      
+
+      {!defaultCountry && (
       <View className="flex-row gap-2 mb-4">
         {PAISES.map((p) => {
           const activo = paisSeleccionado === p.key;
@@ -51,6 +50,7 @@ export default function BankSelect({ options, value, onChange, placeholder = "Se
           );
         })}
       </View>
+      )}
 
      
       {paisSeleccionado && (

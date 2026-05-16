@@ -3,47 +3,88 @@ import { View, Text, Pressable, ScrollView } from "react-native";
 import { Stack } from "expo-router";
 import { ChevronDown, ChevronUp } from "lucide-react-native";
 import HeaderUser from "../UserDropdown/HeaderUser";
+import { HORARIOS_TEXTO } from "../api";
 
-const PREGUNTAS = [
+const PREGUNTAS = (horariosTxt) => [
   {
-    pregunta: "¿Cómo registro una cuenta bancaria?",
+    pregunta: "¿Cómo subo mi QR?",
     respuesta:
-      'Ve a la sección "Cuentas" en el menú inferior. Toca el botón para agregar una cuenta nueva, elige si es cuenta bancaria o QR, y completa los datos solicitados. Una vez guardada, podrás usarla en tus transferencias.',
+      'En la app ve a la sección "Cuentas" y encontrarás la opción para subir tu código QR (Yape, Plin u otro). Solo sube una foto clara y legible del QR. Esta sección fue diseñada especialmente para guardar tu QR de forma segura y vincularlo directamente a tu perfil, así cada vez que realices una operación el dinero llega exactamente al destino correcto sin riesgo de errores.',
   },
   {
-    pregunta: "¿Cuánto tarda una transferencia?",
+    pregunta: "¿Es confiable o qué tan seguro es la app?",
     respuesta:
-      "El tiempo de procesamiento varía según el tipo de operación y el banco destino. En general, las transferencias se procesan en un plazo de 1 a 24 horas hábiles. Puedes ver el estado de tu operación en el historial.",
+      "TransferCash es una aplicación muy confiable. Toda tu información viaja cifrada con protocolos de seguridad de nivel bancario, verificamos la identidad de cada usuario antes de permitir operaciones, y contamos con sistemas de monitoreo en tiempo real para detectar cualquier actividad inusual. Además, operamos de forma formal y registrada, lo que te da la tranquilidad de que tu dinero está en buenas manos.",
   },
   {
-    pregunta: "¿Cómo veo el estado de mis transferencias?",
+    pregunta: "¿Por qué es necesario poner cuenta de origen?",
     respuesta:
-      'Puedes consultar todas tus operaciones en la sección "Historial" accesible desde el menú hamburguesa. Ahí encontrarás el detalle de cada transferencia con su estado actual.',
+      "La cuenta de origen nos permite verificar de dónde proviene el dinero enviado. Es un requisito indispensable para confirmar que la transferencia fue realizada por ti, prevenir operaciones fraudulentas y garantizar la trazabilidad de cada transacción. Sin este dato no podemos validar ni acreditar tu operación.",
   },
   {
-    pregunta: "¿Cómo contacto al soporte?",
+    pregunta: "¿La app tiene acceso a mis cuentas bancarias?",
     respuesta:
-      'Usa el botón "Chat" en el menú inferior para comunicarte directamente con nuestro equipo de atención al cliente. También puedes escribirnos a través de nuestros canales oficiales de WhatsApp o correo electrónico.',
+      "No. TransferCash no tiene acceso a tus cuentas bancarias ni a tus aplicaciones de pago. Solo usamos el número de cuenta o QR que tú nos proporcionas como destino para enviar el dinero. En ningún momento accedemos, consultamos ni movemos fondos de tus cuentas directamente.",
   },
   {
-    pregunta: "¿Cómo cambio mi contraseña?",
+    pregunta: "¿Cuánto demoran en llegar el dinero a mi QR?",
     respuesta:
-      "Actualmente el cambio de contraseña se realiza a través del correo electrónico registrado. Usa la opción \"¿Olvidé mi contraseña?\" en la pantalla de inicio de sesión y sigue las instrucciones que recibirás en tu email.",
+      "Una vez que confirmamos la recepción del dinero de tu parte, procesamos la transferencia a tu QR en el menor tiempo posible, generalmente en cuestión de minutos durante el horario de atención. En momentos de alta demanda el proceso puede tomar un poco más, pero siempre trabajamos para que sea lo más rápido posible.",
   },
   {
-    pregunta: "¿Qué pasa si mi transferencia falla?",
+    pregunta: "¿Cobran comisión por usar la app?",
     respuesta:
-      "Si una transferencia no se completa, el monto no es debitado o es devuelto según el caso. Te recomendamos contactar a nuestro soporte con el número de operación para recibir asistencia personalizada.",
+      "No cobramos ninguna comisión por usar la app. El uso de la aplicación es completamente gratuito para todos nuestros usuarios.",
   },
   {
-    pregunta: "¿Qué tipos de cambio maneja TransferCash?",
+    pregunta: "¿En cuánto tiempo puedo venir a recoger el efectivo que mandé por la app?",
     respuesta:
-      "Ofrecemos cambio entre soles peruanos (PEN) y bolivianos (BOB). La tasa de cambio se muestra antes de confirmar cualquier operación y puede variar según las condiciones del mercado.",
+      `Puedes acercarte a nuestra oficina en Cochabamba (Av. Villazón, calle Los Paraisos – frente a UDABOL) dentro del horario de atención:\n${horariosTxt}\n\nUna vez confirmada tu operación, el efectivo está disponible para retiro.`,
   },
   {
-    pregunta: "¿Es seguro usar TransferCash?",
+    pregunta: "¿Cuáles son los horarios de atención o hasta qué hora trabajan dando en efectivo y por QR?",
     respuesta:
-      "Sí. Toda la información transmitida está cifrada con protocolos de seguridad estándar de la industria. Además, verificamos la identidad de nuestros usuarios a través de un proceso KYC para garantizar transacciones seguras.",
+      `Nuestros horarios de atención son:\n${horariosTxt}\n\nLas entregas en efectivo se realizan de lunes a sábado. Los domingos atendemos únicamente por transferencia o QR, no en efectivo.`,
+  },
+  {
+    pregunta: "¿Dónde se encuentra nuestra oficina?",
+    respuesta:
+      `Nuestra oficina está ubicada en Cochabamba, Bolivia: Av. Villazón, calle Los Paraisos – frente a UDABOL. Puedes visitarnos en el horario de atención:\n${horariosTxt}\n\nTambién puedes contactarnos por WhatsApp Bolivia: +591 60759545 o WhatsApp Perú: +51 907844210.`,
+  },
+  {
+    pregunta: "¿Puedo poner el QR de otra persona para recibir el dinero?",
+    respuesta:
+      "Sí es posible registrar el QR de otra persona, aunque no lo recomendamos. Al poner un QR de un tercero, el dinero llegará a esa cuenta y no a la tuya, lo que puede generar complicaciones si necesitas demostrar que recibiste el dinero. Para evitar problemas, siempre es mejor usar tu propio QR.",
+  },
+  {
+    pregunta: "¿La cuenta de origen puede ser el número de Yape de mis padres si soy menor de edad?",
+    respuesta:
+      "Sí, si eres menor de edad puedes indicar el número de Yape de tus padres o tutor como cuenta de origen, siempre que ellos sean quienes realicen el envío. Esto nos permite verificar correctamente el origen del dinero y validar la operación sin inconvenientes.",
+  },
+  {
+    pregunta: "¿Soy menor de edad, igual puedo usar la app?",
+    respuesta:
+      "Sí puedes usar la app siendo menor de edad, pero debe ser siempre bajo la supervisión de un adulto responsable (padre, madre o tutor). El adulto debe estar presente al momento de registrarse y realizar las operaciones para asegurarse de que todo se haga correctamente.",
+  },
+  {
+    pregunta: "¿Por qué no puedo subir mi comprobante a la app?, sale error.",
+    respuesta:
+      "El error al subir el comprobante puede deberse a que la imagen no cumple con los requisitos de formato o tamaño. Asegúrate de subir una foto clara, en formato JPG o PNG, y que el archivo no sea demasiado pesado. Si el problema persiste, contáctanos.",
+  },
+  {
+    pregunta: "¿Cuántos comprobantes puedo subir en una transacción?",
+    respuesta:
+      "Puedes subir un máximo de 5 comprobantes por transacción. Si realizaste varios envíos parciales, puedes adjuntar cada uno de los comprobantes correspondientes, siempre que no superes ese límite.",
+  },
+  {
+    pregunta: "¿Cuál es el mínimo y máximo que puedo mandar?",
+    respuesta:
+      "Los montos están configurados de la siguiente manera:\n• Envíos Perú → Bolivia: mínimo S/ 20\n• Envíos Bolivia → Perú: mínimo Bs 60\n\nPara operaciones que superen los umbrales de verificación, se solicitará el proceso KYC. Puedes consultar los límites exactos dentro de la app antes de realizar tu transferencia.",
+  },
+  {
+    pregunta: "¿A partir de qué monto pide KYC?",
+    respuesta:
+      "La verificación de identidad (KYC) se activa cuando el monto de tu operación supera los siguientes límites:\n• Envíos Perú → Bolivia: a partir de S/ 3,000\n• Envíos Bolivia → Perú: a partir de Bs 10,000\n\nSi tu operación está por debajo de esos montos, no necesitas completar el KYC.",
   },
 ];
 
@@ -96,7 +137,7 @@ export default function PreguntasFrecuentes() {
           Toca una pregunta para ver la respuesta
         </Text>
 
-        {PREGUNTAS.map((item, i) => (
+        {PREGUNTAS(HORARIOS_TEXTO).map((item, i) => (
           <FAQ key={i} item={item} />
         ))}
       </ScrollView>

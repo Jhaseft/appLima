@@ -43,9 +43,9 @@ const INFO_ITEMS = [
 ];
 
 const REDES = [
-  { icon: "instagram", color: "#E1306C", url: "https://instagram.com/transfercash" },
-  { icon: "facebook", color: "#1877F2", url: "https://facebook.com/transfercash" },
-  { icon: "whatsapp", color: "#25D366", url: "https://wa.me/51900000000" },
+  { icon: "instagram", color: "#E1306C", url: "https://www.instagram.com/transfercash.pe/" },
+  { icon: "facebook", color: "#1877F2", url: "https://www.facebook.com/people/TransferCash/61577711887086/" },
+  { icon: "tiktok", color: "#010101", url: "https://www.tiktok.com/@transfercash.pe?_r=1&_t=ZS-94y1kvv5wzU" },
 ];
 
 function Avatar({ user }) {

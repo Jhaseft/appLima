@@ -1,11 +1,8 @@
 import { View, Text } from "react-native";
+import { HORARIOS } from "../api";
 
 export default function Horarios() {
-  const horarios = [
-    { dia: "Lunes - Viernes", hora: "09:00 AM - 18:00 PM" },
-    { dia: "Sábados", hora: "09:00 AM - 13:00 PM" },
-    { dia: "Domingos", hora: "Cerrado" },
-  ];
+  const horarios = HORARIOS;
 
   return (
     <View className="mt-6 mb-4 bg-indigo-50 rounded-3xl p-5">

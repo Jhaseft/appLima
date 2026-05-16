@@ -4,39 +4,54 @@ import HeaderUser from "../UserDropdown/HeaderUser";
 
 const SECCIONES = [
   {
-    titulo: "1. Uso de la plataforma",
+    titulo: "Objeto",
     contenido:
-      "Al utilizar TransferCash, el usuario acepta hacer uso de la plataforma de manera responsable y conforme a las leyes vigentes. Está prohibido el uso de la aplicación para actividades ilícitas, fraudulentas o que contravengan los términos aquí descritos.",
+      "El presente documento regula el uso de cuentas bancarias, billeteras electrónicas y demás instrumentos financieros registrados y utilizados por los usuarios dentro de la plataforma web Transfer Cash (www.transfercash.click).",
   },
   {
-    titulo: "2. Privacidad de datos",
+    titulo: "Declaración del usuario",
     contenido:
-      "TransferCash recopila y almacena datos personales necesarios para operar el servicio de transferencias internacionales. Los datos son tratados con confidencialidad y no son compartidos con terceros sin consentimiento explícito del usuario, salvo obligación legal.",
+      "El usuario declara bajo juramento que toda cuenta bancaria, billetera digital o medio de pago registrado en la plataforma es de su exclusiva titularidad, y que se encuentra habilitado legalmente para operar con dichos instrumentos.",
   },
   {
-    titulo: "3. Seguridad de la cuenta",
+    titulo: "Cesión de fondos",
     contenido:
-      "El usuario es responsable de mantener la confidencialidad de sus credenciales de acceso. TransferCash no se hace responsable por accesos no autorizados derivados de la negligencia del usuario en el resguardo de su contraseña.",
+      "Al realizar una operación en la plataforma, el usuario cede expresamente los fondos involucrados al beneficiario designado por él mismo, deslindando de responsabilidad a Transfer Cash por la ejecución de la transferencia conforme a las instrucciones proporcionadas.",
   },
   {
-    titulo: "4. Transacciones y comisiones",
+    titulo: "Usuarios",
     contenido:
-      "Cada transferencia puede estar sujeta a comisiones y tasas de cambio que se informan antes de confirmar la operación. TransferCash se reserva el derecho de modificar las tarifas con previo aviso a los usuarios.",
+      "Se considera \"usuario\" a toda persona natural que interactúe dentro de la plataforma web Transfer Cash, ya sea como cliente, remitente, destinatario u operador autorizado.",
   },
   {
-    titulo: "5. Responsabilidades",
+    titulo: "Prohibiciones",
     contenido:
-      "TransferCash no garantiza la disponibilidad ininterrumpida del servicio. En caso de fallas técnicas, se realizarán los esfuerzos razonables para restablecer el servicio en el menor tiempo posible.",
+      "Los usuarios se comprometen a no registrar cuentas o billeteras de terceros sin autorización expresa, ni a utilizar la plataforma para fines ilícitos, fraudulentos, o en contravención de la normativa vigente.",
   },
   {
-    titulo: "6. Modificaciones a las políticas",
+    titulo: "Responsabilidad del usuario",
     contenido:
-      "TransferCash se reserva el derecho de actualizar estas políticas en cualquier momento. Los usuarios serán notificados de cambios significativos a través de la aplicación o correo electrónico registrado.",
+      "Transfer Cash no será responsable por pérdidas, retrasos o controversias derivadas del uso incorrecto o fraudulento de los datos bancarios ingresados por el usuario.",
   },
   {
-    titulo: "7. Contacto",
+    titulo: "Confidencialidad y seguridad",
     contenido:
-      "Para consultas relacionadas con estas políticas, puede comunicarse con nuestro equipo de soporte a través de la sección de Chat en la aplicación o a través de los canales oficiales de TransferCash.",
+      "El usuario se compromete a proteger su información personal y credenciales de acceso. Transfer Cash recomienda no compartir contraseñas ni información sensible con terceros.",
+  },
+  {
+    titulo: "Modificaciones",
+    contenido:
+      "Transfer Cash se reserva el derecho de modificar, actualizar o complementar los presentes términos y condiciones en cualquier momento.",
+  },
+  {
+    titulo: "Jurisdicción",
+    contenido:
+      "Cualquier controversia será sometida a la jurisdicción de los tribunales de la ciudad de Lima, Perú.",
+  },
+  {
+    titulo: "Aceptación",
+    contenido:
+      "El uso de la plataforma www.transfercash.click implica la aceptación total de los presentes términos y condiciones.",
   },
 ];
 
@@ -48,7 +63,7 @@ export default function Politicas() {
         contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
       >
-         <HeaderUser title="Politicas" subtitle="Términos y condiciones de uso" />
+         <HeaderUser title="Politicas" subtitle="Cuentas y Billeteras - Transfer Cash" />
         <Text className="text-gray-500 text-sm mb-6">
           Última actualización: enero 2025
         </Text>

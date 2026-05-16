@@ -17,6 +17,13 @@ import { useUser } from "../ContextUser/UserContext";
 import API_BASE_URL from "../api";
 
 const SESSION_KEY = "chat_session_id";
+const MESSAGES_KEY = "chat_messages_history";
+
+const WELCOME_MESSAGE = {
+  id: "welcome",
+  role: "bot",
+  text: "¡Hola! Soy el asistente de TransferCash. ¿En qué puedo ayudarte hoy?",
+};
 
 async function getSessionId() {
   let id = await AsyncStorage.getItem(SESSION_KEY);
@@ -25,6 +32,23 @@ async function getSessionId() {
     await AsyncStorage.setItem(SESSION_KEY, id);
   }
   return id;
+}
+
+async function loadMessages() {
+  try {
+    const raw = await AsyncStorage.getItem(MESSAGES_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return [WELCOME_MESSAGE];
+}
+
+const MAX_STORED_MESSAGES = 60;
+
+async function saveMessages(msgs) {
+  try {
+    const toSave = msgs.slice(-MAX_STORED_MESSAGES);
+    await AsyncStorage.setItem(MESSAGES_KEY, JSON.stringify(toSave));
+  } catch {}
 }
 
 function TypingIndicator() {
@@ -49,16 +73,18 @@ function TypingIndicator() {
 export default function Chat() {
   const { user } = useUser();
   const router = useRouter();
-  const [messages, setMessages] = useState([
-    {
-      id: "welcome",
-      role: "bot",
-      text: "¡Hola! Soy el asistente de TransferCash. ¿En qué puedo ayudarte hoy?",
-    },
-  ]);
+  const [messages, setMessages] = useState([WELCOME_MESSAGE]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
+
+  useEffect(() => {
+    loadMessages().then(setMessages);
+  }, []);
+
+  useEffect(() => {
+    if (messages.length > 0) saveMessages(messages);
+  }, [messages]);
 
   useEffect(() => {
     scrollRef.current?.scrollToEnd({ animated: true });
