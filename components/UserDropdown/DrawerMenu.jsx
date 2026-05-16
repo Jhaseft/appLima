@@ -10,6 +10,7 @@ import {
   ScrollView,
   Linking,
 } from "react-native";
+import Constants from "expo-constants";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePathname } from "expo-router";
 import {
@@ -227,6 +228,10 @@ export default function DrawerMenu({ visible, onClose, user, onLogout, router })
                 Cerrar sesión
               </Text>
             </Pressable>
+
+            <Text className="text-center text-gray-400 text-xs mb-3">
+              v{Constants.expoConfig?.version ?? "—"}
+            </Text>
           </View>
         </Animated.View>
 
