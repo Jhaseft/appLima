@@ -133,10 +133,10 @@ export default function Finalizar({ onBack, operacion, setOperacion }) {
       Alert.alert(
         "Operación Registrada",
         `Tu operación fue registrada correctamente.\nN° de operación: ${data.transfer_number}`,
-        [{ text: "OK", onPress: () => router.replace("/") }]
+        [{ text: "OK", onPress: () => router.replace("/TransfersHistory") }]
       );
     } catch (err) {
-      setError(`No se pudo enviar la transferencia: ${err.message}`);
+      setError(`No se pudo enviar la transferencia porfavor intenta nuevamente si el problema persiste contacta al +591 60759245`);
       setLoading(false);
     }
   };
