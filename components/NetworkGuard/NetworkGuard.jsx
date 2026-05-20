@@ -1,14 +1,30 @@
 import { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import * as Network from "expo-network";
 import * as Updates from "expo-updates";
 
-const { width, height } = Dimensions.get("window");
+const LATENCY_WARNING_MS = 1500;
+
+async function measureLatency() {
+  try {
+    const start = Date.now();
+    await fetch("https://www.google.com", { method: "HEAD", cache: "no-cache" });
+    return Date.now() - start;
+  } catch {
+    return null;
+  }
+}
 
 export default function NetworkGuard({ children }) {
-  const [isConnected, setIsConnected] = useState(null); // null = verificando
+  const [status, setStatus] = useState("checking"); // "checking" | "offline" | "unstable" | "online"
   const [checking, setChecking] = useState(false);
+  const statusRef = useRef("checking");
   const wasDisconnected = useRef(false);
+
+  const applyStatus = (s) => {
+    statusRef.current = s;
+    setStatus(s);
+  };
 
   const checkConnection = async () => {
     setChecking(true);
@@ -16,15 +32,31 @@ export default function NetworkGuard({ children }) {
       const state = await Network.getNetworkStateAsync();
       const connected = state.isConnected && state.isInternetReachable;
 
-      if (wasDisconnected.current && connected) {
-        await Updates.reloadAsync(); // recarga automática
+      if (!connected) {
+        wasDisconnected.current = true;
+        applyStatus("offline");
+        return;
       }
 
-      wasDisconnected.current = !connected;
-      setIsConnected(connected);
-    } catch (error) {
-      setIsConnected(false);
+      const latency = await measureLatency();
+
+      if (latency === null) {
+        wasDisconnected.current = true;
+        applyStatus("offline");
+        return;
+      }
+
+      const isUnstable = latency > LATENCY_WARNING_MS;
+
+      if (wasDisconnected.current && !isUnstable) {
+        await Updates.reloadAsync();
+      }
+
+      wasDisconnected.current = false;
+      applyStatus(isUnstable ? "unstable" : "online");
+    } catch {
       wasDisconnected.current = true;
+      applyStatus("offline");
     } finally {
       setChecking(false);
     }
@@ -32,12 +64,49 @@ export default function NetworkGuard({ children }) {
 
   useEffect(() => {
     checkConnection();
-    const interval = setInterval(checkConnection, 3000);
-    return () => clearInterval(interval);
+
+    // Reacciona inmediatamente cuando el sistema detecta cambio de red
+    const subscription = Network.addNetworkStateListener((state) => {
+      const connected = state.isConnected && state.isInternetReachable;
+      if (!connected) {
+        wasDisconnected.current = true;
+        applyStatus("offline");
+      } else if (statusRef.current === "offline") {
+        // Volvió la señal — verificar latencia antes de marcar como online
+        checkConnection();
+      }
+    });
+
+    // Chequeo de latencia cada 20s para detectar señal pobre
+    const latencyInterval = setInterval(async () => {
+      if (statusRef.current === "offline") return;
+      const latency = await measureLatency();
+      if (latency === null) {
+        wasDisconnected.current = true;
+        applyStatus("offline");
+      } else if (latency > LATENCY_WARNING_MS) {
+        applyStatus("unstable");
+      } else if (statusRef.current === "unstable") {
+        applyStatus("online");
+      }
+    }, 20000);
+
+    return () => {
+      subscription.remove();
+      clearInterval(latencyInterval);
+    };
   }, []);
 
-  // Pantalla bloqueante
-  if (isConnected === false) {
+  if (status === "checking") {
+    return (
+      <View className="absolute inset-0 z-50 w-full h-full justify-center items-center bg-white">
+        <ActivityIndicator color="#000" size="large" />
+        <Text className="mt-4 text-gray-500">Verificando conexión...</Text>
+      </View>
+    );
+  }
+
+  if (status === "offline") {
     return (
       <View className="absolute inset-0 z-50 w-full h-full justify-center items-center bg-white">
         <View className="w-4/5 p-6 bg-white rounded-xl shadow-lg items-center">
@@ -47,7 +116,6 @@ export default function NetworkGuard({ children }) {
           <Text className="text-gray-600 text-center mb-6">
             Necesitas estar conectado para usar Transfer Cash.
           </Text>
-
           {checking ? (
             <ActivityIndicator color="#000" size="large" className="mt-4" />
           ) : (
@@ -63,16 +131,18 @@ export default function NetworkGuard({ children }) {
     );
   }
 
-  // Mientras se verifica la primera vez
-  if (isConnected === null) {
+  if (status === "unstable") {
     return (
-      <View className="absolute inset-0 z-50 w-full h-full justify-center items-center bg-white">
-        <ActivityIndicator color="#000" size="large" />
-        <Text className="mt-4 text-gray-500">Verificando conexión...</Text>
+      <View style={{ flex: 1 }}>
+        {children}
+        <View className="absolute bottom-0 left-0 right-0 bg-yellow-500 px-4 py-3">
+          <Text className="text-white text-center font-semibold text-sm">
+            Señal débil — las transferencias pueden fallar
+          </Text>
+        </View>
       </View>
     );
   }
 
-  // Si hay conexión, renderiza la app normal
   return children;
 }
