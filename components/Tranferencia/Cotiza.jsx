@@ -28,6 +28,7 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
   const [tasas, setTasas] = useState(null);
   const [transferConfig, setTransferConfig] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [configReady, setConfigReady] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [token, setToken] = useState(null);
   const { user } = useUser();
@@ -55,8 +56,9 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
       setTransferConfig(json);
     } catch (err) {
       console.error("Error cargando config:", err);
-      // Fallback a valores por defecto si falla
       setTransferConfig({ min_pen: 20, min_bob: 60, kyc_limit_pen: 300, kyc_limit_bob: 1000 });
+    } finally {
+      setConfigReady(true);
     }
   };
 
@@ -92,7 +94,7 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
     loadTasas();
   }, []);
 
-  if (loading) {
+  if (loading || !configReady) {
     return (
       <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#FACC15" />
@@ -185,8 +187,8 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
       return;
     }
 
-    const limitePEN = transferConfig?.kyc_limit_pen ?? 300;
-    const limiteBOB = transferConfig?.kyc_limit_bob ?? 1000;
+    const limitePEN = transferConfig?.kyc_limit_pen ?? 0;
+    const limiteBOB = transferConfig?.kyc_limit_bob ?? 0;
     const requiereKyc =
       (modo === "PENtoBOB" && valor > limitePEN) ||
       (modo === "BOBtoPEN" && valor > limiteBOB);
@@ -230,7 +232,8 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
           flexGrow: 1,
           justifyContent: "center",
           alignItems: "center",
-          padding: 50,
+          paddingHorizontal: 50,
+          paddingVertical: 30,
         }}
         keyboardShouldPersistTaps="handled"
         refreshControl={

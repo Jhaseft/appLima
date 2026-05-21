@@ -23,6 +23,7 @@ export default function ModalCuentaDestino({
   isOpen,
   onClose,
   user,
+  defaultCountry = null,
   onCuentaGuardada,
 }) {
   const [banco, setBanco] = useState(null);
@@ -195,7 +196,7 @@ export default function ModalCuentaDestino({
           </Text>
 
           <View className="w-full">
-            <BankSelect options={bancosDisponibles} value={banco} onChange={setBanco} loading={bancosDisponibles.length === 0} />
+            <BankSelect options={bancosDisponibles} value={banco} onChange={setBanco} loading={bancosDisponibles.length === 0} defaultCountry={defaultCountry} />
           </View>
 
           <View className="w-full mt-4 mb-1 bg-gray-50 border border-gray-200 rounded-2xl p-4 gap-3">

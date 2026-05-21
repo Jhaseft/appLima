@@ -1,35 +1,37 @@
 import "../global.css";
-import { Stack } from "expo-router";
+import { Stack, useRouter, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native";
 import { UserProvider } from "../components/ContextUser/UserContext";
 import NetworkGuard from "../components/NetworkGuard/NetworkGuard";
 import VersionGuard from "../components/VersionGuard/VersionGuard";
-import { BackHandler, ToastAndroid } from "react-native";
-import { useEffect, useRef } from "react";
+import { BackHandler, Alert } from "react-native";
+import { useEffect } from "react";
 export default function Layout() {
 
   const insets = useSafeAreaInsets();
-
-  const backPressCount = useRef(0);
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const onBackPress = () => {
-      if (backPressCount.current === 0) {
-        backPressCount.current += 1;
+      const isHome = pathname === "/Home" || pathname === "/" || pathname === "/index";
 
-        ToastAndroid.show("Presiona otra vez para salir", ToastAndroid.SHORT);
-
-        setTimeout(() => {
-          backPressCount.current = 0;
-        }, 2000);
-
-        return true; // bloquea el comportamiento normal
-      } else {
-        BackHandler.exitApp();
+      if (!isHome) {
+        router.replace("/Home");
         return true;
       }
+
+      Alert.alert(
+        "Salir",
+        "¿Deseas salir de la aplicación?",
+        [
+          { text: "Cancelar", style: "cancel" },
+          { text: "Salir", onPress: () => BackHandler.exitApp() },
+        ]
+      );
+      return true;
     };
 
     const subscription = BackHandler.addEventListener(
@@ -38,7 +40,7 @@ export default function Layout() {
     );
 
     return () => subscription.remove();
-  }, []);
+  }, [pathname]);
 
   return (
     <UserProvider>

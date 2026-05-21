@@ -112,8 +112,8 @@ export default function SelectTransfers() {
   }
 
   return (
-    <FooterLayout>
-      <HeaderUser title="Historial de Operaciones" />
+    <>
+      <HeaderUser title="Historial de Operaciones" subtitle="Todas tus transferencias" />
       <ScrollView className="flex-1 bg-gray-50 px-4 py-6">
         {transfers.length === 0 ? (
           <Text className="text-gray-500 text-center">No hay transferencias</Text>
@@ -181,6 +181,6 @@ export default function SelectTransfers() {
           })
         )}
       </ScrollView>
-    </FooterLayout>
+  </>
   );
 }

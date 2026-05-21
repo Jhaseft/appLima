@@ -354,7 +354,7 @@ export default function Cuentas() {
   return (
     <FooterLayout>
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 60 }} className="bg-white">
-        <HeaderUser title="Mis Cuentas" tabKey="Cuentas" />
+        <HeaderUser title="Mis Cuentas" subtitle="Gestiona tus cuentas y QR" />
 
         {/* ── Información del usuario ── */}
         <View className="bg-black/90 p-5 rounded-xl mb-6">

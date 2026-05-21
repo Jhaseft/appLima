@@ -10,7 +10,7 @@ export default function ProgressBar({ step }) {
   ];
 
   return (
-    <View className="w-full my-5">
+    <View className="w-full mt-5">
      
       <View className="flex-row items-center justify-between w-full px-3">
         {steps.map((_, index) => {
@@ -23,7 +23,7 @@ export default function ProgressBar({ step }) {
               {/* Círculo */}
               <View
                 className={`w-7 h-7 rounded-full border-2 flex items-center justify-center z-10
-                ${isCompleted || isActive ? "bg-blue-500 border-blue-500" : "bg-gray-200 border-gray-300"}`}
+                ${isCompleted || isActive ? "bg-yellow-500 border-yellow-100" : "bg-gray-200 border-gray-300"}`}
               >
                 {isCompleted ? (
                   <Check size={18} color="white" strokeWidth={3} />
@@ -42,7 +42,7 @@ export default function ProgressBar({ step }) {
               {index < steps.length - 1 && (
                 <View
                   className={`absolute top-1/2 left-1/2 h-1 w-full -z-10
-                  ${step > current ? "bg-blue-500" : "bg-gray-300"}`}
+                  ${step > current ? "bg-yellow-500" : "bg-gray-300"}`}
                 />
               )}
             </View>

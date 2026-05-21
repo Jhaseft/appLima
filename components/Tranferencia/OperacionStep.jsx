@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -16,20 +16,22 @@ import CuentaSelect from "../Cuentas/CuentasSelectTransfenrecias";
 import SinCuentas from "../Cuentas/SinCuentas";
 import { useTransferMethods } from "../hooks/useTransferMethods";
 import API_BASE_URL from "../api";
+import ModalCuentaBancaria from "../Modales/ModalCuentaBancaria";
+import ModalCuentaDestino from "../Modales/ModalCuentaDestino";
+import ModalCuentaQR from "../Modales/ModalCuentaQR";
 
 const OFICINAS = [
   {
     nombre: "Oficina Cochabamba",
     direccion: "Av. Villazón, calle Los Paraisos – frente a UDABOL",
-    horario: "Lun–Vie 9:00–18:00 | Sáb 9:00–13:00",
+    horario: "Lun–Sáb 8:00–17:00 | Dom solo transferencia/QR",
     linkMapa: "https://maps.app.goo.gl/EnjPUumyYn7hSRxH7",
   },
 ];
-
+9            
 export default function OperacionStep({ onNext, onBack, operacion, setOperacion }) {
   const { user } = useUser();
   const router = useRouter();
-  const goToCuentas = () => router.push("/Cuentas");
   const { modo } = operacion;
   const isOriginBank = modo === "PENtoBOB";
   const isDestinationBank = modo === "BOBtoPEN";
@@ -43,6 +45,11 @@ export default function OperacionStep({ onNext, onBack, operacion, setOperacion 
 
   const [qrUserAccount, setQrUserAccount] = useState(operacion.cuentaQR ?? null);
   const [loadingQrUser, setLoadingQrUser] = useState(false);
+
+  const [modalAbierto, setModalAbierto] = useState(null);
+
+  const defaultCountryOrigen = modo === "PENtoBOB" ? "peru" : "bolivia";
+  const defaultCountryDestino = modo === "PENtoBOB" ? "bolivia" : "peru";
 
   const { methods: metodosPago } = useTransferMethods(modo);
 
@@ -68,28 +75,28 @@ export default function OperacionStep({ onNext, onBack, operacion, setOperacion 
     fetchCuentas();
   }, [user?.id]);
 
+  const fetchQr = useCallback(async () => {
+    if (!user?.id) return;
+    setLoadingQrUser(true);
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const res = await fetch(
+        `${API_BASE_URL}/api/listar-cuentas?user_id=${user.id}&type=qr`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const data = await res.json();
+      const found = (data || []).find((c) => c.qr_country === "BO") || null;
+      setQrUserAccount(found);
+    } catch {
+      setQrUserAccount(null);
+    } finally {
+      setLoadingQrUser(false);
+    }
+  }, [user?.id]);
+
   // Cargar QR del usuario (solo PENtoBOB + qr)
   useEffect(() => {
-    if (!user?.id) return;
     if (modo !== "PENtoBOB" || nonBankMethod !== "qr") return;
-
-    const fetchQr = async () => {
-      setLoadingQrUser(true);
-      try {
-        const token = await AsyncStorage.getItem("token");
-        const res = await fetch(
-          `${API_BASE_URL}/api/listar-cuentas?user_id=${user.id}&type=qr`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        const data = await res.json();
-        const found = (data || []).find((c) => c.qr_country === "BO") || null;
-        setQrUserAccount(found);
-      } catch {
-        setQrUserAccount(null);
-      } finally {
-        setLoadingQrUser(false);
-      }
-    };
     fetchQr();
   }, [user?.id, modo, nonBankMethod]);
 
@@ -174,7 +181,7 @@ export default function OperacionStep({ onNext, onBack, operacion, setOperacion 
           <SinCuentas mensaje={getMensaje()} />
 
           <TouchableOpacity
-            onPress={goToCuentas}
+            onPress={() => setModalAbierto(tipo === "origen" ? "origen" : "destino")}
             className="flex-row items-center justify-center gap-2 bg-blue-600 py-3 rounded-lg mt-2"
           >
             <CreditCard size={16} color="#fff" />
@@ -268,24 +275,24 @@ export default function OperacionStep({ onNext, onBack, operacion, setOperacion 
               </View>
               <Text className="text-xs text-green-600 font-semibold">QR guardado</Text>
               <TouchableOpacity
-                onPress={goToCuentas}
+                onPress={() => setModalAbierto("qr")}
                 className="flex-row items-center gap-1"
               >
                 <CreditCard size={12} color="#2563eb" />
-                <Text className="text-xs text-blue-600">Cambiar QR en Cuentas</Text>
+                <Text className="text-xs text-blue-600">Cambiar QR</Text>
               </TouchableOpacity>
             </View>
           ) : (
             <View className="items-center gap-2">
               <Text className="text-xs text-gray-700 text-center">
-                No tienes un QR registrado para Bolivia. Súbelo en 'Cuentas'.
+                No tienes un QR registrado para Bolivia.
               </Text>
               <TouchableOpacity
-                onPress={goToCuentas}
+                onPress={() => setModalAbierto("qr")}
                 className="flex-row items-center gap-2 bg-blue-600 px-4 py-2 rounded-lg"
               >
                 <CreditCard size={14} color="#fff" />
-                <Text className="text-white font-semibold text-xs">Ir a Cuentas</Text>
+                <Text className="text-white font-semibold text-xs">Agregar QR</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -377,6 +384,29 @@ export default function OperacionStep({ onNext, onBack, operacion, setOperacion 
           <Text className="text-black font-bold">Siguiente</Text>
         </TouchableOpacity>
       </View>
+
+      <ModalCuentaBancaria
+        isOpen={modalAbierto === "origen"}
+        onClose={() => setModalAbierto(null)}
+        user={user}
+        accountType="origin"
+        defaultCountry={defaultCountryOrigen}
+        onCuentaGuardada={(lista) => { setCuentas(lista); setModalAbierto(null); }}
+      />
+      <ModalCuentaDestino
+        isOpen={modalAbierto === "destino"}
+        onClose={() => setModalAbierto(null)}
+        user={user}
+        defaultCountry={defaultCountryDestino}
+        onCuentaGuardada={(lista) => { setCuentas(lista); setModalAbierto(null); }}
+      />
+      <ModalCuentaQR
+        isOpen={modalAbierto === "qr"}
+        onClose={() => setModalAbierto(null)}
+        user={user}
+        qrCountry="BO"
+        onQRGuardado={() => { fetchQr(); setModalAbierto(null); }}
+      />
 
     </ScrollView>
   );
