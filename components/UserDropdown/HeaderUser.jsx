@@ -1,16 +1,60 @@
-import { useState } from "react";
-import { Pressable, Alert, Image } from "react-native";
-import { Stack } from "expo-router";
-import { Feather } from "@expo/vector-icons"; // <--- reemplazo
+import { useState, useEffect } from "react";
+import {
+  Pressable,
+  Alert,
+  View,
+  Text,
+  Image,
+} from "react-native";
+import miLogo from "../../assets/Logo_web_03.png";
+import { Stack, useRouter, usePathname } from "expo-router";
+
+import { Menu } from "lucide-react-native";
+
 import { useUser } from "../ContextUser/UserContext";
 import UserMenuModal from "../UserDropdown/UserMenuModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import API_BASE_URL from "../api";
-export default function HeaderUser({ title, image }) {
+import TcPuntoIcon from "../TcPuntos/TcPuntoIcon";
+
+// Rutas donde NO aparece el badge de TC Puntos
+const RUTAS_SIN_TC_PUNTOS = [
+  "/TcPuntos",
+  "/MiCuenta",
+  "/Cuentas",
+  "/TransfersHistory",
+  "/Politicas",
+  "/PreguntasFrecuentes",
+];
+
+export default function HeaderUser({ title, subtitle, image }) {
   const { user, setUser, loading } = useUser();
-  const [menuVisible, setMenuVisible] = useState(false);
+
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [tcBalance, setTcBalance] = useState(null);
+
   const router = useRouter();
+  const pathname = usePathname();
+  const mostrarTcPuntos = !RUTAS_SIN_TC_PUNTOS.includes(pathname);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchBalance() {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        if (!token) return;
+        const res = await fetch(`${API_BASE_URL}/api/tc-puntos/saldo`, {
+          headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled) setTcBalance(data.balance ?? 0);
+      } catch (_) {}
+    }
+    fetchBalance();
+    return () => { cancelled = true; };
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -37,34 +81,45 @@ export default function HeaderUser({ title, image }) {
     <>
       <Stack.Screen
         options={{
-          headerTitle: loading
-            ? "Cargando..."
-            : image
-            ? () => (
+          headerTitle: () => (
+            <View className="items-center justify-center">
+              {image ? (
                 <Image
-                  source={image}
-                  style={{ width: 130, height: 32 }}
-                  resizeMode="contain"
+                  source={miLogo}
+                  style={{ width: 190, height: 50, resizeMode: "contain" }}
                 />
-              )
-            : title,
-          headerTitleAlign: "center",
-          headerTintColor: "black",
-          headerStyle: { backgroundColor: "white" },
-          headerBackVisible: false,
-          gestureEnabled: false,
-          headerRight: () => (
-            <Pressable
-              onPress={() => !loading && setMenuVisible(true)}
-              className="w-10 h-10 border-2 border-black rounded-full items-center justify-center"
-            >
-              <Feather
-                name="user" // <--- reemplazo
-                size={20}
-                color={loading ? "gray" : "black"}
-              />
-            </Pressable>
+              ) : (
+                <>
+                  <Text className="text-black text-2xl font-bold">
+                    {loading ? "Cargando..." : title}
+                  </Text>
+
+                  {!!subtitle && (
+                    <Text className="text-yellow-500 text-xs font-semibold">
+                      {subtitle}
+                    </Text>
+                  )}
+                </>
+              )}
+            </View>
           ),
+
+          headerTitleAlign: "center",
+
+          headerRight: mostrarTcPuntos
+            ? () => (
+                <Pressable
+                  onPress={() => router.push("/TcPuntos")}
+                  className="mr-3 flex-row items-center"
+                  hitSlop={8}
+                >
+                  <TcPuntoIcon size={26} />
+                  <Text className="ml-1 text-sm font-bold text-yellow-500">
+                    {tcBalance !== null ? tcBalance : "—"}
+                  </Text>
+                </Pressable>
+              )
+            : undefined,
         }}
       />
 
@@ -73,7 +128,7 @@ export default function HeaderUser({ title, image }) {
         onClose={() => setMenuVisible(false)}
         user={user}
         onLogout={handleLogout}
-        onViewOperations={() => { 
+        onViewOperations={() => {
          router.replace("/TransfersHistory"); // redirige al historial de transferencias
           setMenuVisible(false);
         }}
