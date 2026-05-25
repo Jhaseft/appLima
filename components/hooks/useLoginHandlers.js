@@ -46,9 +46,9 @@ export function useLoginHandlers(email, password) {
     try {
       setLoading(true);
       GoogleSignin.configure({
-        webClientId: "269848220574-1u99j5vsj8p9m7v6kg21p1ion00n422s.apps.googleusercontent.com",
+        webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
         offlineAccess: false,
-        iosClientId: "269848220574-u1nncraprer9mf731ibf7j77dsjp2r47.apps.googleusercontent.com",
+        iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
       });
       await GoogleSignin.hasPlayServices();
       await GoogleSignin.signOut();

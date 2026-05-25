@@ -18,7 +18,7 @@ import { RefreshCw } from "lucide-react-native";
 import API_BASE_URL from "../api";
 import { useUser } from "../ContextUser/UserContext";
 
-const KYC_DEEP_LINK = "transfercash://kyc-resultado?status=approved";
+const KYC_DEEP_LINK = process.env.EXPO_PUBLIC_KYC_DEEP_LINK;
 
 export default function Cotiza({ onNext, operacion, setOperacion }) {
   const [monto, setMonto] = useState("");

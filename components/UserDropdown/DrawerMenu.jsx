@@ -114,7 +114,7 @@ export default function DrawerMenu({ visible, onClose, user, onLogout, router })
   return (
     <Modal
       transparent
-      visible={visible}
+      visible={visible} 
       animationType="none"
       onRequestClose={onClose}
     >

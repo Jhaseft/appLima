@@ -4,7 +4,10 @@
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\ASUS\\\\Desktop\\\\Laravel\\\\Laravel-React\\\\TransferCash\\\\app\\\\Http\\\\Controllers\\\\Admin\" -Recurse)",
       "PowerShell(Head -30)",
       "Bash(git add *)",
-      "Bash(git stash *)"
+      "Bash(git stash *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\ASUS\\\\Desktop\\\\Lima\" -Recurse -File -Name)",
+      "Bash(Select-Object -First 50)",
+      "Bash(grep -E \"^\\\\-.*\\\\.\\(env|config|json\\)$\")"
     ]
   }
 }

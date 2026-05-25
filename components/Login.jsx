@@ -55,7 +55,7 @@ export default function Login() {
     <KeyboardAvoidingView className="flex-1 bg-white" behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <Stack.Screen options={{ headerShown: true, headerTitle: "Transfer Cash", headerTitleAlign: "center", headerTintColor: "black" }} />
       <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center", paddingHorizontal: 24 }} enableOnAndroid keyboardShouldPersistTaps="handled" extraScrollHeight={30}>
-        <Image source={{ uri: "https://res.cloudinary.com/dnbklbswg/image/upload/v1756305635/logo_n6nqqr.jpg" }} className="w-32 h-32 mb-6 self-center" resizeMode="contain" />
+        <Image source={require("../assets/logo.png")} className="w-32 h-32 mb-6 self-center" resizeMode="contain" />
         <Text className="text-4xl font-extrabold text-center text-black mb-8">Bienvenido</Text>
 
       

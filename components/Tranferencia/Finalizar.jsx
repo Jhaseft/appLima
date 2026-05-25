@@ -136,7 +136,7 @@ export default function Finalizar({ onBack, operacion, setOperacion }) {
         [{ text: "OK", onPress: () => router.replace("/TransfersHistory") }]
       );
     } catch (err) {
-      setError(`No se pudo enviar la transferencia porfavor intenta nuevamente si el problema persiste contacta al +591 60759245`);
+      setError(`No se pudo enviar la transferencia porfavor intenta nuevamente si el problema persiste contacta al +591 63892482`);
       setLoading(false);
     }
   };

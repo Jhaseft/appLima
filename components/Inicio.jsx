@@ -47,9 +47,7 @@ export default function Inicio() {
 
       <View className="flex-1 items-center justify-center">
         <Image
-          source={{
-            uri: "https://res.cloudinary.com/dnbklbswg/image/upload/v1756305635/logo_n6nqqr.jpg",
-          }}
+          source={require("../assets/logo.png")}
           className="w-64 h-64"
           resizeMode="contain"
         />

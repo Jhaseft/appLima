@@ -58,8 +58,8 @@ export default function GraficoLineas() {
 
   const scaleY = (value) =>
     chartHeight -
-      ((value - minValue) / (maxValue - minValue)) * chartHeight +
-      padding / 2;
+    ((value - minValue) / (maxValue - minValue)) * chartHeight +
+    padding / 2;
 
   const spacingX = (chartWidth - padding * 1.5) / (data.length - 1);
 
@@ -73,6 +73,31 @@ export default function GraficoLineas() {
 
   return (
     <View className="mt-8 bg-white rounded-3xl border border-gray-100 p-4 items-center">
+
+
+
+      <View className="flex-row w-full mt-4 gap-3">
+        <View className="flex-1 items-center bg-blue-50 py-3 rounded-2xl">
+          <Text className="text-gray-400 text-xs mb-1">Compra actual</Text>
+          <Text className="text-blue-600 font-bold text-lg">{latestCompra}</Text>
+        </View>
+        <View className="flex-1 items-center bg-yellow-50 py-3 rounded-2xl">
+          <Text className="text-gray-400 text-xs mb-1">Venta actual</Text>
+          <Text className="text-yellow-600 font-bold text-lg">{latestVenta}</Text>
+        </View>
+      </View>
+
+      <View className="flex-row justify-center gap-6 mt-3">
+        <View className="flex-row items-center gap-2">
+          <View className="w-3 h-3 bg-blue-500 rounded-full" />
+          <Text className="text-gray-600 text-sm">Compra</Text>
+        </View>
+        <View className="flex-row items-center gap-2">
+          <View className="w-3 h-3 bg-yellow-400 rounded-full" />
+          <Text className="text-gray-600 text-sm">Venta</Text>
+        </View>
+      </View>
+
       <View className="w-full mb-4">
         <Text className="text-xs text-gray-400 font-semibold uppercase mb-1">Historial</Text>
         <Text className="text-lg font-bold text-gray-900">Compra vs Venta</Text>
@@ -187,29 +212,7 @@ export default function GraficoLineas() {
         })}
       </Svg>
 
-      {/* Leyenda */}
-      <View className="flex-row justify-center gap-6 mt-3">
-        <View className="flex-row items-center gap-2">
-          <View className="w-3 h-3 bg-blue-500 rounded-full" />
-          <Text className="text-gray-600 text-sm">Compra</Text>
-        </View>
-        <View className="flex-row items-center gap-2">
-          <View className="w-3 h-3 bg-yellow-400 rounded-full" />
-          <Text className="text-gray-600 text-sm">Venta</Text>
-        </View>
-      </View>
 
-      {/* Valores actuales */}
-      <View className="flex-row w-full mt-4 gap-3">
-        <View className="flex-1 items-center bg-blue-50 py-3 rounded-2xl">
-          <Text className="text-gray-400 text-xs mb-1">Compra actual</Text>
-          <Text className="text-blue-600 font-bold text-lg">{latestCompra}</Text>
-        </View>
-        <View className="flex-1 items-center bg-yellow-50 py-3 rounded-2xl">
-          <Text className="text-gray-400 text-xs mb-1">Venta actual</Text>
-          <Text className="text-yellow-600 font-bold text-lg">{latestVenta}</Text>
-        </View>
-      </View>
     </View>
   );
 }

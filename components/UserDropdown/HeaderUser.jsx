@@ -12,9 +12,8 @@ import { Stack, useRouter, usePathname } from "expo-router";
 import { Menu } from "lucide-react-native";
 
 import { useUser } from "../ContextUser/UserContext";
-import UserMenuModal from "../UserDropdown/UserMenuModal";
+import DrawerMenu from "../UserDropdown/DrawerMenu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
 import API_BASE_URL from "../api";
 import TcPuntoIcon from "../TcPuntos/TcPuntoIcon";
 
@@ -106,16 +105,26 @@ export default function HeaderUser({ title, subtitle, image }) {
 
           headerTitleAlign: "center",
 
+          headerLeft: () => (
+            <Pressable
+              onPress={() => setDrawerVisible(true)}
+              className="ml-3"
+              hitSlop={8}
+            >
+              <Menu size={26} color="#000" />
+            </Pressable>
+          ),
+
           headerRight: mostrarTcPuntos
             ? () => (
                 <Pressable
                   onPress={() => router.push("/TcPuntos")}
-                  className="mr-3 flex-row items-center"
+                  className=" flex-row items-center"
                   hitSlop={8}
                 >
                   <TcPuntoIcon size={26} />
-                  <Text className="ml-1 text-sm font-bold text-yellow-500">
-                    {tcBalance !== null ? tcBalance : "—"}
+                  <Text className="text-sm font-bold text-yellow-500">
+                    {tcBalance !== null ? tcBalance : "cargando.."}
                   </Text>
                 </Pressable>
               )
@@ -123,15 +132,12 @@ export default function HeaderUser({ title, subtitle, image }) {
         }}
       />
 
-      <UserMenuModal
-        visible={menuVisible}
-        onClose={() => setMenuVisible(false)}
+      <DrawerMenu
+        visible={drawerVisible}
+        onClose={() => setDrawerVisible(false)}
         user={user}
         onLogout={handleLogout}
-        onViewOperations={() => {
-         router.replace("/TransfersHistory"); // redirige al historial de transferencias
-          setMenuVisible(false);
-        }}
+        router={router}
       />
     </>
   );
