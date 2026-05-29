@@ -22,13 +22,15 @@
     },
     "android": {
       "package": "com.transfercash.lima",
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/logopro2.png"
     },
     "plugins": [
       "expo-dev-client",
+      "expo-notifications",
       "expo-router",
       "expo-web-browser",
       [

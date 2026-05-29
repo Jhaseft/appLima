@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useUser } from "../ContextUser/UserContext";
 import API_BASE_URL from "../api";
+import { registerForPushNotifications } from "../../utils/notifications";
 
 export function useLoginHandlers(email, password) {
   const router = useRouter();
@@ -34,6 +35,7 @@ export function useLoginHandlers(email, password) {
       }
       await AsyncStorage.setItem("token", data.token);
       await fetchUser(data.user);
+      registerForPushNotifications();
       router.replace("/Home");
     } catch (error) {
       Alert.alert("Error", error.message);
@@ -80,6 +82,7 @@ export function useLoginHandlers(email, password) {
       }
       await AsyncStorage.setItem("token", data.token);
       await fetchUser(data.user);
+      registerForPushNotifications();
       router.replace(data.needs_profile ? "/CompleteProfile" : "/Home");
     } catch (error) {
       Alert.alert("Error", error?.message || "Error al iniciar sesión con Google");
