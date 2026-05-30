@@ -60,7 +60,7 @@ export default function HeaderUser({ title, subtitle, image }) {
       const token = await AsyncStorage.getItem("token");
       if (!token) return;
 
-      await fetch(`${API_BASE_URL}/api/logoutapp`, {
+      await fetch(`${API_BASE_URL}/api/logout`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });

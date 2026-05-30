@@ -40,7 +40,6 @@ export async function registerForPushNotifications() {
     })
   ).data;
 
-  console.log("📲 Expo Push Token:", token);
   await savePushToken(token);
   return token;
 }
@@ -58,7 +57,6 @@ async function savePushToken(token) {
       body: JSON.stringify({ token }),
     });
     const data = await res.json();
-    console.log("✅ Token guardado en BD:", data);
   } catch (e) {
     console.log("❌ Error guardando token:", e.message);
   }

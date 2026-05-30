@@ -11,7 +11,7 @@
     "splash": {
       "image": "./assets/logopro2.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#FFD700"
     },
     "ios": {
       "bundleIdentifier": "com.transfercash.lima",
@@ -30,7 +30,13 @@
     },
     "plugins": [
       "expo-dev-client",
-      "expo-notifications",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#FFD700"
+        }
+      ],
       "expo-router",
       "expo-web-browser",
       [

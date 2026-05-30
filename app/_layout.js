@@ -7,12 +7,26 @@ import { UserProvider } from "../components/ContextUser/UserContext";
 import NetworkGuard from "../components/NetworkGuard/NetworkGuard";
 import VersionGuard from "../components/VersionGuard/VersionGuard";
 import { BackHandler, Alert } from "react-native";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import * as Notifications from "expo-notifications";
+
 export default function Layout() {
 
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const pathname = usePathname();
+  const notificationListener = useRef();
+
+  // Navegar cuando el usuario toca la notificación
+  useEffect(() => {
+    notificationListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      const data = response.notification.request.content.data;
+      if (data?.screen) {
+        router.push(data.screen);
+      }
+    });
+    return () => notificationListener.current?.remove();
+  }, []);
 
   useEffect(() => {
     const onBackPress = () => {

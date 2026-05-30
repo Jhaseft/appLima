@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import API_BASE_URL from "../api";
+import { registerForPushNotifications } from "../../utils/notifications";
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
@@ -82,7 +83,10 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const init = async () => {
       await loadUserFromStorage(); // muestra user inmediato
-      await fetchUser();           // valida token
+      const userData = await fetchUser(); // valida token
+      if (userData?.id) {
+        registerForPushNotifications(); // re-registra token con user_id
+      }
       setLoading(false);
     };
 
