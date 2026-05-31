@@ -9,7 +9,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/logopro2.png",
+      "image": "./assets/logopro2nobg.png",
       "resizeMode": "contain", 
       "backgroundColor": "#000000"
     },
@@ -23,14 +23,10 @@
     "android": {
       "package": "com.transfercash.lima",
       "edgeToEdgeEnabled": true,
-      "googleServicesFile": "./google-services.json",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/logopro2.png",
-        "backgroundColor": "#000000"
-      }
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
-      "favicon": "./assets/logopro2.png"
+      "favicon": "./assets/logopro2nobg.png"
     },
     "plugins": [
       "expo-dev-client",

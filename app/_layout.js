@@ -9,6 +9,9 @@ import VersionGuard from "../components/VersionGuard/VersionGuard";
 import { BackHandler, Alert } from "react-native";
 import { useEffect, useRef } from "react";
 import * as Notifications from "expo-notifications";
+import * as SplashScreen from "expo-splash-screen";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
 
@@ -16,6 +19,10 @@ export default function Layout() {
   const router = useRouter();
   const pathname = usePathname();
   const notificationListener = useRef();
+
+  useEffect(() => {
+    SplashScreen.hideAsync();
+  }, []);
 
   // Navegar cuando el usuario toca la notificación
   useEffect(() => {
@@ -58,8 +65,8 @@ export default function Layout() {
 
   return (
     <UserProvider>
-      <View className="flex-1" style={{ paddingBottom: insets.bottom }}>
-        <StatusBar style="dark" />
+      <View className="flex-1" style={{ paddingBottom: insets.bottom, backgroundColor: '#000000' }}>
+        <StatusBar style="light" />
         <NetworkGuard>
           <VersionGuard>
             <Stack />
