@@ -9,7 +9,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/cuadrado.png",
+      "image": "./assets/logopro2.png",
       "resizeMode": "cover", 
       "backgroundColor": "#000000"
     },
@@ -23,7 +23,11 @@
     "android": {
       "package": "com.transfercash.lima",
       "edgeToEdgeEnabled": true,
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logopro2.png",
+        "backgroundColor": "#000000"
+      }
     },
     "web": {
       "favicon": "./assets/logopro2.png"
