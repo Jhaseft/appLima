@@ -35,7 +35,11 @@ const PasswordInput = memo(({ password, setPassword, showPassword, setShowPasswo
       onBlur={() => setFocused("")}
       className="flex-1 py-4 text-black"
     />
-    <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+    <TouchableOpacity
+      onPress={() => setShowPassword(!showPassword)}
+      hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+      style={{ padding: 8, backgroundColor: "#f0f0f0", borderRadius: 8 }}
+    >
       <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color={focused === "password" ? "#2563EB" : "#555"} />
     </TouchableOpacity>
   </View>
@@ -53,12 +57,18 @@ export default function Login() {
 
   return (
     <KeyboardAvoidingView className="flex-1 bg-white" behavior={Platform.OS === "ios" ? "padding" : undefined}>
-      <Stack.Screen options={{ headerShown: true, headerTitle: "Transfer Cash", headerTitleAlign: "center", headerTintColor: "black" }} />
+      <Stack.Screen
+        options={{
+          title: "",
+          headerBackTitleVisible: false,
+          headerShadowVisible: false,
+        }}
+      />
       <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center", paddingHorizontal: 24 }} enableOnAndroid keyboardShouldPersistTaps="handled" extraScrollHeight={30}>
-        <Image source={require("../assets/logo.png")} className="w-32 h-32 mb-6 self-center" resizeMode="contain" />
+        <Image source={require("../assets/Logo_web_03.png")} className="w-96 h-28 mb-6 self-center" resizeMode="contain" />
         <Text className="text-4xl font-extrabold text-center text-black mb-8">Bienvenido</Text>
 
-      
+
         <TextInput
           value={email}
           onChangeText={setEmail}
@@ -73,7 +83,7 @@ export default function Login() {
           className={`w-full bg-white border-2 rounded-2xl px-5 py-4 mb-4 text-black shadow-md ${focused === "email" ? "border-blue-500" : "border-black"}`}
         />
 
-       
+
         <PasswordInput
           password={password}
           setPassword={setPassword}
@@ -84,7 +94,7 @@ export default function Login() {
           passwordRef={passwordRef}
         />
 
-       
+
         <Pressable
           onPress={handleLogin}
           disabled={loading}
@@ -97,10 +107,10 @@ export default function Login() {
           )}
         </Pressable>
 
-          <GoogleBotoon handleGoogleLogin={handleGoogleLogin}/>
+        <GoogleBotoon handleGoogleLogin={handleGoogleLogin} />
 
         <View className="mt-4 w-full flex-row justify-center">
-          
+
           <TouchableOpacity onPress={() => Linking.openURL("https://transfercash.click/forgot-password")}>
             <Text className="text-blue-600 font-semibold ">Olvidé mi contraseña</Text>
           </TouchableOpacity>

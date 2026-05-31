@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import * as Network from "expo-network";
-import * as Updates from "expo-updates";
 
 const LATENCY_WARNING_MS = 1500;
 
@@ -48,10 +47,6 @@ export default function NetworkGuard({ children }) {
 
       const isUnstable = latency > LATENCY_WARNING_MS;
 
-      if (wasDisconnected.current && !isUnstable) {
-        await Updates.reloadAsync();
-      }
-
       wasDisconnected.current = false;
       applyStatus(isUnstable ? "unstable" : "online");
     } catch {
@@ -65,36 +60,16 @@ export default function NetworkGuard({ children }) {
   useEffect(() => {
     checkConnection();
 
-    // Reacciona inmediatamente cuando el sistema detecta cambio de red
+    // Solo detecta cuando se pierde la conexión — la recuperación es manual via "Reintentar"
     const subscription = Network.addNetworkStateListener((state) => {
       const connected = state.isConnected && state.isInternetReachable;
       if (!connected) {
         wasDisconnected.current = true;
         applyStatus("offline");
-      } else if (statusRef.current === "offline") {
-        // Volvió la señal — verificar latencia antes de marcar como online
-        checkConnection();
       }
     });
 
-    // Chequeo de latencia cada 20s para detectar señal pobre
-    const latencyInterval = setInterval(async () => {
-      if (statusRef.current === "offline") return;
-      const latency = await measureLatency();
-      if (latency === null) {
-        wasDisconnected.current = true;
-        applyStatus("offline");
-      } else if (latency > LATENCY_WARNING_MS) {
-        applyStatus("unstable");
-      } else if (statusRef.current === "unstable") {
-        applyStatus("online");
-      }
-    }, 20000);
-
-    return () => {
-      subscription.remove();
-      clearInterval(latencyInterval);
-    };
+    return () => subscription.remove();
   }, []);
 
   if (status === "checking") {

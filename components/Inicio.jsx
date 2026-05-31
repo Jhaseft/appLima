@@ -47,8 +47,8 @@ export default function Inicio() {
 
       <View className="flex-1 items-center justify-center">
         <Image
-          source={require("../assets/logo.png")}
-          className="w-64 h-64"
+          source={require("../assets/Logo_web_03.png")}
+          className="w-96 h-28"
           resizeMode="contain"
         />
         <Text className="text-2xl font-extrabold text-black mt-4">
