@@ -23,11 +23,7 @@
     "android": {
       "package": "com.transfercash.lima",
       "edgeToEdgeEnabled": true,
-      "googleServicesFile": "./google-services.json",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/cuadrado.png",
-        "backgroundColor": "#000000"
-      }
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/logopro2.png"
