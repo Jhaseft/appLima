@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/logopro2nobg.png",
-      "resizeMode": "contain", 
+      "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
     "ios": {
@@ -45,7 +45,15 @@
           "iosUrlScheme": "com.googleusercontent.apps.269848220574-u1nncraprer9mf731ibf7j77dsjp2r47"
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableMinifyInReleaseBuilds": true
+          }
+        }
+      ]
     ],
     "extra": {
       "router": {},
