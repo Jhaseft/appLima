@@ -3,7 +3,7 @@
     "name": "TransferCash",
     "slug": "Lima",
     "scheme": "transfercash",
-    "version": "16.0",
+    "version": "17.0",
     "orientation": "portrait",
     "icon": "./assets/logopro2.png",
     "userInterfaceStyle": "light",
@@ -33,8 +33,8 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/notificationiconnobg_orig.png",
-          "color": "#000000"
+          "icon": "./assets/notificationiconnobgorig.png",
+          "color": "#B3D9FF"
         }
       ],
       "expo-router",
