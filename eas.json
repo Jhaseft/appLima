@@ -19,6 +19,12 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "huguierlee@gmail.com",
+        "ascAppId": "6788919096",
+        "appleTeamId": "2S5W7246Z3"
+      }
+    }
   }
 }
