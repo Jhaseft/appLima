@@ -5,6 +5,7 @@ import {
   View,
   Text,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import miLogo from "../../assets/Logo_web_03.png";
 import { Stack, useRouter, usePathname } from "expo-router";
@@ -108,7 +109,7 @@ export default function HeaderUser({ title, subtitle, image }) {
           headerLeft: () => (
             <Pressable
               onPress={() => setDrawerVisible(true)}
-              className="ml-3"
+              className="ml-[5px]"
               hitSlop={8}
             >
               <Menu size={26} color="#000" />
@@ -123,9 +124,13 @@ export default function HeaderUser({ title, subtitle, image }) {
                   hitSlop={8}
                 >
                   <TcPuntoIcon size={26} />
-                  <Text className="text-sm font-bold text-yellow-500">
-                    {tcBalance !== null ? tcBalance : "cargando.."}
-                  </Text>
+                  {tcBalance !== null ? (
+                    <Text className="text-sm font-bold text-yellow-500">
+                      {tcBalance}
+                    </Text>
+                  ) : (
+                    <ActivityIndicator size="small" color="#eab308" />
+                  )}
                 </Pressable>
               )
             : undefined,

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,10 +7,8 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   ScrollView,
-  Platform,
   Alert,
   Linking,
-  Keyboard,
   RefreshControl,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -32,20 +30,12 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
   const [refreshing, setRefreshing] = useState(false);
   const [token, setToken] = useState(null);
   const { user } = useUser();
-  const scrollRef = useRef(null);
 
   useEffect(() => {
     (async () => {
       const savedToken = await AsyncStorage.getItem("token");
       setToken(savedToken);
     })();
-  }, []);
-
-  useEffect(() => {
-    const sub = Keyboard.addListener("keyboardDidShow", () => {
-      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 100);
-    });
-    return () => sub.remove();
   }, []);
 
   // Carga configuración de límites desde el backend
@@ -222,12 +212,8 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
       <ScrollView
-        ref={scrollRef}
         contentContainerStyle={{
           flexGrow: 1,
           justifyContent: "center",

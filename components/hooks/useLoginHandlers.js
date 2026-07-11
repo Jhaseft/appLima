@@ -3,6 +3,7 @@ import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import * as AppleAuthentication from "expo-apple-authentication";
 import { useUser } from "../ContextUser/UserContext";
 import API_BASE_URL from "../api";
 import { registerForPushNotifications } from "../../utils/notifications";
@@ -91,5 +92,56 @@ export function useLoginHandlers(email, password) {
     }
   };
 
-  return { handleLogin, handleGoogleLogin, loading };
+  const handleAppleLogin = async () => {
+    try {
+      setLoading(true);
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      const { identityToken, fullName, email, user } = credential;
+      if (!identityToken) {
+        Alert.alert("Error", "No se recibió el token de Apple");
+        return;
+      }
+      // Apple solo envía nombre/email en el PRIMER inicio de sesión.
+      // El backend debe verificar identityToken con las llaves públicas de Apple
+      // y persistir estos datos la primera vez usando `appleUserId` como identificador estable.
+      const res = await fetch(`${API_BASE_URL}/api/loginapple`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          identityToken,
+          appleUserId: user,
+          email: email ?? null,
+          firstName: fullName?.givenName ?? null,
+          lastName: fullName?.familyName ?? null,
+        }),
+      });
+      const contentType = res.headers.get("content-type");
+      if (!contentType?.includes("application/json")) {
+        throw new Error("El servidor devolvió HTML en lugar de JSON");
+      }
+      const data = await res.json();
+      if (!res.ok) {
+        Alert.alert("Error", data.message || "No se pudo iniciar sesión con Apple");
+        return;
+      }
+      await AsyncStorage.setItem("token", data.token);
+      await fetchUser(data.user);
+      registerForPushNotifications();
+      router.replace(data.needs_profile ? "/CompleteProfile" : "/Home");
+    } catch (error) {
+      if (error?.code === "ERR_REQUEST_CANCELED") {
+        return;
+      }
+      Alert.alert("Error", error?.message || "Error al iniciar sesión con Apple");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { handleLogin, handleGoogleLogin, handleAppleLogin, loading };
 }

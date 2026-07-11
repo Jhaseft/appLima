@@ -8,6 +8,7 @@ import Step3Security from "./Step3Security";
 import ProgressBar from "./ProgressBar";
 import API_BASE_URL from "../api";
 import GoogleBotoon from "../GoogleBoton";
+import AppleBoton from "../AppleBoton";
 import { useLoginHandlers } from "../hooks/useLoginHandlers";
 
 export default function Register() {
@@ -32,7 +33,7 @@ export default function Register() {
   const prevStep = () => setStep(step - 1);
   const nextStep = () => { if (validateStep()) setStep(step + 1); };
 
-  const { handleGoogleLogin } = useLoginHandlers();
+  const { handleGoogleLogin, handleAppleLogin } = useLoginHandlers();
 
   // Validación simple por paso
   const validateStep = () => {
@@ -147,7 +148,7 @@ export default function Register() {
 
   return (
     <KeyboardAwareScrollView className="flex-1 bg-white px-6 py-10" extraScrollHeight={20} enableOnAndroid keyboardShouldPersistTaps="handled">
-
+ 
       <Stack.Screen
         options={{
           headerTitle: () => (
@@ -162,6 +163,9 @@ export default function Register() {
           ),
 
           headerTitleAlign: "center",
+          title: "",
+          headerBackButtonDisplayMode: "minimal",
+          headerShadowVisible: false,
         }}
       />
 
@@ -190,6 +194,8 @@ export default function Register() {
       </View>
 
       <GoogleBotoon handleGoogleLogin={handleGoogleLogin} />
+
+      <AppleBoton handleAppleLogin={handleAppleLogin} />
 
     </KeyboardAwareScrollView>
   );

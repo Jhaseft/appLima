@@ -9,8 +9,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Pressable,
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Send, ArrowLeft, Bot } from "lucide-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "../ContextUser/UserContext";
@@ -73,6 +75,7 @@ function TypingIndicator() {
 export default function Chat() {
   const { user } = useUser();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [messages, setMessages] = useState([WELCOME_MESSAGE]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -152,43 +155,41 @@ export default function Chat() {
     <>
       <Stack.Screen
         options={{
-          headerBackVisible: false,
+          headerShown: false,
           gestureEnabled: false,
-          headerShadowVisible: true,
-          headerStyle: {
-            backgroundColor: "white",
-          },
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.replace("/Home")}
-              className="mr-2 p-1"
-              hitSlop={8}
-            >
-              <ArrowLeft size={24} color="black" />
-            </TouchableOpacity>
-          ),
-          headerTitle: () => (
-            <View className="flex-row items-center gap-3">
-              <View className="w-10 h-10 rounded-full overflow-hidden bg-yellow-400 border-2 border-yellow-400">
-                <Image
-                  source={require("../../assets/logopro2.png")}
-                  style={{ width: "100%", height: "100%" }}
-                  resizeMode="cover"
-                />
-              </View>
-              <View>
-                <Text className="text-black text-base font-bold leading-tight">
-                  Asistente TC
-                </Text>
-                <Text className="text-green-500 text-xs font-medium">
-                  en línea
-                </Text>
-              </View>
-            </View>
-          ),
-          headerTitleAlign: "left",
         }}
       />
+
+      <View
+        style={{ paddingTop: insets.top }}
+        className="bg-white border-b border-gray-100"
+      >
+        <View className="flex-row items-center gap-3 px-4 h-14">
+          <Pressable
+            onPress={() => router.replace("/Home")}
+            className="p-1"
+            hitSlop={8}
+          >
+            <ArrowLeft size={24} color="black" />
+          </Pressable>
+
+          <View className="w-10 h-10 rounded-full overflow-hidden bg-yellow-400 border-2 border-yellow-400">
+            <Image
+              source={require("../../assets/logopro2.png")}
+              style={{ width: "100%", height: "100%" }}
+              resizeMode="cover"
+            />
+          </View>
+          <View>
+            <Text className="text-black text-base font-bold leading-tight">
+              Asistente TC
+            </Text>
+            <Text className="text-green-500 text-xs font-medium">
+              en línea
+            </Text>
+          </View>
+        </View>
+      </View>
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -258,7 +259,7 @@ export default function Chat() {
             blurOnSubmit={false}
             editable={!loading}
           />
-          <TouchableOpacity
+          <Pressable
             onPress={sendMessage}
             disabled={!input.trim() || loading}
             className={`w-12 h-12 rounded-full items-center justify-center ${
@@ -270,7 +271,7 @@ export default function Chat() {
             ) : (
               <Send size={20} color={input.trim() ? "black" : "#9CA3AF"} />
             )}
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </KeyboardAvoidingView>
     </>

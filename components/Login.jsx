@@ -17,6 +17,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { Stack, Link } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import GoogleBotoon from "./GoogleBoton";
+import AppleBoton from "./AppleBoton";
 import { useLoginHandlers } from "./hooks/useLoginHandlers";
 
 // Componente memoizado para el input de contraseña
@@ -52,7 +53,7 @@ export default function Login() {
   const [focused, setFocused] = useState("");
   const passwordRef = useRef(null);
 
-  const { handleLogin, handleGoogleLogin, loading } = useLoginHandlers(email, password);
+  const { handleLogin, handleGoogleLogin, handleAppleLogin, loading } = useLoginHandlers(email, password);
 
 
   return (
@@ -60,7 +61,7 @@ export default function Login() {
       <Stack.Screen
         options={{
           title: "",
-          headerBackTitleVisible: false,
+          headerBackButtonDisplayMode: "minimal",
           headerShadowVisible: false,
         }}
       />
@@ -108,6 +109,8 @@ export default function Login() {
         </Pressable>
 
         <GoogleBotoon handleGoogleLogin={handleGoogleLogin} />
+
+        <AppleBoton handleAppleLogin={handleAppleLogin} />
 
         <View className="mt-4 w-full flex-row justify-center">
 
