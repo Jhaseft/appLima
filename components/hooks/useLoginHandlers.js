@@ -84,7 +84,9 @@ export function useLoginHandlers(email, password) {
       await AsyncStorage.setItem("token", data.token);
       await fetchUser(data.user);
       registerForPushNotifications();
-      router.replace(data.needs_profile ? "/CompleteProfile" : "/Home");
+      // Apple (guía 5.1.1) no permite forzar "Completar perfil" al iniciar sesión.
+      // Se entra siempre a Home; el perfil se exige al operar (ver Cotiza.jsx).
+      router.replace("/Home");
     } catch (error) {
       Alert.alert("Error", error?.message || "Error al iniciar sesión con Google");
     } finally {
@@ -132,7 +134,9 @@ export function useLoginHandlers(email, password) {
       await AsyncStorage.setItem("token", data.token);
       await fetchUser(data.user);
       registerForPushNotifications();
-      router.replace(data.needs_profile ? "/CompleteProfile" : "/Home");
+      // Apple (guía 5.1.1) no permite forzar "Completar perfil" al iniciar sesión.
+      // Se entra siempre a Home; el perfil se exige al operar (ver Cotiza.jsx).
+      router.replace("/Home");
     } catch (error) {
       if (error?.code === "ERR_REQUEST_CANCELED") {
         return;

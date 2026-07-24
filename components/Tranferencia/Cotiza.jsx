@@ -12,6 +12,7 @@ import {
   RefreshControl,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 import { RefreshCw } from "lucide-react-native";
 import API_BASE_URL from "../api";
 import { useUser } from "../ContextUser/UserContext";
@@ -30,6 +31,12 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
   const [refreshing, setRefreshing] = useState(false);
   const [token, setToken] = useState(null);
   const { user } = useUser();
+  const router = useRouter();
+
+  // El perfil se considera incompleto si falta alguno de estos datos
+  // (mismos campos que valida el backend: nationality, phone, document_number).
+  const perfilIncompleto =
+    !user?.nationality || !user?.phone || !user?.document_number;
 
   useEffect(() => {
     (async () => {
@@ -164,6 +171,19 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
   };
 
   const handleNext = () => {
+    // Si el perfil está incompleto, se exige completarlo antes de operar.
+    if (perfilIncompleto) {
+      Alert.alert(
+        "Completa tu perfil",
+        "Para realizar una operación necesitamos unos datos adicionales.",
+        [
+          { text: "Completar", onPress: () => router.push("/CompleteProfile") },
+          { text: "Cancelar", style: "cancel" },
+        ]
+      );
+      return;
+    }
+
     const valor = parseFloat(monto.replace(",", "."));
 
     const minPEN = transferConfig?.min_pen ?? 20;

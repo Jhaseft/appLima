@@ -29,7 +29,14 @@ export default function Layout() {
           <VersionGuard>
             <AuthGuard>
               <NotificationsGuard>
-                <Stack />
+                <Stack
+                  screenOptions={{
+                    // iOS muestra por defecto la flecha + el título de la
+                    // pantalla anterior (ej. "‹ Cambiar"). "minimal" deja
+                    // solo la flecha, igual que Android.
+                    headerBackButtonDisplayMode: "minimal",
+                  }}
+                />
               </NotificationsGuard>
             </AuthGuard>
           </VersionGuard>
