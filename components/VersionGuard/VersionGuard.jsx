@@ -13,7 +13,7 @@ import API_BASE_URL from "../api";
 
 const STORE_URL = {
   android: "https://play.google.com/store/apps/details?id=com.transfercash.lima",
-  ios: "https://apps.apple.com/app/id000000000",
+  ios: "https://apps.apple.com/app/id6788919096",
 };
 
 function parseVersion(v = "0") {
