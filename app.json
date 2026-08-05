@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "Transfer Cash by SDC",
+    "name": "SDC Transferencias",
     "slug": "Lima",
     "scheme": "transfercash",
-    "version": "20.0",
+    "version": "21.0",
     "orientation": "portrait",
     "icon": "./assets/logopro2.png",
     "userInterfaceStyle": "light",
