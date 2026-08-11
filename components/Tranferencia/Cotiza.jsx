@@ -50,10 +50,10 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
     try {
       const res = await fetch(`${API_BASE_URL}/api/config/transfer`);
       const json = await res.json();
-      setTransferConfig(json);
+      setTransferConfig(json); 
     } catch (err) {
       console.error("Error cargando config:", err);
-      setTransferConfig({ min_pen: 20, min_bob: 60, kyc_limit_pen: 300, kyc_limit_bob: 1000 });
+      setTransferConfig({ min_pen: 20,max_bob: 1000000, max_pen: 1000000, min_bob: 60, kyc_limit_pen: 300, kyc_limit_bob: 1000 });
     } finally {
       setConfigReady(true);
     }
@@ -188,6 +188,10 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
 
     const minPEN = transferConfig?.min_pen ?? 20;
     const minBOB = transferConfig?.min_bob ?? 60;
+    const maxPEN = transferConfig?.max_pen ?? 100000;
+    const maxBOB = transferConfig?.max_bob ?? 100000;
+
+
     if (modo === "PENtoBOB" && valor < minPEN) {
       setError(` El monto mínimo es S/ ${minPEN}.`);
       return;
@@ -196,6 +200,16 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
       setError(` El monto mínimo es Bs ${minBOB}.`);
       return;
     }
+
+    if (modo === "PENtoBOB" && valor > maxPEN) {
+      setError(` El monto maximo en S/ es ${maxPEN}.`);
+      return;
+    }
+    if (modo === "BOBtoPEN" && valor > maxBOB) {
+      setError(` El monto maximo en Bs es ${maxBOB}.`);
+      return;
+    }
+   
 
     const limitePEN = transferConfig?.kyc_limit_pen ?? 0;
     const limiteBOB = transferConfig?.kyc_limit_bob ?? 0;
