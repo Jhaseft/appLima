@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native";
 import { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
+import { useFonts } from "expo-font";
 
 import { UserProvider } from "../components/ContextUser/UserContext";
 import NetworkGuard from "../components/NetworkGuard/NetworkGuard";
@@ -16,14 +17,22 @@ SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
   const insets = useSafeAreaInsets();
+  const [fontsLoaded] = useFonts({
+    "LemonMilkPro-Light": require("../assets/fonts/lemon-milk-pro-ftr-ultralight.otf"),
+    LemonMilkPro: require("../assets/fonts/lemon-milk-pro-ftr-regular.otf"),
+    "LemonMilkPro-Medium": require("../assets/fonts/lemon-milk-pro-ftr-medium.otf"),
+    "LemonMilkPro-Bold": require("../assets/fonts/lemon-milk-pro-ftr-bold.otf"),
+  });
 
   useEffect(() => {
-    SplashScreen.hideAsync();
-  }, []);
+    if (fontsLoaded) SplashScreen.hideAsync();
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) return null;
 
   return (
     <UserProvider>
-      <View className="flex-1" style={{ paddingBottom: insets.bottom, backgroundColor: "#000000" }}>
+      <View className="flex-1 bg-background" style={{ paddingBottom: insets.bottom }}>
         <StatusBar style="dark" />
         <NetworkGuard>
           <VersionGuard>

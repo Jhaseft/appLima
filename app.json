@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "SDC Transferencias",
+    "name": "Transfer Cash",
     "slug": "Lima",
     "scheme": "transfercash",
     "version": "21.0",
     "orientation": "portrait",
-    "icon": "./assets/logopro2.png",
+    "icon": "./assets/images/logopro2.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/logopro2nobg.png",
+      "image": "./assets/images/logopro2nobg.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
@@ -27,14 +27,14 @@
       "googleServicesFile": "./google-services.json"
     },
     "web": {
-      "favicon": "./assets/logopro2nobg.png"
+      "favicon": "./assets/images/logopro2nobg.png"
     },
     "plugins": [
       "expo-dev-client",
       [
         "expo-notifications",
         {
-          "icon": "./assets/notificationiconnobgorig.png",
+          "icon": "./assets/images/notificationiconnobgorig.png",
           "color": "#B3D9FF"
         }
       ],

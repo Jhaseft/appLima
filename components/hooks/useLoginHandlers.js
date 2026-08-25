@@ -5,13 +5,22 @@ import { useRouter } from "expo-router";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import * as AppleAuthentication from "expo-apple-authentication";
 import { useUser } from "../ContextUser/UserContext";
-import API_BASE_URL from "../api";
 import { registerForPushNotifications } from "../../utils/notifications";
+import { loginWithEmail, loginWithGoogle, loginWithApple } from "../services/authApi";
 
 export function useLoginHandlers(email, password) {
   const router = useRouter();
   const { fetchUser } = useUser();
   const [loading, setLoading] = useState(false);
+
+  // Apple (guía 5.1.1) no permite forzar "Completar perfil" al iniciar sesión.
+  // Se entra siempre a Home; el perfil se exige al operar (ver Cotiza.jsx).
+  const enter = async (data) => {
+    await AsyncStorage.setItem("token", data.token);
+    await fetchUser(data.user);
+    registerForPushNotifications();
+    router.replace("/Home");
+  };
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -20,24 +29,7 @@ export function useLoginHandlers(email, password) {
     }
     try {
       setLoading(true);
-      const res = await fetch(`${API_BASE_URL}/api/loginapp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const contentType = res.headers.get("content-type");
-      if (!contentType?.includes("application/json")) {
-        throw new Error("El servidor devolvió HTML en lugar de JSON");
-      }
-      const data = await res.json();
-      if (!res.ok) {
-        Alert.alert("Error", data.message || "Credenciales inválidas");
-        return;
-      }
-      await AsyncStorage.setItem("token", data.token);
-      await fetchUser(data.user);
-      registerForPushNotifications();
-      router.replace("/Home");
+      await enter(await loginWithEmail(email, password));
     } catch (error) {
       Alert.alert("Error", error.message);
     } finally {
@@ -67,26 +59,7 @@ export function useLoginHandlers(email, password) {
         Alert.alert("Error", "No se recibió idToken de Google");
         return;
       }
-      const res = await fetch(`${API_BASE_URL}/api/logingoogle`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ idToken }),
-      });
-      const contentType = res.headers.get("content-type");
-      if (!contentType?.includes("application/json")) {
-        throw new Error("El servidor devolvió HTML en lugar de JSON");
-      }
-      const data = await res.json();
-      if (!res.ok) {
-        Alert.alert("Error", data.message || "No se pudo iniciar sesión con Google");
-        return;
-      }
-      await AsyncStorage.setItem("token", data.token);
-      await fetchUser(data.user);
-      registerForPushNotifications();
-      // Apple (guía 5.1.1) no permite forzar "Completar perfil" al iniciar sesión.
-      // Se entra siempre a Home; el perfil se exige al operar (ver Cotiza.jsx).
-      router.replace("/Home");
+      await enter(await loginWithGoogle(idToken));
     } catch (error) {
       Alert.alert("Error", error?.message || "Error al iniciar sesión con Google");
     } finally {
@@ -103,44 +76,22 @@ export function useLoginHandlers(email, password) {
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
-      const { identityToken, fullName, email, user } = credential;
+      const { identityToken, fullName, email: appleEmail, user } = credential;
       if (!identityToken) {
         Alert.alert("Error", "No se recibió el token de Apple");
         return;
       }
-      // Apple solo envía nombre/email en el PRIMER inicio de sesión.
-      // El backend debe verificar identityToken con las llaves públicas de Apple
-      // y persistir estos datos la primera vez usando `appleUserId` como identificador estable.
-      const res = await fetch(`${API_BASE_URL}/api/loginapple`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
+      await enter(
+        await loginWithApple({
           identityToken,
           appleUserId: user,
-          email: email ?? null,
+          email: appleEmail ?? null,
           firstName: fullName?.givenName ?? null,
           lastName: fullName?.familyName ?? null,
-        }),
-      });
-      const contentType = res.headers.get("content-type");
-      if (!contentType?.includes("application/json")) {
-        throw new Error("El servidor devolvió HTML en lugar de JSON");
-      }
-      const data = await res.json();
-      if (!res.ok) {
-        Alert.alert("Error", data.message || "No se pudo iniciar sesión con Apple");
-        return;
-      }
-      await AsyncStorage.setItem("token", data.token);
-      await fetchUser(data.user);
-      registerForPushNotifications();
-      // Apple (guía 5.1.1) no permite forzar "Completar perfil" al iniciar sesión.
-      // Se entra siempre a Home; el perfil se exige al operar (ver Cotiza.jsx).
-      router.replace("/Home");
+        })
+      );
     } catch (error) {
-      if (error?.code === "ERR_REQUEST_CANCELED") {
-        return;
-      }
+      if (error?.code === "ERR_REQUEST_CANCELED") return;
       Alert.alert("Error", error?.message || "Error al iniciar sesión con Apple");
     } finally {
       setLoading(false);

@@ -7,7 +7,7 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
-import miLogo from "../../assets/Logo_web_03.png";
+import miLogo from "../../assets/images/Logo_web_03.png";
 import { Stack, useRouter, usePathname } from "expo-router";
 
 import { Menu } from "lucide-react-native";

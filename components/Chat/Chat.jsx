@@ -175,7 +175,7 @@ export default function Chat() {
 
           <View className="w-10 h-10 rounded-full overflow-hidden bg-yellow-400 border-2 border-yellow-400">
             <Image
-              source={require("../../assets/logopro2.png")}
+              source={require("../../assets/images/logopro2.png")}
               style={{ width: "100%", height: "100%" }}
               resizeMode="cover"
             />

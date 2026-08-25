@@ -58,7 +58,7 @@ export default function VersionGuard({ children }) {
       <View className="flex-1 items-center justify-center bg-white">
         <ActivityIndicator size="large" color="#000000" />
         <Text className="mt-4 text-sm text-neutral-400 tracking-widest uppercase font-medium">
-          Verificando versión...
+          Cargando...
         </Text>
       </View>
     );
@@ -69,10 +69,9 @@ export default function VersionGuard({ children }) {
     return (
       <View className="flex-1 bg-black items-center justify-center px-9">
 
-        {/* Logo con borde blanco sutil */}
         <View className="w-24 h-24 rounded-3xl bg-white items-center justify-center mb-10 shadow-lg">
           <Image
-            source={require("../../assets/logo.png")}
+            source={require("../../assets/images/logo.png")}
             className="w-20 h-20 rounded-2xl"
             resizeMode="contain"
           />

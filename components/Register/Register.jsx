@@ -155,7 +155,7 @@ export default function Register() {
             <View className="items-center justify-center">
 
               <Image
-                source={require("../../assets/Logo_web_03.png")}
+                source={require("../../assets/images/Logo_web_03.png")}
                 style={{ width: 190, height: 50, resizeMode: "contain" }}
               />
 
