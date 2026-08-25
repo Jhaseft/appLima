@@ -1,27 +1,73 @@
-import { View, Text } from "react-native";
+import { useState } from "react";
+import { View, Text, Pressable, Modal } from "react-native";
+import { Check } from "lucide-react-native";
+import { colors } from "../../theme/colors";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+const STEPS = [
+  { title: "Datos personales", desc: "Tu nombre, apellido y correo." },
+  { title: "Información extra", desc: "Teléfono, nacionalidad y documento." },
+  { title: "Seguridad", desc: "Crea tu contraseña y acepta los términos." },
+];
 
-const LABELS = ["Personal", "Extra", "Seguridad"];
-
-export default function ProgressBar({ step, totalSteps }) {
-  const progress = (step / totalSteps) * 100;
-
+function StepRow({ item, index, step }) {
+  const done = index < step - 1;
+  const current = index === step - 1;
+  const last = index === STEPS.length - 1;
+    const insets = useSafeAreaInsets();
   return (
-    <View className="mb-6">
-      <View className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-        <View className="h-2 bg-primary rounded-full" style={{ width: `${progress}%` }} />
+    <View className="flex-row" style={{ paddingBottom: last ? insets.bottom : 10 }}>
+      <View className="items-center mr-4">
+        <View
+          className={`w-8 h-8 rounded-full items-center justify-center border-2 ${
+            done
+              ? "bg-success border-success"
+              : current
+              ? "bg-primary border-primary"
+              : "bg-white border-gray-300"
+          }`}
+        >
+          {done ? <Check size={18} color={colors.background} strokeWidth={3.5} /> : null}
+        </View>
+        {last ? null : (
+          <View className={`w-0.5 flex-1 my-1 ${done ? "bg-success" : "bg-gray-200"}`} />
+        )}
       </View>
-      <View className="flex-row justify-between mt-4">
-        {LABELS.map((label, index) => (
-          <View key={label} className="items-center">
-            <View
-              className={`w-6 h-6 rounded-full border-2 mb-1 ${
-                step - 1 >= index ? "bg-primary border-primary" : "bg-white border-gray-300"
-              }`}
-            />
-            <Text className="text-xs text-center text-text font-sans">{label}</Text>
-          </View>
-        ))}
+
+      <View className={`flex-1 ${last ? "" : "pb-6"}`}>
+        <Text className="text-lg font-lm-bold text-text">{item.title}</Text>
+        <Text className="text-text-muted font-sans mt-1">{item.desc}</Text>
       </View>
     </View>
+  );
+} 
+
+export default function ProgressBar({ step, totalSteps = STEPS.length }) {
+  const [open, setOpen] = useState(false);
+  const progress = (step / totalSteps) * 100;
+  const insets = useSafeAreaInsets();
+  return (
+    <>
+      <Pressable onPress={() => setOpen(true)} hitSlop={12} className="px-6">
+        <View className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+          <View className="h-2 bg-primary rounded-full" style={{ width: `${progress}%` }} />
+        </View>
+      </Pressable>
+
+      <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
+        <Pressable className="flex-1 bg-black/40 justify-end" onPress={() => setOpen(false)}>
+          <Pressable className="bg-white rounded-t-3xl px-6 pt-6 pb-10" onPress={() => {}}>
+            <View className="w-12 h-1.5 rounded-full bg-gray-200 self-center mb-5" />
+            <Text className="text-2xl font-lm-bold text-text">¡A pocos pasos!</Text>
+            <Text className="text-text-muted font-sans mt-2 mb-6">
+              Necesitamos algunos datos para crear tu cuenta.
+            </Text>
+
+            {STEPS.map((item, index) => (
+              <StepRow key={item.title} item={item} index={index} step={step} />
+            ))}
+          </Pressable>
+        </Pressable>
+      </Modal>
+    </>
   );
 }
