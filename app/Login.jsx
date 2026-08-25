@@ -41,10 +41,6 @@ export default function Login() {
         <PasswordInput
           value={form.password}
           onChangeText={form.setPassword}
-          show={form.showPassword}
-          setShow={form.setShowPassword}
-          focused={form.focused}
-          setFocused={form.setFocused}
           inputRef={form.passwordRef}
         />
         <SubmitButton onPress={handleLogin} loading={loading} label="Iniciar sesión" />

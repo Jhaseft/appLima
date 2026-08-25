@@ -1,38 +1,51 @@
-import { View, TextInput, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../../theme/colors";
+import { useRef } from "react";
+import { View, Text, TextInput, Pressable } from "react-native";
 
-export default function PasswordInput({ value, onChangeText, show, setShow, focused, setFocused, inputRef }) {
-  const active = focused === "password";
+const LENGTH = 4;
+
+export default function PasswordInput({ value, onChangeText, inputRef }) {
+  const localRef = useRef(null);
+  const ref = inputRef ?? localRef;
+  const digits = value ?? "";
+
+  const handleChange = (text) =>
+    onChangeText(text.replace(/[^0-9]/g, "").slice(0, LENGTH));
+
   return (
-    <View
-      className={`flex-row items-center border-2 rounded-2xl px-5 mb-6 bg-white ${
-        active ? "border-primary" : "border-gray-300"
-      }`}
-    >
-      <TextInput
-        ref={inputRef}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder="Contraseña"
-        placeholderTextColor={colors.textMuted}
-        secureTextEntry={!show}
-        autoCapitalize="none"
-        returnKeyType="done"
-        onFocus={() => setFocused("password")}
-        onBlur={() => setFocused("")}
-        className="flex-1 py-4 text-text font-sans"
-      />
-      <TouchableOpacity
-        onPress={() => setShow(!show)}
-        hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+    <View className="mb-6">
+      <Text className="text-text-muted font-lm-medium text-sm mb-2">
+        Contraseña
+      </Text>
+
+      <Pressable
+        onPress={() => ref.current?.focus()}
+        className="flex-row justify-between"
       >
-        <Ionicons
-          name={show ? "eye-off" : "eye"}
-          size={24}
-          color={active ? colors.primaryDark : colors.textMuted}
-        />
-      </TouchableOpacity>
+        {Array.from({ length: LENGTH }).map((_, i) => (
+          <View
+            key={i}
+            className={`w-16 h-16 rounded-2xl border-2 items-center justify-center bg-white ${
+              digits.length === i ? "border-primary" : "border-gray-300"
+            }`}
+          >
+            <Text className="text-2xl font-lm-bold text-text">
+              {digits[i] ?? ""}
+            </Text>
+          </View>
+        ))}
+      </Pressable>
+
+      <TextInput
+        ref={ref}
+        value={digits}
+        onChangeText={handleChange}
+        keyboardType="number-pad"
+        maxLength={LENGTH}
+        caretHidden
+        textContentType="oneTimeCode"
+        pointerEvents="none"
+        className="absolute inset-0 opacity-0"
+      />
     </View>
   );
 }
