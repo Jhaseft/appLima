@@ -1,13 +1,8 @@
 import { View, TextInput, Pressable } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { colors } from "../../theme/colors";
 
-export default function PasswordInput({
-  value,
-  onChange,
-  show,
-  toggleShow,
-  placeholder,
-}) {
+export default function PasswordInput({ value, onChange, show, toggleShow, placeholder }) {
   return (
     <View className="relative w-full">
       <TextInput
@@ -15,24 +10,16 @@ export default function PasswordInput({
         onChangeText={onChange}
         secureTextEntry={!show}
         placeholder={placeholder}
-        className="w-full border border-gray-300 rounded-xl px-4 py-3 pr-10 text-gray-900 text-sm"
+        placeholderTextColor={colors.textMuted}
+        className="w-full pr-10 py-1 text-text font-sans text-sm"
         autoCapitalize="none"
         autoCorrect={false}
         keyboardType="numeric"
         maxLength={4}
         textContentType="password"
-        placeholderTextColor="#9CA3AF"
       />
-      <Pressable
-        onPress={toggleShow}
-        className="absolute right-3 top-3"
-        hitSlop={10}
-      >
-        <Feather
-          name={show ? "eye-off" : "eye"}
-          size={20}
-          color="gray"
-        />
+      <Pressable onPress={toggleShow} className="absolute right-1 top-1" hitSlop={10}>
+        <Feather name={show ? "eye-off" : "eye"} size={20} color={colors.textMuted} />
       </Pressable>
     </View>
   );
