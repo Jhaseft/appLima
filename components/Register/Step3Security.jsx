@@ -1,33 +1,12 @@
-import { useState, useEffect } from "react";
-import { View, ScrollView, Switch, Text, Linking } from "react-native";
-import FieldWrapper from "./FieldWrapper";
-import PasswordInput from "./PasswordInput";
+import { useState } from "react";
+import { View, Switch, Text, Linking } from "react-native";
+import CodeBoxes from "../CodeBoxes";
 import { colors } from "../../theme/colors";
 import API_BASE_URL from "../api";
 
-function PasswordRules({ rules }) {
-  return (
-    <View className="ml-1 mb-2">
-      <Text className={`text-xs font-sans ${rules.digits ? "text-success" : "text-text-muted"}`}>
-        • Exactamente 4 dígitos
-      </Text>
-    </View>
-  );
-}
-
-export default function Step3Security({ data, setData, errors }) {
+export default function Step3Security({ data, setData, errors, requirePassword = true }) {
   const [password, setPassword] = useState(data.password || "");
   const [confirmPassword, setConfirmPassword] = useState(data.password_confirmation || "");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [rules, setRules] = useState({ digits: false, match: false });
-
-  useEffect(() => {
-    setRules({
-      digits: /^\d{4}$/.test(password),
-      match: password.length > 0 && password === confirmPassword,
-    });
-  }, [password, confirmPassword]);
 
   const changePassword = (t) => {
     setPassword(t);
@@ -39,50 +18,42 @@ export default function Step3Security({ data, setData, errors }) {
   };
   const openTerms = () => Linking.openURL(`${API_BASE_URL}/politicas`);
 
-  const confirmError =
-    !rules.match && confirmPassword.length > 0
-      ? "Las contraseñas no coinciden"
-      : errors.password_confirmation;
+  const mismatch = confirmPassword.length === 4 && password !== confirmPassword;
 
   return (
-    <ScrollView contentContainerStyle={{ paddingBottom: 20 }} className="px-3">
-      <FieldWrapper label="Contraseña *" error={errors.password}>
-        <PasswordInput
-          value={password}
-          onChange={changePassword}
-          show={showPassword}
-          toggleShow={() => setShowPassword((p) => !p)}
-          placeholder="Ingrese su contraseña"
+    <View>
+      {requirePassword ? (
+        <>
+          <Text className="text-text font-lm-medium mb-3">Contraseña (4 dígitos)</Text>
+          <CodeBoxes length={4} value={password} onChange={changePassword} />
+          {errors.password ? (
+            <Text className="text-danger text-xs mt-2 font-sans">{errors.password}</Text>
+          ) : null}
+
+          <Text className="text-text font-lm-medium mb-3 mt-6">Confirma tu contraseña</Text>
+          <CodeBoxes length={4} value={confirmPassword} onChange={changeConfirm} />
+          {mismatch ? (
+            <Text className="text-danger text-xs mt-2 font-sans">Las contraseñas no coinciden.</Text>
+          ) : null}
+        </>
+      ) : null}
+
+      <View className="flex-row items-center mt-8">
+        <Switch
+          value={data.accepted_terms}
+          onValueChange={(v) => setData("accepted_terms", v)}
+          trackColor={{ true: colors.primary }}
         />
-      </FieldWrapper>
-
-      <PasswordRules rules={rules} />
-
-      <FieldWrapper label="Confirmar contraseña *" error={confirmError}>
-        <PasswordInput
-          value={confirmPassword}
-          onChange={changeConfirm}
-          show={showConfirm}
-          toggleShow={() => setShowConfirm((p) => !p)}
-          placeholder="Confirme su contraseña"
-        />
-      </FieldWrapper>
-
-      <FieldWrapper label="Acepto los términos y condiciones" error={errors.accepted_terms}>
-        <View className="flex-row items-center">
-          <Switch
-            value={data.accepted_terms}
-            onValueChange={(v) => setData("accepted_terms", v)}
-            trackColor={{ true: colors.primary }}
-          />
-          <Text className="ml-2 text-text text-sm font-sans">
-            Acepto los{" "}
-            <Text className="text-primary-dark underline" onPress={openTerms}>
-              términos y condiciones
-            </Text>
+        <Text className="ml-2 text-text text-sm font-sans">
+          Acepto los{" "}
+          <Text className="text-primary-dark underline" onPress={openTerms}>
+            términos y condiciones
           </Text>
-        </View>
-      </FieldWrapper>
-    </ScrollView>
+        </Text>
+      </View>
+      {errors.accepted_terms ? (
+        <Text className="text-danger text-xs mt-2 font-sans">{errors.accepted_terms}</Text>
+      ) : null}
+    </View>
   );
 }

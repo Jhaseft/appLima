@@ -8,7 +8,6 @@ const PUBLIC_ROUTES = [
   "/index",
   "/Login",
   "/Register",
-  "/ConfirmarRegistro",
 ];
 
 export default function AuthGuard({ children }) {

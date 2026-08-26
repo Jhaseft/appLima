@@ -19,7 +19,7 @@ export function useLoginHandlers(email, password) {
     await AsyncStorage.setItem("token", data.token);
     await fetchUser(data.user);
     registerForPushNotifications();
-    router.replace("/Home");
+    router.replace(data.needs_profile ? "/CompleteProfile" : "/Home");
   };
 
   const handleLogin = async () => {

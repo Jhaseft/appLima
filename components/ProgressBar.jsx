@@ -1,27 +1,21 @@
 import { useState } from "react";
 import { View, Text, Pressable, Modal } from "react-native";
-import { Check } from "lucide-react-native";
-import { colors } from "../../theme/colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-const STEPS = [
-  { title: "Datos personales", desc: "Tu nombre, apellido y correo." },
-  { title: "Información extra", desc: "Teléfono, nacionalidad y documento." },
-  { title: "Seguridad", desc: "Crea tu contraseña y acepta los términos." },
-];
+import { Check } from "lucide-react-native";
+import { colors } from "../theme/colors";
 
-function StepRow({ item, index, step }) {
-  const done = index < step - 1;
-  const current = index === step - 1;
-  const last = index === STEPS.length - 1;
-    const insets = useSafeAreaInsets();
+function StepRow({ item, index, current, last, bottomInset }) {
+  const done = index < current - 1;
+  const active = index === current - 1;
+
   return (
-    <View className="flex-row" style={{ paddingBottom: last ? insets.bottom : 10 }}>
-      <View className="items-center mr-4">
+    <View className="flex-row" >
+      <View className="items-center mr-4 ">
         <View
-          className={`w-8 h-8 rounded-full items-center justify-center border-2 ${
+          className={`w-8 h-8 rounded-full  items-center justify-center border-2 ${
             done
               ? "bg-success border-success"
-              : current
+              : active
               ? "bg-primary border-primary"
               : "bg-white border-gray-300"
           }`}
@@ -33,21 +27,22 @@ function StepRow({ item, index, step }) {
         )}
       </View>
 
-      <View className={`flex-1 ${last ? "" : "pb-6"}`}>
+      <View className={`flex-1  ${last ? "" : "pb-6"}`}>
         <Text className="text-lg font-lm-bold text-text">{item.title}</Text>
         <Text className="text-text-muted font-sans mt-1">{item.desc}</Text>
       </View>
     </View>
   );
-} 
+}
 
-export default function ProgressBar({ step, totalSteps = STEPS.length }) {
+export default function ProgressBar({ steps, current }) {
   const [open, setOpen] = useState(false);
-  const progress = (step / totalSteps) * 100;
   const insets = useSafeAreaInsets();
+  const progress = (current / steps.length) * 100;
+
   return (
     <>
-      <Pressable onPress={() => setOpen(true)} hitSlop={12} className="px-6">
+      <Pressable onPress={() => setOpen(true)} hitSlop={12} className="mx-6 ">
         <View className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
           <View className="h-2 bg-primary rounded-full" style={{ width: `${progress}%` }} />
         </View>
@@ -55,15 +50,26 @@ export default function ProgressBar({ step, totalSteps = STEPS.length }) {
 
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
         <Pressable className="flex-1 bg-black/40 justify-end" onPress={() => setOpen(false)}>
-          <Pressable className="bg-white rounded-t-3xl px-6 pt-6 pb-10" onPress={() => {}}>
+          <Pressable
+            className="bg-white rounded-t-3xl px-6 pt-6"
+            style={{ paddingBottom: insets.bottom + 16 }}
+            onPress={() => {}}
+          >
             <View className="w-12 h-1.5 rounded-full bg-gray-200 self-center mb-5" />
             <Text className="text-2xl font-lm-bold text-text">¡A pocos pasos!</Text>
             <Text className="text-text-muted font-sans mt-2 mb-6">
-              Necesitamos algunos datos para crear tu cuenta.
+              Completa estos pasos para crear tu cuenta.
             </Text>
 
-            {STEPS.map((item, index) => (
-              <StepRow key={item.title} item={item} index={index} step={step} />
+            {steps.map((item, index) => (
+              <StepRow
+                key={item.title}
+                item={item}
+                index={index}
+                current={current}
+                last={index === steps.length - 1}
+                bottomInset={insets.bottom}
+              />
             ))}
           </Pressable>
         </Pressable>

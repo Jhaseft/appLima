@@ -1,33 +1,31 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Pressable } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ArrowLeft } from "lucide-react-native";
-import { useRegisterForm } from "../components/Register/hooks/useRegisterForm";
-import ProgressBar from "../components/Register/ProgressBar";
-import Step1Personal from "../components/Register/Step1Personal";
-import Step2Extras from "../components/Register/Step2Extras";
-import Step3Security from "../components/Register/Step3Security";
-import StepNavigation from "../components/Register/StepNavigation";
-import GoogleBoton from "../components/GoogleBoton";
-import AppleBoton from "../components/AppleBoton";
+import { useRegisterFlow } from "../components/Register/hooks/useRegisterFlow";
 import { useLoginHandlers } from "../components/hooks/useLoginHandlers";
+import ProgressBar from "../components/ProgressBar";
+import { buildAccountSteps } from "../components/accountSteps";
+import StepEmail from "../components/Register/StepEmail";
+import StepPassword from "../components/Register/StepPassword";
+import StepCode from "../components/Register/StepCode";
 import { colors } from "../theme/colors";
 
 export default function Register() {
-  const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { step, form, errors, loading, setData, nextStep, prevStep, register, canSubmit } =
-    useRegisterForm();
+  const flow = useRegisterFlow();
   const { handleGoogleLogin, handleAppleLogin } = useLoginHandlers();
 
   return (
-    <View className="flex-1 bg-background" style={{ paddingTop: insets.top+10 }}>
+    <View
+      className="flex-1 bg-background"style={{ paddingTop: insets.top + 12}}
+    >
       <Stack.Screen options={{ headerShown: false }} />
 
-      <ProgressBar step={step} totalSteps={3} />
+      <ProgressBar steps={buildAccountSteps(false)} current={1} />
 
-      <Pressable onPress={() => router.back()} hitSlop={12} className="self-start ml-4 p-2 mt-4 mb-2">
+      <Pressable onPress={flow.back} hitSlop={12} className="self-start ml-4 p-2 mt-4 mb-2">
         <ArrowLeft size={26} color={colors.text} />
       </Pressable>
 
@@ -38,25 +36,38 @@ export default function Register() {
         enableOnAndroid
         keyboardShouldPersistTaps="handled"
       >
-        <Text className="text-2xl font-lm-bold mb-6 text-text">Crear una cuenta nueva</Text>
+        {flow.phase === "email" && (
+          <StepEmail
+            email={flow.email}
+            setEmail={flow.setEmail}
+            valid={flow.emailValid}
+            onContinue={flow.goToPassword}
+            onGoogle={handleGoogleLogin}
+            onApple={handleAppleLogin}
+          />
+        )}
 
-        <View className="space-y-6">
-          {step === 1 && <Step1Personal data={form} setData={setData} errors={errors} />}
-          {step === 2 && <Step2Extras data={form} setData={setData} errors={errors} />}
-          {step === 3 && <Step3Security data={form} setData={setData} errors={errors} />}
-        </View>
+        {flow.phase === "password" && (
+          <StepPassword
+            password={flow.password}
+            setPassword={flow.setPassword}
+            confirm={flow.confirm}
+            setConfirm={flow.setConfirm}
+            valid={flow.passwordValid}
+            loading={flow.loading}
+            onContinue={flow.submitRegister}
+          />
+        )}
 
-        <StepNavigation
-          step={step}
-          loading={loading}
-          canSubmit={canSubmit}
-          onPrev={prevStep}
-          onNext={nextStep}
-          onSubmit={register}
-        />
-
-        <GoogleBoton handleGoogleLogin={handleGoogleLogin} />
-        <AppleBoton handleAppleLogin={handleAppleLogin} />
+        {flow.phase === "code" && (
+          <StepCode
+            email={flow.email}
+            code={flow.code}
+            setCode={flow.setCode}
+            loading={flow.loading}
+            onVerify={flow.verify}
+          />
+        )}
       </KeyboardAwareScrollView>
     </View>
   );

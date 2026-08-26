@@ -1,14 +1,19 @@
 import API_BASE_URL from "../../api";
 
-export async function registerUser(form) {
-  const res = await fetch(`${API_BASE_URL}/api/register`, {
+async function postJson(path, body) {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify(form),
+    body: JSON.stringify(body),
   });
-  const data = await res.json();
-  if (!res.ok || data.status !== "success") {
-    throw new Error(data.message || "No se pudo completar el registro");
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || (data.status && data.status !== "success")) {
+    throw new Error(data.message || "Ocurrió un error. Inténtalo de nuevo.");
   }
   return data;
 }
+
+export const sendRegister = (email, password) =>
+  postJson("/api/register", { email, password, password_confirmation: password });
+
+export const verifyCode = (email, code) => postJson("/api/verify-code", { email, code });
