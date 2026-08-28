@@ -7,6 +7,7 @@ import * as AppleAuthentication from "expo-apple-authentication";
 import { useUser } from "../ContextUser/UserContext";
 import { registerForPushNotifications } from "../../utils/notifications";
 import { loginWithEmail, loginWithGoogle, loginWithApple } from "../services/authApi";
+import { routeForUser } from "../profileStatus";
 
 export function useLoginHandlers(email, password) {
   const router = useRouter();
@@ -19,7 +20,7 @@ export function useLoginHandlers(email, password) {
     await AsyncStorage.setItem("token", data.token);
     await fetchUser(data.user);
     registerForPushNotifications();
-    router.replace(data.needs_profile ? "/CompleteProfile" : "/Home");
+    router.replace(routeForUser(data.user));
   };
 
   const handleLogin = async () => {

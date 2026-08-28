@@ -3,11 +3,13 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 
 import { UserProvider } from "../components/ContextUser/UserContext";
+import AnimatedSplash from "../components/AnimatedSplash";
+import LoadingOverlay from "../components/LoadingOverlay";
 import NetworkGuard from "../components/NetworkGuard/NetworkGuard";
 import VersionGuard from "../components/VersionGuard/VersionGuard";
 import AuthGuard from "../components/AuthGuard/AuthGuard";
@@ -17,6 +19,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
   const insets = useSafeAreaInsets();
+  const [animationDone, setAnimationDone] = useState(false);
   const [fontsLoaded] = useFonts({
     "LemonMilkPro-Light": require("../assets/fonts/lemon-milk-pro-ftr-ultralight.otf"),
     LemonMilkPro: require("../assets/fonts/lemon-milk-pro-ftr-regular.otf"),
@@ -51,6 +54,8 @@ export default function Layout() {
           </VersionGuard>
         </NetworkGuard>
       </View>
+      <LoadingOverlay />
+      {!animationDone && <AnimatedSplash onFinish={() => setAnimationDone(true)} />}
     </UserProvider>
   );
 }
