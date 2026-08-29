@@ -54,7 +54,6 @@ export default function Register() {
             confirm={flow.confirm}
             setConfirm={flow.setConfirm}
             valid={flow.passwordValid}
-            loading={flow.loading}
             onContinue={flow.submitRegister}
           />
         )}
@@ -64,7 +63,6 @@ export default function Register() {
             email={flow.email}
             code={flow.code}
             setCode={flow.setCode}
-            loading={flow.loading}
             onVerify={flow.verify}
           />
         )}

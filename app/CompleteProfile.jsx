@@ -13,7 +13,7 @@ import { colors } from "../theme/colors";
 
 export default function CompleteProfile() {
   const insets = useSafeAreaInsets();
-  const { subStep, index, isLast, macroCurrent, requirePassword, form, errors, loading, setData, next, back } =
+  const { subStep, index, isLast, macroCurrent, requirePassword, form, errors, setData, next, back } =
     useCompleteProfile();
 
   return (
@@ -68,13 +68,10 @@ export default function CompleteProfile() {
 
         <Pressable
           onPress={next}
-          disabled={loading}
-          className={`w-full py-4 rounded-2xl mt-6 mb-10 bg-primary ${
-            loading ? "opacity-50" : "active:opacity-80"
-          }`}
+          className="w-full py-4 rounded-2xl mt-6 mb-10 bg-primary active:opacity-80"
         >
           <Text className="text-center text-text font-lm-bold text-lg">
-            {loading ? "Procesando..." : isLast ? "Crear cuenta" : "Continuar"}
+            {isLast ? "Crear cuenta" : "Continuar"}
           </Text>
         </Pressable>
       </KeyboardAwareScrollView>

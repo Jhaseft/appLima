@@ -1,11 +1,10 @@
 import { useEffect } from "react";
-import { View, Text, ActivityIndicator } from "react-native";
+import { View, Text } from "react-native";
 import CodeBoxes from "../CodeBoxes";
-import { colors } from "../../theme/colors";
 
-export default function StepCode({ email, code, setCode, loading, onVerify }) {
+export default function StepCode({ email, code, setCode, onVerify }) {
   useEffect(() => {
-    if (code.length === 6 && !loading) onVerify(code);
+    if (code.length === 6) onVerify(code);
   }, [code]);
 
   return (
@@ -17,13 +16,6 @@ export default function StepCode({ email, code, setCode, loading, onVerify }) {
       </Text>
 
       <CodeBoxes length={6} value={code} onChange={setCode} autoFocus />
-
-      {loading ? (
-        <View className="flex-row items-center justify-center mt-8">
-          <ActivityIndicator color={colors.primary} />
-          <Text className="ml-2 text-text-muted font-sans">Verificando...</Text>
-        </View>
-      ) : null}
     </View>
   );
 }

@@ -17,7 +17,6 @@ export function useRegisterFlow() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [code, setCode] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const step = PHASES.indexOf(phase) + 1;
   const emailValid = EMAIL_RE.test(email.trim());
@@ -36,20 +35,16 @@ export function useRegisterFlow() {
   const submitRegister = async () => {
     if (!passwordValid) return;
     try {
-      setLoading(true);
       await sendRegister(email.trim(), password);
       setCode("");
       setPhase("code");
     } catch (e) {
       Alert.alert("Error", e.message);
-    } finally {
-      setLoading(false);
     }
   };
 
   const verify = async (fullCode) => {
     try {
-      setLoading(true);
       const data = await verifyCode(email.trim(), fullCode);
       await AsyncStorage.setItem("token", data.token);
       await fetchUser(data.user);
@@ -58,8 +53,6 @@ export function useRegisterFlow() {
     } catch (e) {
       Alert.alert("Error", e.message);
       setCode("");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -76,7 +69,6 @@ export function useRegisterFlow() {
     passwordValid,
     code,
     setCode,
-    loading,
     back,
     goToPassword,
     submitRegister,

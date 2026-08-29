@@ -13,7 +13,7 @@ import SocialButtons from "../components/Login/SocialButtons";
 
 export default function Login() {
   const form = useLoginForm();
-  const { handleLogin, handleGoogleLogin, handleAppleLogin, loading } =
+  const { handleLogin, handleGoogleLogin, handleAppleLogin } =
     useLoginHandlers(form.email, form.password);
 
   return (
@@ -43,7 +43,7 @@ export default function Login() {
           onChangeText={form.setPassword}
           inputRef={form.passwordRef}
         />
-        <SubmitButton onPress={handleLogin} loading={loading} label="Iniciar sesión" />
+        <SubmitButton onPress={handleLogin} label="Iniciar sesión" />
         <SocialButtons onGoogle={handleGoogleLogin} onApple={handleAppleLogin} />
         <LoginFooter />
       </KeyboardAwareScrollView>

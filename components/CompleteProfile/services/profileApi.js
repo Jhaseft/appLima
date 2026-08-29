@@ -1,7 +1,8 @@
 import API_BASE_URL from "../../api";
+import { apiFetch } from "../../services/apiFetch";
 
 export async function completeProfile(token, body) {
-  const res = await fetch(`${API_BASE_URL}/api/complete-profile`, {
+  const res = await apiFetch(`${API_BASE_URL}/api/complete-profile`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

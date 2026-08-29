@@ -1,7 +1,8 @@
 import API_BASE_URL from "../api";
+import { apiFetch } from "./apiFetch";
 
 async function postJson(path, body) {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
+  const res = await apiFetch(`${API_BASE_URL}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify(body),

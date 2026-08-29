@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import API_BASE_URL from "../api";
+import { apiFetch } from "../services/apiFetch";
 import { registerForPushNotifications } from "../../utils/notifications";
 const UserContext = createContext();
 
@@ -40,7 +41,7 @@ export const UserProvider = ({ children }) => {
 
 
 
-    const res = await fetch(`${API_BASE_URL}/api/userapp`, {
+    const res = await apiFetch(`${API_BASE_URL}/api/userapp`, {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",

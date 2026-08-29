@@ -8,6 +8,7 @@ import BalanceCard from "./BalanceCard";
 import CategoriaSection from "./CategoriaSection";
 import CanjeModal from "./CanjeModal";
 import ComoFuncionaModal from "./ComoFuncionaModal";
+import { useTcPuntos } from "./TcPuntosContext";
 import API_BASE_URL from "../api";
 
 async function authHeaders() {
@@ -16,8 +17,7 @@ async function authHeaders() {
 }
 
 export default function TcPuntos() {
-  const [balance, setBalance] = useState(null);
-  const [valorPunto, setValorPunto] = useState(null);
+  const { balance, valorPunto, refrescar, fijarBalance } = useTcPuntos();
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -26,18 +26,10 @@ export default function TcPuntos() {
   const [canjeLoading, setCanjeLoading] = useState(false);
   const [infoVisible, setInfoVisible] = useState(false);
 
-  const fetchData = useCallback(async () => {
+  const fetchCatalogo = useCallback(async () => {
     try {
       const headers = await authHeaders();
-      const [saldoRes, catalogoRes] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/tc-puntos/saldo`, { headers }),
-        fetch(`${API_BASE_URL}/api/tc-puntos/catalogo`, { headers }),
-      ]);
-      if (saldoRes.ok) {
-        const d = await saldoRes.json();
-        setBalance(d.balance ?? 0);
-        setValorPunto(d.valor_punto ?? 1);
-      }
+      const catalogoRes = await fetch(`${API_BASE_URL}/api/tc-puntos/catalogo`, { headers });
       if (catalogoRes.ok) setCategorias(await catalogoRes.json());
     } catch (_) {}
     finally {
@@ -46,9 +38,9 @@ export default function TcPuntos() {
     }
   }, []);
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchCatalogo(); }, []);
 
-  const onRefresh = () => { setRefreshing(true); fetchData(); };
+  const onRefresh = () => { setRefreshing(true); refrescar(); fetchCatalogo(); };
 
   const abrirCanje = (producto) => {
     setProductoSeleccionado(producto);
@@ -70,7 +62,7 @@ export default function TcPuntos() {
         Alert.alert("No se pudo canjear", data.message ?? "Intenta de nuevo");
         return;
       }
-      setBalance(data.balance);
+      fijarBalance(data.balance);
       setCanjeVisible(false);
       Alert.alert(
         "¡Canje exitoso!",

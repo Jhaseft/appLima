@@ -98,10 +98,41 @@ arriba de la función/hook, o se extrae a un subcomponente con nombre claro.
 - [ ] Amarillo = `primary`; nada de azules/negros de acento viejos.
 - [ ] Componentes pequeños y reutilizables; sin duplicar lo existente.
 - [ ] Sin comentarios dentro del `return`/JSX.
+- [ ] En inicio/login/registro: peticiones con `apiFetch` y sin spinner/`loading` local (lo cubre el loader).
 
 ---
 
-## 6. Estado de migración
+## 6. Peticiones al backend — loader (solo inicio, login y registro)
+
+El loader global (`LoadingOverlay`, animación Lottie a pantalla completa que **bloquea
+todos los toques**) **NO** intercepta todas las peticiones. Se aplica **solo** en los
+flujos de **inicio, login y registro**, usando `apiFetch`:
+
+```js
+import { apiFetch } from "../services/apiFetch"; // ajustar ruta relativa
+const res = await apiFetch(`${API_BASE_URL}/api/...`, { method: "POST", body });
+```
+
+- `apiFetch` enciende/apaga el loader (`start`/`done`) alrededor del `fetch`; se apaga
+  solo al terminar (éxito o error).
+- El overlay ya está montado una vez en `app/_layout.jsx`. No montar otro.
+- Petición de fondo que **no** debe bloquear la UI: `apiFetch(url, { silent: true })`.
+
+Dónde está aplicado hoy:
+
+| Flujo    | Archivo                                   |
+| -------- | ----------------------------------------- |
+| Inicio   | `ContextUser/UserContext.jsx` (`fetchUser`) |
+| Login    | `services/authApi.js`                     |
+| Registro | `Register/services/registerApi.js`, `CompleteProfile/services/profileApi.js` |
+
+### En esos flujos: sin spinners/`loading` propios
+
+En inicio/login/registro **no** agregar spinner ni estado `loading` local para la
+petición (`disabled={loading}`, `ActivityIndicator`): lo cubre el loader global y sobra.
+El resto de módulos (aún no migrados) conservan su `loading` local como antes.
+
+## 7. Estado de migración
 
 | Módulo               | Estado      |
 | -------------------- | ----------- |
@@ -122,9 +153,11 @@ Leyenda: ⬜ pendiente · 🟨 en progreso · ✅ hecho
 
 ---
 
-## 7. Notas técnicas
+## 8. Notas técnicas
 
 - Rutas en `app/` con extensión `.jsx`; imports sin extensión (expo-router resuelve por nombre).
 - SVG como componentes: `react-native-svg-transformer` está configurado en `metro.config.js`.
 - Imágenes en `assets/images/` (en uso) y `assets/unused/` (candidatas a borrar); ver `assets/README.md`.
 - Tras cambios en `tailwind.config.js`, `metro.config.js` o fuentes: reiniciar con `npx expo start -c`.
+- El loader global usa `lottie-react-native` (módulo nativo) + `assets/animations/loader.json`.
+  Al agregarlo hubo que **reconstruir el dev client** (`npx expo run:android`/`run:ios`), no basta `expo start -c`.

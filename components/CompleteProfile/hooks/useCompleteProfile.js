@@ -28,7 +28,6 @@ export function useCompleteProfile() {
   const [index, setIndex] = useState(0);
   const [form, setForm] = useState(EMPTY);
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -50,8 +49,11 @@ export function useCompleteProfile() {
   const validateStep = () => {
     const e = {};
     if (subStep === "personal") {
+      const NAME_RE = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'’-]{2,}$/;
       if (!form.first_name.trim()) e.first_name = "Requerido";
+      else if (!NAME_RE.test(form.first_name.trim())) e.first_name = "Solo letras";
       if (!form.last_name.trim()) e.last_name = "Requerido";
+      else if (!NAME_RE.test(form.last_name.trim())) e.last_name = "Solo letras";
     }
     if (subStep === "extra") {
       if (!form.phone || form.phone.trim().length < 8) e.phone = "Teléfono inválido";
@@ -68,7 +70,6 @@ export function useCompleteProfile() {
   };
 
   const submit = async () => {
-    setLoading(true);
     try {
       const token = await AsyncStorage.getItem("token");
       const body = {
@@ -88,8 +89,6 @@ export function useCompleteProfile() {
       router.replace("/Home");
     } catch (e) {
       Alert.alert("Error", e.message);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -111,7 +110,6 @@ export function useCompleteProfile() {
     requirePassword,
     form,
     errors,
-    loading,
     setData,
     next,
     back,

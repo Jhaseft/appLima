@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Constants from "expo-constants";
+import { apiFetch } from "../services/apiFetch";
 import API_BASE_URL from "../api";
 
 const STORE_URL = {
@@ -42,7 +43,7 @@ export default function VersionGuard({ children }) {
   const checkVersion = async () => {
     try {
       const current = Constants.expoConfig?.version ?? "0";
-      const res = await fetch(`${API_BASE_URL}/api/version-minima`, {
+      const res = await apiFetch(`${API_BASE_URL}/api/version-minima`, {
         headers: { Accept: "application/json" },
       });
       if (!res.ok) { setStatus("ok"); return; }

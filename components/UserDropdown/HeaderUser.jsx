@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Pressable,
   Alert,
@@ -11,11 +11,11 @@ import miLogo from "../../assets/images/Logo_web_03.png";
 import { Stack, useRouter, usePathname } from "expo-router";
 
 import { Menu } from "lucide-react-native";
-
+import { apiFetch } from "../services/apiFetch";
 import { useUser } from "../ContextUser/UserContext";
+import { useTcPuntos } from "../TcPuntos/TcPuntosContext";
 import DrawerMenu from "../UserDropdown/DrawerMenu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import API_BASE_URL from "../api";
 import TcPuntoIcon from "../TcPuntos/TcPuntoIcon";
 
 // Rutas donde NO aparece el badge de TC Puntos
@@ -30,38 +30,20 @@ const RUTAS_SIN_TC_PUNTOS = [
 
 export default function HeaderUser({ title, subtitle, image }) {
   const { user, setUser, loading } = useUser();
+  const { balance: tcBalance } = useTcPuntos();
 
   const [drawerVisible, setDrawerVisible] = useState(false);
-  const [tcBalance, setTcBalance] = useState(null);
 
   const router = useRouter();
   const pathname = usePathname();
   const mostrarTcPuntos = !RUTAS_SIN_TC_PUNTOS.includes(pathname);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function fetchBalance() {
-      try {
-        const token = await AsyncStorage.getItem("token");
-        if (!token) return;
-        const res = await fetch(`${API_BASE_URL}/api/tc-puntos/saldo`, {
-          headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-        });
-        if (!res.ok) return;
-        const data = await res.json();
-        if (!cancelled) setTcBalance(data.balance ?? 0);
-      } catch (_) {}
-    }
-    fetchBalance();
-    return () => { cancelled = true; };
-  }, []);
 
   const handleLogout = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
       if (!token) return;
 
-      await fetch(`${API_BASE_URL}/api/logout`, {
+      await apiFetch(`${API_BASE_URL}/api/logout`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });

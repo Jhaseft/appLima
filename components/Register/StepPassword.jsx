@@ -1,7 +1,7 @@
 import { View, Text, Pressable } from "react-native";
 import CodeBoxes from "../CodeBoxes";
 
-export default function StepPassword({ password, setPassword, confirm, setConfirm, valid, loading, onContinue }) {
+export default function StepPassword({ password, setPassword, confirm, setConfirm, valid, onContinue }) {
   return (
     <View>
       <Text className="text-3xl font-lm-bold text-text mb-2">Crea tu contraseña</Text>
@@ -21,14 +21,12 @@ export default function StepPassword({ password, setPassword, confirm, setConfir
 
       <Pressable
         onPress={onContinue}
-        disabled={!valid || loading}
+        disabled={!valid}
         className={`w-full py-4 rounded-2xl mt-10 bg-primary ${
-          valid && !loading ? "active:opacity-80" : "opacity-50"
+          valid ? "active:opacity-80" : "opacity-50"
         }`}
       >
-        <Text className="text-center text-text font-lm-bold text-lg">
-          {loading ? "Enviando..." : "Continuar"}
-        </Text>
+        <Text className="text-center text-text font-lm-bold text-lg">Continuar</Text>
       </Pressable>
     </View>
   );

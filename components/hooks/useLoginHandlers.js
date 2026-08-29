@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -12,7 +11,6 @@ import { routeForUser } from "../profileStatus";
 export function useLoginHandlers(email, password) {
   const router = useRouter();
   const { fetchUser } = useUser();
-  const [loading, setLoading] = useState(false);
 
   // Apple (guía 5.1.1) no permite forzar "Completar perfil" al iniciar sesión.
   // Se entra siempre a Home; el perfil se exige al operar (ver Cotiza.jsx).
@@ -29,18 +27,14 @@ export function useLoginHandlers(email, password) {
       return;
     }
     try {
-      setLoading(true);
       await enter(await loginWithEmail(email, password));
     } catch (error) {
       Alert.alert("Error", error.message);
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
     try {
-      setLoading(true);
       GoogleSignin.configure({
         webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
         offlineAccess: false,
@@ -63,14 +57,11 @@ export function useLoginHandlers(email, password) {
       await enter(await loginWithGoogle(idToken));
     } catch (error) {
       Alert.alert("Error", error?.message || "Error al iniciar sesión con Google");
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleAppleLogin = async () => {
     try {
-      setLoading(true);
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
@@ -94,10 +85,8 @@ export function useLoginHandlers(email, password) {
     } catch (error) {
       if (error?.code === "ERR_REQUEST_CANCELED") return;
       Alert.alert("Error", error?.message || "Error al iniciar sesión con Apple");
-    } finally {
-      setLoading(false);
     }
   };
 
-  return { handleLogin, handleGoogleLogin, handleAppleLogin, loading };
+  return { handleLogin, handleGoogleLogin, handleAppleLogin };
 }

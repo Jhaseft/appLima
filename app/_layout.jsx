@@ -8,6 +8,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 
 import { UserProvider } from "../components/ContextUser/UserContext";
+import { TcPuntosProvider } from "../components/TcPuntos/TcPuntosContext";
 import AnimatedSplash from "../components/AnimatedSplash";
 import LoadingOverlay from "../components/LoadingOverlay";
 import NetworkGuard from "../components/NetworkGuard/NetworkGuard";
@@ -40,16 +41,22 @@ export default function Layout() {
         <NetworkGuard>
           <VersionGuard>
             <AuthGuard>
-              <NotificationsGuard>
-                <Stack
-                  screenOptions={{
-                    // iOS muestra por defecto la flecha + el título de la
-                    // pantalla anterior (ej. "‹ Cambiar"). "minimal" deja
-                    // solo la flecha, igual que Android.
-                    headerBackButtonDisplayMode: "minimal",
-                  }}
-                />
-              </NotificationsGuard>
+              <TcPuntosProvider>
+                <NotificationsGuard>
+                  <Stack
+                    screenOptions={{
+                      // iOS muestra por defecto la flecha + el título de la
+                      // pantalla anterior (ej. "‹ Cambiar"). "minimal" deja
+                      // solo la flecha, igual que Android.
+                      headerBackButtonDisplayMode: "minimal",
+                      // Bloquea el gesto de deslizar para volver atrás en iOS
+                      // (evita salir de pantallas como Cambiar sin querer).
+                      gestureEnabled: false,
+                      fullScreenGestureEnabled: false,
+                    }}
+                  />
+                </NotificationsGuard>
+              </TcPuntosProvider>
             </AuthGuard>
           </VersionGuard>
         </NetworkGuard>
