@@ -16,6 +16,7 @@ import { useTcPuntos } from "../TcPuntos/TcPuntosContext";
 import DrawerMenu from "../UserDropdown/DrawerMenu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TcPuntoIcon from "../TcPuntos/TcPuntoIcon";
+import API_BASE_URL from "../api";
 
 // Rutas donde NO aparece el badge de TC Puntos
 const RUTAS_SIN_TC_PUNTOS = [
