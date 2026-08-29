@@ -5,7 +5,6 @@ import {
   View,
   Text,
   Image,
-  ActivityIndicator,
 } from "react-native";
 import miLogo from "../../assets/images/Logo_web_03.png";
 import { Stack, useRouter, usePathname } from "expo-router";
@@ -106,12 +105,10 @@ export default function HeaderUser({ title, subtitle, image }) {
                   hitSlop={8}
                 >
                   <TcPuntoIcon size={26} />
-                  {tcBalance !== null ? (
+                  {tcBalance !== null && (
                     <Text className="text-sm font-bold text-yellow-500">
                       {tcBalance}
                     </Text>
-                  ) : (
-                    <ActivityIndicator size="small" color="#eab308" />
                   )}
                 </Pressable>
               )

@@ -6,7 +6,6 @@ import {
   Linking,
   Platform,
   Image,
-  ActivityIndicator,
 } from "react-native";
 import Constants from "expo-constants";
 import { apiFetch } from "../services/apiFetch";
@@ -55,14 +54,7 @@ export default function VersionGuard({ children }) {
   };
 
   if (status === "checking") {
-    return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#000000" />
-        <Text className="mt-4 text-sm text-neutral-400 tracking-widest uppercase font-medium">
-          Cargando...
-        </Text>
-      </View>
-    );
+    return <View className="flex-1 bg-background" />;
   }
 
   if (status === "outdated") {
