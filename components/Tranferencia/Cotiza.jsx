@@ -265,7 +265,8 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
               await loadConfig();
               setRefreshing(false);
             }}
-            tintColor="#FACC15"
+             colors={["#fdc834"]} 
+            tintColor="#fdc834"
           />
         }
       >

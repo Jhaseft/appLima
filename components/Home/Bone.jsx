@@ -31,16 +31,10 @@ export default function Bone({ className = "", style }) {
     >
       {width > 0 && (
         <AnimatedGradient
-          colors={[
-            "transparent",
-            "rgba(250,204,21,0.18)",
-            "rgba(255,255,255,0.95)",
-            "rgba(250,204,21,0.18)",
-            "transparent",
-          ]}
-          locations={[0.2, 0.4, 0.5, 0.6, 0.8]}
+          colors={["transparent", "rgba(255,255,255,0.9)", "transparent"]}
+          locations={[0.35, 0.5, 0.65]}
           start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
+          end={{ x: 1, y: 1 }}
           style={{ position: "absolute", top: 0, bottom: 0, width, transform: [{ translateX }] }}
         />
       )}

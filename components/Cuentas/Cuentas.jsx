@@ -356,7 +356,7 @@ export default function Cuentas() {
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: FOOTER_CLEARANCE }} className="bg-white">
         <HeaderUser title="Mis Cuentas" subtitle="Gestiona tus cuentas y QR" />
 
-        {/* ── Información del usuario ── */}
+
         <View className="bg-black/90 p-5 rounded-xl mb-6">
           <Text className="font-bold text-center text-lg mb-4 text-white">Información del Usuario</Text>
           <View className="flex-row flex-wrap">
@@ -381,7 +381,7 @@ export default function Cuentas() {
           </View>
         </View>
 
-        {/* ── Selector de tipo de cuenta ── */}
+     
         <View className="flex-row bg-gray-100 rounded-2xl p-1 mb-6">
           <TouchableOpacity
             className={`flex-1 py-3 rounded-xl items-center ${tipoVista === "bank" ? "bg-black" : ""}`}
@@ -401,7 +401,7 @@ export default function Cuentas() {
           </TouchableOpacity>
         </View>
 
-        {/* ── Contenido según tipo ── */}
+       
         {tipoVista === "bank" ? (
           <>
             {renderCuentas(cuentasOrigen, cuentaOrigen, setCuentaOrigen, "origin")}
@@ -417,7 +417,7 @@ export default function Cuentas() {
           </>
         )}
 
-        {/* ── Modales bancarios ── */}
+    
         {tipoAgregar === "origin" ? (
           <ModalCuentaBancaria
             isOpen={openModal}
@@ -447,7 +447,7 @@ export default function Cuentas() {
           />
         )}
 
-        {/* ── Modal QR ── */}
+    
         <ModalCuentaQR
           isOpen={openModalQR}
           onClose={() => setOpenModalQR(false)}

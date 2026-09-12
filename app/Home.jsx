@@ -1,4 +1,4 @@
-import { View, Text, ScrollView,RefreshControl } from "react-native";
+import { View, Text, ScrollView, RefreshControl } from "react-native";
 import FooterLayout, { FOOTER_CLEARANCE } from "../components/FooterLayout/FooterLayout";
 import HeaderUser from "../components/UserDropdown/HeaderUser";
 import Botons from "../components/Home/Botons";
@@ -30,24 +30,26 @@ export default function Home() {
               await refresh();
               await resumen.reload();
               await banners.reload();
+
               setRefreshing(false);
             }}
-            tintColor="#FACC15"
+            colors={["#fdc834"]} 
+            tintColor="#fdc834"
           />
         }
       >
-        <HeaderUser image />
-        <BannerCarousel banners={banners.banners} loading={refreshing} />
-        <View className="my-7">
-          <Text className="text-2xl font-lm-bold text-text">
-            Bienvenido(a) {user?.first_name || "Usuario"}
-          </Text>
-        </View>
-        <StatsCarousel resumen={resumen.resumen} loading={refreshing} />
-        <Botons />
-        <GraficoLineas data={data} loading={refreshing} />
-        <Horarios />
-      </ScrollView>
+      <HeaderUser image />
+      <BannerCarousel banners={banners.banners} loading={refreshing} />
+      <View className="my-7">
+        <Text className="text-2xl font-lm-bold text-text">
+          Bienvenido(a) {user?.first_name || "Usuario"}
+        </Text>
+      </View>
+      <StatsCarousel resumen={resumen.resumen} loading={refreshing} />
+      <Botons />
+      <GraficoLineas data={data} loading={refreshing} />
+      <Horarios />
+    </ScrollView>
     </FooterLayout >
   );
 }
