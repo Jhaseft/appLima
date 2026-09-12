@@ -10,7 +10,7 @@ import { useUser } from "../components/ContextUser/UserContext";
 import { useState } from "react";
 import { useTipoCambio } from "../components/Home/hooks/useTipoCambio";
 import { useBanners } from "../components/Home/hooks/useBanners";
-import { useResumen } from "../components/Home/hooks/useResumen";
+import { useResumen } from "../components/Home/ResumenContext";
 export default function Home() {
   const { user } = useUser();
   const [refreshing, setRefreshing] = useState(false);
@@ -28,7 +28,7 @@ export default function Home() {
             onRefresh={async () => {
               setRefreshing(true);
               await refresh();
-              await resumen.reload();
+              await resumen.refrescar();
               await banners.reload();
 
               setRefreshing(false);

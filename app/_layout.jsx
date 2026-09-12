@@ -9,6 +9,7 @@ import { useFonts } from "expo-font";
 
 import { UserProvider } from "../components/ContextUser/UserContext";
 import { TcPuntosProvider } from "../components/TcPuntos/TcPuntosContext";
+import { ResumenProvider } from "../components/Home/ResumenContext";
 import AnimatedSplash from "../components/AnimatedSplash";
 import LoadingOverlay from "../components/LoadingOverlay";
 import NetworkGuard from "../components/NetworkGuard/NetworkGuard";
@@ -42,20 +43,22 @@ export default function Layout() {
           <VersionGuard>
             <AuthGuard>
               <TcPuntosProvider>
-                <NotificationsGuard>
-                  <Stack
-                    screenOptions={{
-                      // iOS muestra por defecto la flecha + el título de la
-                      // pantalla anterior (ej. "‹ Cambiar"). "minimal" deja
-                      // solo la flecha, igual que Android.
-                      headerBackButtonDisplayMode: "minimal",
-                      // Bloquea el gesto de deslizar para volver atrás en iOS
-                      // (evita salir de pantallas como Cambiar sin querer).
-                      gestureEnabled: false,
-                      fullScreenGestureEnabled: false,
-                    }}
-                  />
-                </NotificationsGuard>
+                <ResumenProvider>
+                  <NotificationsGuard>
+                    <Stack
+                      screenOptions={{
+                        // iOS muestra por defecto la flecha + el título de la
+                        // pantalla anterior (ej. "‹ Cambiar"). "minimal" deja
+                        // solo la flecha, igual que Android.
+                        headerBackButtonDisplayMode: "minimal",
+                        // Bloquea el gesto de deslizar para volver atrás en iOS
+                        // (evita salir de pantallas como Cambiar sin querer).
+                        gestureEnabled: false,
+                        fullScreenGestureEnabled: false,
+                      }}
+                    />
+                  </NotificationsGuard>
+                </ResumenProvider>
               </TcPuntosProvider>
             </AuthGuard>
           </VersionGuard>

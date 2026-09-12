@@ -13,6 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { X } from "lucide-react-native";
 import API_BASE_URL from "../api";
+import { useResumen } from "../Home/ResumenContext";
 
 const MAX_COMPROBANTES = 5;
 
@@ -22,6 +23,7 @@ export default function Finalizar({ onBack, operacion, setOperacion }) {
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState(null);
   const router = useRouter();
+  const { refrescar: refrescarResumen } = useResumen();
 
   useEffect(() => {
     AsyncStorage.getItem("token").then(setToken);
@@ -130,6 +132,7 @@ export default function Finalizar({ onBack, operacion, setOperacion }) {
       }
 
       setLoading(false);
+      refrescarResumen();
       Alert.alert(
         "Operación Registrada",
         `Tu operación fue registrada correctamente.\nN° de operación: ${data.transfer_number}`,
