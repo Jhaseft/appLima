@@ -3,8 +3,6 @@ import { Animated, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "../../theme/colors";
 
-const AnimatedGradient = Animated.createAnimatedComponent(LinearGradient);
-
 export default function Bone({ className = "", style }) {
   const [width, setWidth] = useState(0);
   const shift = useRef(new Animated.Value(0)).current;
@@ -30,13 +28,17 @@ export default function Bone({ className = "", style }) {
       style={[{ backgroundColor: colors.border }, style]}
     >
       {width > 0 && (
-        <AnimatedGradient
-          colors={["transparent", "rgba(255,255,255,0.9)", "transparent"]}
-          locations={[0.35, 0.5, 0.65]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+        <Animated.View
           style={{ position: "absolute", top: 0, bottom: 0, width, transform: [{ translateX }] }}
-        />
+        >
+          <LinearGradient
+            colors={["transparent", "rgba(255,255,255,0.9)", "transparent"]}
+            locations={[0.35, 0.5, 0.65]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ flex: 1 }}
+          />
+        </Animated.View>
       )}
     </View>
   );

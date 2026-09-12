@@ -30,7 +30,6 @@ export default function Home() {
               await refresh();
               await resumen.refrescar();
               await banners.reload();
-
               setRefreshing(false);
             }}
             colors={["#fdc834"]} 

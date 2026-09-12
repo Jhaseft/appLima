@@ -72,12 +72,12 @@ export default function HeaderUser({ title, subtitle, image }) {
                 />
               ) : (
                 <>
-                  <Text className="text-black text-2xl font-bold">
+                  <Text className="text-black text-2xl font-lm-bold">
                     {loading ? "Cargando..." : title}
                   </Text>
 
                   {!!subtitle && (
-                    <Text className="text-yellow-500 text-xs font-semibold">
+                    <Text className="text-yellow-500 text-xs font-lm-medium">
                       {subtitle}
                     </Text>
                   )}
@@ -107,7 +107,7 @@ export default function HeaderUser({ title, subtitle, image }) {
                 >
                   <TcPuntoIcon size={26} />
                   {tcBalance !== null && (
-                    <Text className="text-sm font-bold text-yellow-500">
+                    <Text className="text-sm font-lm-bold text-yellow-500">
                       {tcBalance}
                     </Text>
                   )}

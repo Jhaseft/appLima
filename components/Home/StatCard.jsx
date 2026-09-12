@@ -13,7 +13,7 @@ export default function StatCard({ label, value, prefix = "", Icon, width }) {
             {prefix}{value}
           </Text>
         </View>
-        <View className="w-12 h-12 rounded-2xl bg-primary-light items-center justify-center">
+        <View className="w-12 h-12 rounded-2xl items-center justify-center">
           <Icon size={22} color={colors.primaryDark} />
         </View>
       </View>
