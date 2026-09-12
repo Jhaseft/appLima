@@ -4,16 +4,23 @@ import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import API_BASE_URL from "../components/api";
 
+export const NOTIF_PREF_KEY = "pref_notifications";
+export const PUSH_TOKEN_KEY = "push_token";
+
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
+  handleNotification: async () => {
+    const enabled = (await AsyncStorage.getItem(NOTIF_PREF_KEY)) !== "0";
+    return {
+      shouldShowAlert: enabled,
+      shouldPlaySound: enabled,
+      shouldSetBadge: false,
+    };
+  },
 });
 
 export async function registerForPushNotifications() {
   if (!Device.isDevice) return null;
+  if ((await AsyncStorage.getItem(NOTIF_PREF_KEY)) === "0") return null;
 
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {
@@ -40,14 +47,27 @@ export async function registerForPushNotifications() {
     })
   ).data;
 
+  await AsyncStorage.multiSet([
+    [NOTIF_PREF_KEY, "1"],
+    [PUSH_TOKEN_KEY, token],
+  ]);
   await savePushToken(token);
   return token;
+}
+
+export async function disablePushNotifications() {
+  await AsyncStorage.setItem(NOTIF_PREF_KEY, "0");
+  const token = await AsyncStorage.getItem(PUSH_TOKEN_KEY);
+  if (token) {
+    await deletePushToken(token);
+    await AsyncStorage.removeItem(PUSH_TOKEN_KEY);
+  }
 }
 
 async function savePushToken(token) {
   try {
     const authToken = await AsyncStorage.getItem("token");
-    const res = await fetch(`${API_BASE_URL}/api/push-tokens`, {
+    await fetch(`${API_BASE_URL}/api/push-tokens`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -56,8 +76,24 @@ async function savePushToken(token) {
       },
       body: JSON.stringify({ token }),
     });
-    const data = await res.json();
   } catch (e) {
     console.log("❌ Error guardando token:", e.message);
+  }
+}
+
+async function deletePushToken(token) {
+  try {
+    const authToken = await AsyncStorage.getItem("token");
+    await fetch(`${API_BASE_URL}/api/push-tokens`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({ token }),
+    });
+  } catch (e) {
+    console.log("❌ Error eliminando token:", e.message);
   }
 }

@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Pressable,
   Alert,
   View,
   Text,
   Image,
+  Platform,
 } from "react-native";
+import { colors } from "../../theme/colors";
 import miLogo from "../../assets/images/Logo_web_03.png";
 import { Stack, useRouter, usePathname } from "expo-router";
 
@@ -26,6 +28,7 @@ const RUTAS_SIN_TC_PUNTOS = [
   "/TransfersHistory",
   "/Politicas",
   "/PreguntasFrecuentes",
+  "/Idioma",
 ];
 
 export default function HeaderUser({ title, subtitle, image }) {
@@ -33,10 +36,26 @@ export default function HeaderUser({ title, subtitle, image }) {
   const { balance: tcBalance } = useTcPuntos();
 
   const [drawerVisible, setDrawerVisible] = useState(false);
+  const [origin, setOrigin] = useState(null);
+  const iconRef = useRef(null);
 
   const router = useRouter();
   const pathname = usePathname();
   const mostrarTcPuntos = !RUTAS_SIN_TC_PUNTOS.includes(pathname);
+
+  const CY_DIVISOR = Platform.OS === "ios" ? 2 : 0.64;
+
+  const openMenu = () => {
+    const node = iconRef.current;
+    if (node?.measureInWindow) {
+      node.measureInWindow((x, y, w, h) => {
+        setOrigin({ cx: x + w / 2, cy: y + h / CY_DIVISOR });
+        setDrawerVisible(true);
+      });
+    } else {
+      setDrawerVisible(true);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -87,14 +106,16 @@ export default function HeaderUser({ title, subtitle, image }) {
           ),
 
           headerTitleAlign: "center",
-
+ 
           headerLeft: () => (
-            <Pressable
-              onPress={() => setDrawerVisible(true)}
-              className="ml-[5px]"
-              hitSlop={8}
-            >
-              <UserRoundCog size={30} color="#000" />
+            <Pressable onPress={openMenu} className="ml-[5px]" hitSlop={8}>
+              <View
+                ref={iconRef}
+                collapsable={false}
+                style={{ opacity: drawerVisible ? 0 : 1 }}
+              >
+                <UserRoundCog size={30} color={colors.text} />
+              </View>
             </Pressable>
           ),
 
@@ -123,6 +144,7 @@ export default function HeaderUser({ title, subtitle, image }) {
         user={user}
         onLogout={handleLogout}
         router={router}
+        origin={origin}
       />
     </>
   );

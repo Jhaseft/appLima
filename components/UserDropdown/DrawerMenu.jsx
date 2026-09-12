@@ -1,205 +1,177 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
   Pressable,
   Modal,
-  TouchableOpacity,
   Animated,
-  Dimensions,
-  ScrollView,
   Linking,
 } from "react-native";
 import Constants from "expo-constants";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePathname } from "expo-router";
-import {
-  House,
-  CreditCard,
-  RefreshCcw,
-  MessageCircle,
-  Coins,
-  FileText,
-  HelpCircle,
-  LogOut,
-  ClipboardList,
-  UserCircle,
-} from "lucide-react-native";
+import { ArrowLeft, UserCircle, LogOut, Smartphone, UserRoundCog, Bell, Moon, Languages } from "lucide-react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { colors } from "../../theme/colors";
+import { NAV_ITEMS, INFO_ITEMS, REDES } from "./data/menuItems";
+import MenuRow from "./MenuRow";
+import MenuToggleRow from "./MenuToggleRow";
+import SectionTitle from "./SectionTitle";
+import ProfileHeader from "./ProfileHeader";
+import CompletarBadge from "./CompletarBadge";
+import { usePreferences } from "./hooks/usePreferences";
 
-const DRAWER_WIDTH = Dimensions.get("window").width * 0.75;
+const AV = 82;
+const FLY = 54;
+const HEADER_BAR = 56;
 
-const NAV_ITEMS = [
-  { label: "Inicio", icon: House, route: "/Home" },
-  { label: "Cuentas", icon: CreditCard, route: "/Cuentas" },
-  { label: "Cambiar", icon: RefreshCcw, route: "/Cambiar" },
-  { label: "Chat", icon: MessageCircle, route: "/Chat" },
-  { label: "TcPuntos", icon: Coins, route: "/TcPuntos" },
-  { label: "Ver Operaciones", icon: ClipboardList, route: "/TransfersHistory" },
-];
-
-const INFO_ITEMS = [
-  { label: "Políticas", icon: FileText, route: "/Politicas" },
-  { label: "Preguntas frecuentes", icon: HelpCircle, route: "/PreguntasFrecuentes" },
-];
-
-const REDES = [
-  { icon: "instagram", color: "#E1306C", url: "https://www.instagram.com/transfercash.pe/" },
-  { icon: "facebook", color: "#1877F2", url: "https://www.facebook.com/people/TransferCash/61577711887086/" },
-  { icon: "tiktok", color: "#010101", url: "https://www.tiktok.com/@transfercash.pe?_r=1&_t=ZS-94y1kvv5wzU" },
-];
-
-function Avatar({ user }) {
-  const initials = user
-    ? `${user.first_name?.[0] ?? ""}${user.last_name?.[0] ?? ""}`.toUpperCase()
-    : "?";
-  return (
-    <View className="w-14 h-14 rounded-full bg-yellow-400 items-center justify-center mb-3 border-2 border-black">
-      <Text className="text-black text-xl font-bold">{initials}</Text>
-    </View>
-  );
-}
-
-function Divider() {
-  return <View className="h-px bg-gray-200 my-2 mx-4" />;
-}
-
-function NavItem({ label, icon: Icon, route, active, onPress }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      className={`flex-row items-center px-5 py-3 mx-2 rounded-xl mb-1 ${active ? "bg-yellow-400" : ""
-        }`}
-    >
-      <Icon size={20} color={active ? "#000" : "#374151"} />
-      <Text
-        className={`ml-3 text-base font-medium ${active ? "text-black font-bold" : "text-gray-700"
-          }`}
-      >
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
-
-export default function DrawerMenu({ visible, onClose, user, onLogout, router }) {
+export default function DrawerMenu({ visible, onClose, user, onLogout, router, origin }) {
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
-  const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
+  const { notifications, toggleNotifications, darkMode, setDarkMode } = usePreferences();
+
+  const t = useRef(new Animated.Value(0)).current;
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const [render, setRender] = useState(false);
+  const [settled, setSettled] = useState(false);
 
   useEffect(() => {
     if (visible) {
-      Animated.spring(translateX, {
-        toValue: 0,
+      setRender(true);
+      setSettled(false);
+      scrollY.setValue(0);
+      t.setValue(0);
+      Animated.spring(t, {
+        toValue: 1,
         useNativeDriver: true,
-        tension: 80,
-        friction: 12,
-      }).start();
-    } else {
-      Animated.timing(translateX, {
-        toValue: -DRAWER_WIDTH,
-        duration: 220,
-        useNativeDriver: true,
-      }).start();
+        tension: 65,
+        friction: 11,
+      }).start(({ finished }) => finished && setSettled(true));
     }
   }, [visible]);
 
-  const navigate = (route) => {
-    onClose();
-    if (route !== pathname) {
-      setTimeout(() => router.replace(route), 100);
-    }
+  const runClose = (after) => {
+    setSettled(false);
+    Animated.timing(t, { toValue: 0, duration: 260, useNativeDriver: true }).start(() => {
+      setRender(false);
+      onClose();
+      after && after();
+    });
   };
 
+  const navigate = (route) => {
+    if (route === pathname) return runClose();
+    runClose(() => setTimeout(() => router.replace(route), 40));
+  };
+
+  const targetCX = 18.5 + AV / 2;
+  const targetCY = insets.top + HEADER_BAR + 8 + AV / 2;
+  const originCX = origin?.cx ?? 25;
+  const originCY = origin?.cy ?? insets.top + 28;
+
+  const flyX = t.interpolate({ inputRange: [0, 1], outputRange: [originCX - FLY / 2, targetCX - FLY / 2] });
+  const flyY = t.interpolate({ inputRange: [0, 1], outputRange: [originCY - FLY / 2, targetCY - FLY / 2] });
+  const flyScale = t.interpolate({ inputRange: [0, 1], outputRange: [30 / FLY, 1] });
+
+  const compactName = scrollY.interpolate({
+    inputRange: [50, 100],
+    outputRange: [0, 1],
+    extrapolate: "clamp",
+  });
+
+  const nombre = user ? `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim() : "";
+  const needsProfile = !!user?.needs_profile;
+
   return (
-    <Modal
-      transparent
-      visible={visible} 
-      animationType="none"
-      onRequestClose={onClose}
-    >
-      <View style={{ flex: 1, flexDirection: "row" }}>
-        <Animated.View
-          style={{
-            width: DRAWER_WIDTH,
-            transform: [{ translateX }],
-            backgroundColor: "white",
-            shadowColor: "#000",
-            shadowOpacity: 0.25,
-            shadowRadius: 12,
-            elevation: 8,
-            paddingTop: insets.top,
-            paddingBottom: insets.bottom,
-          }}
-        >
-
-          <View className="px-5 pt-5 pb-2 bg-white">
-            {user ? (
-              <>
-
-                <View className="flex-row items-center">
-                  <Avatar user={user} />
-
-                  <View className="ml-4 flex-1 mb-3">
-                    <Text className="text-black text-lg font-bold">
-                      {user.first_name} {user.last_name}
-                    </Text>
-
-                    <Text className="text-yellow-500 text-sm font-medium mt-0.5">
-                      {user.email}
-                    </Text>
-                  </View>
-                </View>
-
-                <Pressable
-                  onPress={() => navigate("/MiCuenta")}
-                  className="mt-2 flex-row items-center justify-center rounded-2xl border-2 border-black py-2.5 px-4  "
-                >
-                  <UserCircle size={17} color="black" />
-
-                  <Text className="ml-2 text-black font-bold text-sm">
-                    Ver mi cuenta
-                  </Text>
-                </Pressable>
-              </>
-            ) : (
-              <Text className="text-gray-400">
-                Cargando...
-              </Text>
-            )}
+    <Modal transparent visible={render} animationType="none" onRequestClose={() => runClose()}>
+      <View style={{ flex: 1 }}>
+        <Animated.View style={{ flex: 1, opacity: t }} className="bg-background">
+          <View
+            style={{ paddingTop: insets.top, height: insets.top + HEADER_BAR }}
+            className="absolute top-0 left-0 right-0 z-10 flex-row items-center px-4 bg-background border-b border-border"
+          >
+            <Pressable onPress={() => runClose()} hitSlop={10} className="pr-3">
+              <ArrowLeft size={26} color={colors.text} />
+            </Pressable>
+            <Animated.Text
+              style={{ opacity: compactName }}
+              numberOfLines={1}
+              className="flex-1 text-text text-lg font-lm-bold"
+            >
+              {nombre}
+            </Animated.Text>
           </View>
 
-          <Divider />
-
-
-          <ScrollView
+          <Animated.ScrollView
             showsVerticalScrollIndicator={false}
-            style={{ flex: 1 }}
-            contentContainerStyle={{ paddingBottom: 4 }}
+            scrollEventThrottle={16}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              { useNativeDriver: true }
+            )}
+            contentContainerStyle={{
+              paddingTop: insets.top + HEADER_BAR,
+              paddingBottom: insets.bottom + 12,
+            }}
           >
+            <ProfileHeader user={user} scrollY={scrollY} settled={settled} />
+
+            <SectionTitle title="Mi cuenta" />
+            <MenuRow
+              label="Detalles de perfil"
+              icon={UserCircle}
+              danger={needsProfile}
+              trailing={needsProfile ? <CompletarBadge /> : null}
+              onPress={() => navigate(needsProfile ? "/CompleteProfile" : "/MiCuenta")}
+            />
+
+            <SectionTitle title="Navegación" />
             {NAV_ITEMS.map((item) => (
-              <NavItem
+              <MenuRow
                 key={item.route}
-                {...item}
-                active={pathname === item.route}
+                label={item.label}
+                icon={item.icon}
+                svgIcon={item.svg}
                 onPress={() => navigate(item.route)}
               />
             ))}
 
-            <Divider />
-
+            <SectionTitle title="Información y ayuda" />
             {INFO_ITEMS.map((item) => (
-              <NavItem
+              <MenuRow
                 key={item.route}
-                {...item}
-                active={pathname === item.route}
+                label={item.label}
+                icon={item.icon}
                 onPress={() => navigate(item.route)}
               />
             ))}
-          </ScrollView>
 
+            <SectionTitle title="Preferencias" />
+            <MenuToggleRow
+              label="Notificaciones"
+              icon={Bell}
+              value={notifications}
+              onValueChange={toggleNotifications}
+            />
+            <MenuToggleRow
+              label="Modo oscuro"
+              icon={Moon}
+              value={darkMode}
+              onValueChange={setDarkMode}
+            />
+            <MenuRow
+              label="Idioma"
+              icon={Languages}
+              onPress={() => navigate("/Idioma")}
+            />
 
-          <View>
+            <SectionTitle title="Sesión" />
+            <MenuRow
+              label="Cerrar sesión"
+              icon={LogOut}
+              danger
+              onPress={() => runClose(() => setTimeout(onLogout, 150))}
+            />
 
             <View className="flex-row justify-center gap-5 py-7">
               {REDES.map((red) => (
@@ -214,32 +186,30 @@ export default function DrawerMenu({ visible, onClose, user, onLogout, router })
               ))}
             </View>
 
-            <Divider />
-                 <Text className="text-center text-gray-400 text-xs mb-3">
-              v{Constants.expoConfig?.version ?? "—"}
-            </Text>
-            <Pressable
-              onPress={() => {
-                onClose();
-                setTimeout(onLogout, 150);
-              }}
-              className="flex-row items-center px-5 py-3 mx-2 mb-2 rounded-xl border border-black"
-            >
-              <LogOut size={20} color="#000" />
-              <Text className="ml-3 text-black font-bold text-base">
-                Cerrar sesión
+            <View className="flex-row items-center justify-center pb-4">
+              <Text className="text-text-muted text-xs font-lm-medium mr-2">
+                Versión: {Constants.expoConfig?.version ?? "—"}
               </Text>
-            </Pressable>
-
-          </View>
+              <Smartphone size={14} color={colors.textMuted} />
+            </View>
+          </Animated.ScrollView>
         </Animated.View>
 
-  
-        <TouchableOpacity
-          style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.4)" }}
-          activeOpacity={1}
-          onPress={onClose}
-        />
+        {!settled && (
+          <Animated.View
+            pointerEvents="none"
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              width: FLY,
+              height: FLY,
+              transform: [{ translateX: flyX }, { translateY: flyY }, { scale: flyScale }],
+            }}
+          >
+            <UserRoundCog size={FLY} color={colors.text} />
+          </Animated.View>
+        )}
       </View>
     </Modal>
   );
