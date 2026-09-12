@@ -1,53 +1,19 @@
-import { useEffect, useState } from "react";
-import { View, Text, ActivityIndicator } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View, Text } from "react-native";
 import Svg, { Line, Circle, Text as SvgText, Rect } from "react-native-svg";
-import API_BASE_URL from "../api";
-export default function GraficoLineas() {
-  const [data, setData] = useState(null);
+import { colors } from "../../theme/colors";
+import GraficoSkeleton from "./GraficoSkeleton";
 
-  const loadData = async () => {
-    try {
-      const cached = await AsyncStorage.getItem("tipoCambio");
-      const lastUpdate = await AsyncStorage.getItem("tipoCambioUpdate");
 
-      const now = Date.now();
-      const fiveMinutes = 5 * 60 * 1000;
+const SVG_FONT = "LemonMilkPro";
+const chartHeight = 180;
+const chartWidth = 320;
+const padding = 50;
+const ticks = 15;
 
-      if (cached && lastUpdate && now - parseInt(lastUpdate) < fiveMinutes) {
-        // Usar lo guardado
-        setData(JSON.parse(cached));
-      } else {
-        // Pedir a la API y guardar
-        const res = await fetch(`${API_BASE_URL}/api/tipo-cambio/historial`);
-        const json = await res.json();
-        const sliced = json.slice(-4); // últimos 4
-
-        setData(sliced);
-        await AsyncStorage.setItem("tipoCambio", JSON.stringify(sliced));
-        await AsyncStorage.setItem("tipoCambioUpdate", now.toString());
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  if (!data) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#3B82F6" />
-      </View>
-    );
+export default function GraficoLineas({ data, loading }) {
+  if (loading || !data || data.length === 0) {
+    return <GraficoSkeleton />;
   }
-
-  // === Configuración de gráfico ===
-  const chartHeight = 180;
-  const chartWidth = 320;
-  const padding = 50;
 
   const maxValue = Math.max(
     ...data.map((d) => Math.max(parseFloat(d.compra), parseFloat(d.venta)))
@@ -63,7 +29,6 @@ export default function GraficoLineas() {
 
   const spacingX = (chartWidth - padding * 1.5) / (data.length - 1);
 
-  const ticks = 5;
   const tickValues = Array.from({ length: ticks }, (_, i) =>
     minValue + ((maxValue - minValue) / (ticks - 1)) * i
   );
@@ -72,47 +37,44 @@ export default function GraficoLineas() {
   const latestVenta = data[data.length - 1].venta;
 
   return (
-    <View className="mt-8 bg-white rounded-3xl border border-gray-100 p-4 items-center">
-
-
-
+    <View className="mt-8 bg-background rounded-3xl border border-border p-4 items-center">
       <View className="flex-row w-full mt-4 gap-3">
-        <View className="flex-1 items-center bg-blue-50 py-3 rounded-2xl">
-          <Text className="text-gray-400 text-xs mb-1">Compra actual</Text>
-          <Text className="text-blue-600 font-bold text-lg">{latestCompra}</Text>
+        <View className="flex-1 items-center bg-surface py-3 rounded-2xl">
+          <Text className="text-text-muted text-xs mb-1 font-sans">Compra actual</Text>
+          <Text className="text-text font-lm-bold text-lg">{latestCompra}</Text>
         </View>
-        <View className="flex-1 items-center bg-yellow-50 py-3 rounded-2xl">
-          <Text className="text-gray-400 text-xs mb-1">Venta actual</Text>
-          <Text className="text-yellow-600 font-bold text-lg">{latestVenta}</Text>
+        <View className="flex-1 items-center bg-primary-light py-3 rounded-2xl">
+          <Text className="text-text-muted text-xs mb-1 font-sans">Venta actual</Text>
+          <Text className="text-primary-dark font-lm-bold text-lg">{latestVenta}</Text>
         </View>
       </View>
 
       <View className="flex-row justify-center gap-6 mt-3">
         <View className="flex-row items-center gap-2">
-          <View className="w-3 h-3 bg-blue-500 rounded-full" />
-          <Text className="text-gray-600 text-sm">Compra</Text>
+          <View className="w-3 h-3 bg-text rounded-full" />
+          <Text className="text-text-muted text-sm font-sans">Compra</Text>
         </View>
         <View className="flex-row items-center gap-2">
-          <View className="w-3 h-3 bg-yellow-400 rounded-full" />
-          <Text className="text-gray-600 text-sm">Venta</Text>
+          <View className="w-3 h-3 bg-primary rounded-full" />
+          <Text className="text-text-muted text-sm font-sans">Venta</Text>
         </View>
       </View>
 
-      <View className="w-full mb-4">
-        <Text className="text-xs text-gray-400 font-semibold uppercase mb-1">Historial</Text>
-        <Text className="text-lg font-bold text-gray-900">Compra vs Venta</Text>
+      <View className="w-full mb-4 mt-2">
+        <Text className="text-xs text-text-muted font-lm-medium uppercase mb-1">Historial</Text>
+        <Text className="text-lg font-lm-bold text-text">Compra vs Venta</Text>
       </View>
+
       <Svg height={chartHeight + padding + 30} width={chartWidth}>
         <Rect
           x={0}
           y={0}
           width={chartWidth}
           height={chartHeight + padding}
-          fill="#F3F4F6"
+          fill={colors.surface}
           rx={10}
         />
 
-        {/* Líneas de referencia Y */}
         {tickValues.map((val, i) => {
           const y = scaleY(val);
           return [
@@ -122,7 +84,7 @@ export default function GraficoLineas() {
               y1={y}
               x2={chartWidth - 10}
               y2={y}
-              stroke="#D1D5DB"
+              stroke={colors.border}
               strokeWidth="1"
             />,
             <SvgText
@@ -130,15 +92,15 @@ export default function GraficoLineas() {
               x={padding - 5}
               y={y + 4}
               fontSize="10"
-              fill="#374151"
+              fontFamily={SVG_FONT}
+              fill={colors.textMuted}
               textAnchor="end"
             >
               {val.toFixed(2)}
-            </SvgText>
+            </SvgText>,
           ];
         })}
 
-        {/* Líneas Compra */}
         {data.map((item, index) => {
           if (index === 0) return null;
           const x1 = padding + (index - 1) * spacingX;
@@ -152,14 +114,13 @@ export default function GraficoLineas() {
               y1={y1}
               x2={x2}
               y2={y2}
-              stroke="#3B82F6"
+              stroke={colors.text}
               strokeWidth="2"
               strokeLinecap="round"
             />
           );
         })}
 
-        {/* Líneas Venta */}
         {data.map((item, index) => {
           if (index === 0) return null;
           const x1 = padding + (index - 1) * spacingX;
@@ -173,28 +134,25 @@ export default function GraficoLineas() {
               y1={y1}
               x2={x2}
               y2={y2}
-              stroke="#F59E0B"
+              stroke={colors.primary}
               strokeWidth="2"
               strokeLinecap="round"
             />
           );
         })}
 
-        {/* Puntos Compra */}
         {data.map((item, index) => {
           const x = padding + index * spacingX;
           const y = scaleY(parseFloat(item.compra));
-          return <Circle key={`c-${index}`} cx={x} cy={y} r={4} fill="#3B82F6" />;
+          return <Circle key={`c-${index}`} cx={x} cy={y} r={4} fill={colors.text} />;
         })}
 
-        {/* Puntos Venta */}
         {data.map((item, index) => {
           const x = padding + index * spacingX;
           const y = scaleY(parseFloat(item.venta));
-          return <Circle key={`v-${index}`} cx={x} cy={y} r={4} fill="#F59E0B" />;
+          return <Circle key={`v-${index}`} cx={x} cy={y} r={4} fill={colors.primary} />;
         })}
 
-        {/* Fechas */}
         {data.map((item, index) => {
           const x = padding + index * spacingX;
           return (
@@ -203,7 +161,8 @@ export default function GraficoLineas() {
               x={x}
               y={chartHeight + padding / 2 + 15}
               fontSize="10"
-              fill="#374151"
+              fontFamily={SVG_FONT}
+              fill={colors.textMuted}
               textAnchor="middle"
             >
               {item.fecha_actualizacion.split(" ")[0]}
@@ -211,8 +170,6 @@ export default function GraficoLineas() {
           );
         })}
       </Svg>
-
-
     </View>
   );
 }

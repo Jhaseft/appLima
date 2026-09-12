@@ -9,6 +9,7 @@ module.exports = {
         primary: { DEFAULT: "#FACC15", light: "#FEF9C3", accent: "#EAB308", dark: "#CA8A04" },
         background: "#FFFFFF",
         surface: "#F9FAFB",
+        border: "#E5E7EB",
         text: { DEFAULT: "#111827", muted: "#6B7280" },
         success: "#16A34A",
         danger: "#DC2626",

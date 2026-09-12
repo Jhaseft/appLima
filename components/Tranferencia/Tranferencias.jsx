@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ScrollView, Text, BackHandler } from "react-native";
-import FooterLayout from "../FooterLayout/FooterLayout";
+import FooterLayout, { FOOTER_CLEARANCE } from "../FooterLayout/FooterLayout";
 import HeaderUser from "../UserDropdown/HeaderUser";
 
 import ProgressBar from "./ProgressBar";
@@ -43,7 +43,7 @@ export default function Cambiar() {
     <FooterLayout>
       <ScrollView
         className="flex-1 bg-white px-6"
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ paddingBottom: FOOTER_CLEARANCE }}
       >
         <HeaderUser title="Nueva Operación" subtitle="Realiza transferencias de forma rápida y segura" />
 

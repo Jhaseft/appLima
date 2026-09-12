@@ -6,20 +6,20 @@ import Cambios from "../../assets/HomeIcons/04.svg";
 export const SLIDES = [
   {
     id: "seguridad",
-    title: "Cambios seguros",
-    text: "Protegemos cada operación de principio a fin.",
+    title: "REALIZA TUS CAMBIOS ",
+    text: "El tipo de cambio en Tiempo Real lo ves en TRANSFERCASH.",
     Svg: Telefono,
   },
   {
     id: "rapidez",
-    title: "Rápido de verdad",
-    text: "Tu dinero se transfiere en minutos, sin vueltas.",
+    title: "ASISTENCIA 24/7 PARA TI",
+    text: "Consultores y Asistentes Virtuales, te ayudan en todos tus pasos.",
     Svg: Soporte,
   },
   {
     id: "puntos",
-    title: "Gana TC Puntos",
-    text: "Acumula puntos en cada cambio y canjéalos por premios.",
+    title: "TODO A TU ALCANCE",
+    text: "Cambios, información, beneficios, premios y mucho mas.",
     Svg: Cambios,
   },
 ];

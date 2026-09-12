@@ -10,7 +10,7 @@ import {
    Alert
 } from "react-native";
 import { Plus, RefreshCw,Trash2 } from "lucide-react-native";
-import FooterLayout from "../FooterLayout/FooterLayout";
+import FooterLayout, { FOOTER_CLEARANCE } from "../FooterLayout/FooterLayout";
 import HeaderUser from "../UserDropdown/HeaderUser";
 import CuentaSelect from "../Cuentas/CuentasSelect";
 import InfoTooltip from "../Cuentas/InfoTooltip";
@@ -353,7 +353,7 @@ export default function Cuentas() {
 
   return (
     <FooterLayout>
-      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 60 }} className="bg-white">
+      <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: FOOTER_CLEARANCE }} className="bg-white">
         <HeaderUser title="Mis Cuentas" subtitle="Gestiona tus cuentas y QR" />
 
         {/* ── Información del usuario ── */}

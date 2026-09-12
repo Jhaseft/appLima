@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { View, Text, ScrollView, ActivityIndicator, RefreshControl } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import FooterLayout from "../FooterLayout/FooterLayout";
+import FooterLayout, { FOOTER_CLEARANCE } from "../FooterLayout/FooterLayout";
 import HeaderUser from "../UserDropdown/HeaderUser";
 import API_BASE_URL from "../api";
 
@@ -79,6 +79,7 @@ export default function HistorialScreen() {
       ) : (
         <ScrollView
           className="flex-1 bg-white"
+          contentContainerStyle={{ paddingBottom: FOOTER_CLEARANCE }}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#fdc834"]} tintColor="#fdc834" />

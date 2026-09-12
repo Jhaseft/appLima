@@ -7,6 +7,7 @@ export const colors = {
   primaryDark: "#CA8A04",
   background: "#FFFFFF",
   surface: "#F9FAFB",
+  border: "#E5E7EB",
   text: "#111827",
   textMuted: "#6B7280",
   success: "#16A34A",

@@ -9,7 +9,7 @@ import {
 import miLogo from "../../assets/images/Logo_web_03.png";
 import { Stack, useRouter, usePathname } from "expo-router";
 
-import { Menu } from "lucide-react-native";
+import { Menu,User,UserRoundCog   } from "lucide-react-native";
 import { apiFetch } from "../services/apiFetch";
 import { useUser } from "../ContextUser/UserContext";
 import { useTcPuntos } from "../TcPuntos/TcPuntosContext";
@@ -94,7 +94,7 @@ export default function HeaderUser({ title, subtitle, image }) {
               className="ml-[5px]"
               hitSlop={8}
             >
-              <Menu size={26} color="#000" />
+              <UserRoundCog size={30} color="#000" />
             </Pressable>
           ),
 

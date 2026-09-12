@@ -140,7 +140,7 @@ El resto de módulos (aún no migrados) conservan su `loading` local como antes.
 | Inicio (`app/index`) | ✅ hecho     |
 | Login                | ✅ hecho     |
 | Register             | ✅ hecho     |
-| Home                 | ⬜ pendiente |
+| Home                 | ✅ hecho     |
 | Cuentas              | ⬜ pendiente |
 | Transferencias       | ⬜ pendiente |
 | TcPuntos             | ⬜ pendiente |
@@ -153,7 +153,36 @@ Leyenda: ⬜ pendiente · 🟨 en progreso · ✅ hecho
 
 ---
 
-## 8. Notas técnicas
+## 8. Skeleton loading (carga)
+
+**Regla:** todo skeleton loading se construye a partir de `Bone`
+(`components/Home/Bone.jsx`). **Prohibido** crear placeholders sueltos con opacidad,
+`ActivityIndicator` como "esqueleto", ni animaciones propias por pantalla. Una sola
+pieza, un solo estilo.
+
+`Bone` es un bloque con **shimmer tipo "ventana de luz"**: una banda que barre en
+horizontal (blanco con halo `primary`) sobre base gris (`colors.border`), en bucle y con
+`useNativeDriver`. Recibe solo `className` (tamaño/redondeo) y `style` (medidas dinámicas).
+
+```jsx
+import Bone from "../Home/Bone"; // ajustar ruta relativa
+
+<Bone className="w-40 h-5 rounded-md" />
+<Bone className="rounded-3xl h-28" style={{ width: cardW }} />
+```
+
+Cómo armar el skeleton de un módulo nuevo:
+
+- Un componente `<Feature>Skeleton.jsx` que **solo** compone `Bone`s con la misma
+  silueta/medidas que la UI real (mismos alto/ancho/redondeo).
+- El componente presentacional decide: `if (loading || !data) return <FeatureSkeleton />`.
+- No cambiar la animación dentro del skeleton: si el shimmer debe mejorar, se toca
+  **`Bone`** y todos heredan. Ejemplos vivos: `GraficoSkeleton`, `StatsSkeleton`,
+  y el placeholder de `BannerCarousel`.
+
+---
+
+## 9. Notas técnicas
 
 - Rutas en `app/` con extensión `.jsx`; imports sin extensión (expo-router resuelve por nombre).
 - SVG como componentes: `react-native-svg-transformer` está configurado en `metro.config.js`.

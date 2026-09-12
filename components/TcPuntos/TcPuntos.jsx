@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { View, Text, ScrollView, ActivityIndicator, RefreshControl, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import FooterLayout from "../FooterLayout/FooterLayout";
+import FooterLayout, { FOOTER_CLEARANCE } from "../FooterLayout/FooterLayout";
 import HeaderUser from "../UserDropdown/HeaderUser";
 import TcPuntoIcon from "./TcPuntoIcon";
 import BalanceCard from "./BalanceCard";
@@ -94,6 +94,7 @@ export default function TcPuntos() {
 
       <ScrollView
         className="flex-1 bg-gray-50"
+        contentContainerStyle={{ paddingBottom: FOOTER_CLEARANCE }}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#fdc834"]} tintColor="#fdc834" />
