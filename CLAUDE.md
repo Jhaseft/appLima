@@ -82,7 +82,20 @@ components/<Feature>/
 - Cosas compartidas entre features viven en `components/` (raíz), `components/hooks/`
   o `components/services/` (ej. `useLoginHandlers`, `authApi`, `GoogleBoton`).
 
-Regla de tamaño: si un archivo pasa de ~120 líneas o mezcla fetch + UI, se parte.
+**Regla de oro — código corto siempre.** Odiamos el código largo. Si un `.jsx` se pasa de
+~120 líneas o mezcla lógica de negocio + UI, **de una** se vuelve orquestador: la lógica
+(estado, efectos, fetch, guardado) baja a `hooks/`, los datos a `services/`, y la UI se parte
+en subcomponentes pequeños y reutilizables. El `.jsx` solo compone.
+
+Esto aplica a **todo** JSX, no solo a las rutas:
+
+- **Modales** (`components/Modales/*`) también son orquestadores: su lógica vive en
+  `components/Modales/hooks/` (`useFormBancaria`, `useFormDestino`, `useGuardarQR`,
+  `useGuardarCuenta`, `useBancos`) y `components/Modales/services/` (`cuentasModalApi`). El
+  modal solo lee `const f = useForm...()` y pinta. Piezas repetidas → componente reutilizable
+  (ej. `ToggleSwitch`, `BankSelect`). Son "orquestadores" que dependen del orquestador padre
+  (ej. `app/(tabs)/Cuentas.jsx`), que les pasa `user` y callbacks (`onCuentaGuardada`).
+- Antes de escribir un componente nuevo, revisa si ya existe un hook/subcomponente que reusar.
 
 **Comentarios en JSX prohibidos.** Si algo necesita explicación, va en un comentario
 arriba de la función/hook, o se extrae a un subcomponente con nombre claro.
@@ -141,7 +154,7 @@ El resto de módulos (aún no migrados) conservan su `loading` local como antes.
 | Login                | ✅ hecho     |
 | Register             | ✅ hecho     |
 | Home                 | ✅ hecho     |
-| Cuentas              | ⬜ pendiente |
+| Cuentas              | ✅ hecho     |
 | Transferencias       | ⬜ pendiente |
 | TcPuntos             | ⬜ pendiente |
 | MiCuenta             | ⬜ pendiente |
@@ -182,9 +195,85 @@ Cómo armar el skeleton de un módulo nuevo:
 
 ---
 
-## 9. Notas técnicas
+## 9. Loading de mutaciones (crear / eliminar / actualizar)
+
+**Regla:** toda acción que **muta** datos (crear, eliminar, actualizar, subir) usa el
+overlay estándar `ActionOverlay` (`components/ActionOverlay.jsx`). **Prohibido** poner
+spinners por botón (`ActivityIndicator` dentro del botón) o estados de carga inline: eso
+provoca que se "activen" varios botones a la vez y da un feedback pobre. Una sola pieza.
+
+`ActionOverlay` es un **View absoluto (NO Modal)** con velo oscuro, spinner y mensaje, que
+**bloquea los toques** mientras dura la acción. **Importante:** no se usa `Modal` nativo para
+esto — apilar Modals en iOS deja una capa fantasma que bloquea todo el touch. Es distinto de:
+
+- `Bone` / skeleton → **lectura** de datos (carga inicial y pull-to-refresh). Ver sección 8.
+- `LoadingOverlay` global (Lottie) → solo **inicio / login / registro** vía `apiFetch`. Ver
+  sección 6.
+
+Dos formas de usarlo:
+
+- **A nivel de pantalla** (cubrir header + tabs): usar `feedback.withLoading(mensaje, task)`,
+  que monta el overlay desde la raíz (por encima del navegador). Ver sección 10.
+
+  ```jsx
+  await feedback.withLoading("Eliminando cuenta...", () => bancarias.eliminar(id));
+  ```
+
+- **Dentro de un Modal** (los overlays de raíz no tapan una ventana Modal nativa): montar
+  `ActionOverlay` como hijo del Modal y cubrirlo:
+
+  ```jsx
+  import ActionOverlay from "../ActionOverlay"; // ajustar ruta relativa
+  <ActionOverlay visible={loading} mensaje="Guardando cuenta..." />
+  ```
+
+Ejemplos vivos: borrado en `app/(tabs)/Cuentas.jsx` (`withLoading`) y el guardado de
+`ModalCuentaBancaria`, `ModalCuentaDestino`, `ModalCuentaQR` (`ActionOverlay` dentro del modal).
+
+---
+
+## 10. Feedback: mensajes y confirmaciones (nada de `Alert`)
+
+**Regla:** **prohibido** usar `Alert` de React Native. Todo mensaje (éxito / error / info)
+y toda confirmación usan el sistema único `useFeedback` (`components/Feedback/`), montado
+una vez en `app/_layout.jsx` con `<FeedbackProvider>`. Un solo modal (`FeedbackModal`) con
+tokens; cambiar el look = tocar `FeedbackModal` y todos heredan.
+
+```jsx
+import { useFeedback } from "../Feedback/FeedbackContext"; // ajustar ruta relativa
+const feedback = useFeedback();
+
+feedback.success("Cuenta guardada correctamente");
+feedback.error("No se pudo eliminar la cuenta");
+feedback.info("TransferCash estará disponible en varios idiomas.", { title: "Muy pronto" });
+
+// Confirmación: devuelve Promise<boolean>
+const ok = await feedback.confirm({
+  title: "Eliminar cuenta",
+  message: "¿Estás seguro de eliminar esta cuenta?",
+  confirmText: "Eliminar",
+  destructive: true,
+});
+if (ok) { /* ... */ }
+```
+
+- `success` / `error` / `info` reciben `(mensaje, { title })` y devuelven `Promise` (resuelve
+  al cerrar) — útil para navegar después: `await feedback.success(...); router.replace(...)`.
+- `confirm({ title, message, confirmText, cancelText, destructive })` → `Promise<boolean>`.
+- `withLoading(mensaje, task)` → corre `task()` mostrando el overlay de carga a pantalla
+  completa (sección 9). Ej.: `await feedback.withLoading("Eliminando...", () => api())`.
+- Se usa igual desde componentes, hooks (login/registro/preferencias) y handlers async.
+- No confundir con `ActionOverlay` (sección 9, carga de mutaciones) ni con skeletons
+  (sección 8, lectura). Feedback = resultado/decisión; overlay = progreso.
+
+---
+
+## 11. Notas técnicas
 
 - Rutas en `app/` con extensión `.jsx`; imports sin extensión (expo-router resuelve por nombre).
+- Modales tipo **hoja inferior**: usar `components/BottomSheet.jsx` (entra deslizando y se
+  cierra arrastrando el asa hacia abajo o tocando el velo). Contenido como hijo (un `ScrollView`
+  con `max-h-[...]`); overlays a pantalla completa (ej. `ActionOverlay`) via prop `overlay`.
 - SVG como componentes: `react-native-svg-transformer` está configurado en `metro.config.js`.
 - Imágenes en `assets/images/` (en uso) y `assets/unused/` (candidatas a borrar); ver `assets/README.md`.
 - Tras cambios en `tailwind.config.js`, `metro.config.js` o fuentes: reiniciar con `npx expo start -c`.

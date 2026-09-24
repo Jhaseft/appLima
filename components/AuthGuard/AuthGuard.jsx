@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
-import { BackHandler, Alert } from "react-native";
+import { BackHandler } from "react-native";
 import { useRouter, usePathname, useRootNavigationState } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFeedback } from "../Feedback/FeedbackContext";
 
 const PUBLIC_ROUTES = [
   "/",
@@ -14,6 +15,7 @@ export default function AuthGuard({ children }) {
   const router = useRouter();
   const pathname = usePathname();
   const navState = useRootNavigationState();
+  const feedback = useFeedback();
   const isRedirectingRef = useRef(false);
 
   // Redirige al inicio si la ruta es protegida y no hay token
@@ -45,16 +47,22 @@ export default function AuthGuard({ children }) {
         return true;
       }
 
-      Alert.alert("Salir", "¿Deseas salir de la aplicación?", [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Salir", onPress: () => BackHandler.exitApp() },
-      ]);
+      feedback
+        .confirm({
+          title: "Salir",
+          message: "¿Deseas salir de la aplicación?",
+          confirmText: "Salir",
+          destructive: true,
+        })
+        .then((ok) => {
+          if (ok) BackHandler.exitApp();
+        });
       return true;
     };
 
     const sub = BackHandler.addEventListener("hardwareBackPress", onBackPress);
     return () => sub.remove();
-  }, [pathname]);
+  }, [pathname, feedback]);
 
   return children;
 }

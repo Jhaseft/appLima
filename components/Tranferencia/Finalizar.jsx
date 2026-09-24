@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  Alert,
   ActivityIndicator,
   ScrollView,
 } from "react-native";
@@ -14,6 +13,7 @@ import { useRouter } from "expo-router";
 import { X } from "lucide-react-native";
 import API_BASE_URL from "../api";
 import { useResumen } from "../Home/ResumenContext";
+import { useFeedback } from "../Feedback/FeedbackContext";
 
 const MAX_COMPROBANTES = 5;
 
@@ -24,6 +24,7 @@ export default function Finalizar({ onBack, operacion, setOperacion }) {
   const [token, setToken] = useState(null);
   const router = useRouter();
   const { refrescar: refrescarResumen } = useResumen();
+  const feedback = useFeedback();
 
   useEffect(() => {
     AsyncStorage.getItem("token").then(setToken);
@@ -133,11 +134,11 @@ export default function Finalizar({ onBack, operacion, setOperacion }) {
 
       setLoading(false);
       refrescarResumen();
-      Alert.alert(
-        "Operación Registrada",
+      await feedback.success(
         `Tu operación fue registrada correctamente.\nN° de operación: ${data.transfer_number}`,
-        [{ text: "OK", onPress: () => router.replace("/TransfersHistory") }]
+        { title: "Operación Registrada" }
       );
+      router.replace("/TransfersHistory");
     } catch (err) {
       setError(`No se pudo enviar la transferencia porfavor intenta nuevamente si el problema persiste contacta al +591 63892482`);
       setLoading(false);

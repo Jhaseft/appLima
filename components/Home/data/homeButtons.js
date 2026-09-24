@@ -1,20 +1,23 @@
 import { CreditCard, RefreshCw, MessageCircle } from "lucide-react-native";
 import { colors } from "../../../theme/colors";
+import WhatsapIcon from "../../../assets/HomeIcons/AccesosRapidos/ico_whatsapp.svg";
+import CambioIcon from "../../../assets/navicons/cambio.svg";
+import TarjetaIcon from "../../../assets/navicons/tarjeta.svg";
 
 export const HOME_BUTTONS = [
   {
     label1: "Cuentas",
     label2: "Bancarias",
     route: "/Cuentas",
-    Icon: CreditCard,
-    bg: "bg-surface",
+    Icon: TarjetaIcon,
+    bg: "bg-primary-light",
     color: colors.text,
   },
   {
     label1: "Cambiar",
     label2: "Soles",
     route: "/Cambiar",
-    Icon: RefreshCw,
+    Icon: CambioIcon,
     bg: "bg-primary",
     color: colors.text,
   },
@@ -22,7 +25,7 @@ export const HOME_BUTTONS = [
     label1: "Recibe",
     label2: "Ayuda",
     route: "",
-    Icon: MessageCircle,
+    Icon: WhatsapIcon,
     bg: "bg-primary-light",
     color: colors.primaryDark,
     whatsappMessage: "Hola, necesito ayuda con mis transferencias",

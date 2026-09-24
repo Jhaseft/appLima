@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ScrollView, Text, BackHandler } from "react-native";
-import FooterLayout, { FOOTER_CLEARANCE } from "../FooterLayout/FooterLayout";
+import { FOOTER_CLEARANCE } from "../FooterLayout/FooterBar";
 import HeaderUser from "../UserDropdown/HeaderUser";
 
 import ProgressBar from "./ProgressBar";
@@ -40,7 +40,6 @@ export default function Cambiar() {
   }, [step]);
 
   return (
-    <FooterLayout>
       <ScrollView
         className="flex-1 bg-white px-6"
         contentContainerStyle={{ paddingBottom: FOOTER_CLEARANCE }}
@@ -80,6 +79,5 @@ export default function Cambiar() {
           />
         )}
       </ScrollView>
-    </FooterLayout>
   );
 }

@@ -3,7 +3,7 @@ import { HORARIOS } from "../api";
 
 export default function Horarios() {
   return (
-    <View className="mt-6 mb-4 bg-surface rounded-3xl p-5">
+    <View className="mt-6 mb-4 bg-surface rounded-3xl p-4">
       <Text className="text-xs text-primary-dark font-lm-medium uppercase mb-1">Atención</Text>
       <Text className="text-lg font-lm-bold text-text mb-4">Horarios</Text>
       {HORARIOS.map((item, i) => (

@@ -14,6 +14,11 @@ import PuntosIcon from "../../assets/navicons/tc_puntos.svg";
 // muy redondeadas (ovaladas), más una cuna cóncava suave en el centro donde se
 // acuna el botón (Cambiar). Todo lo que queda por encima de la curva es
 // transparente. El texto oscuro y el marcador activo resaltan sobre el amarillo.
+//
+// Se renderiza como `tabBar` del navegador de Tabs: va como overlay fuera del
+// flujo (position:absolute) para que la escena ocupe todo el alto y el contenido
+// pase por DETRÁS de la cuna transparente. La barra la dibuja el navegador una
+// sola vez, así que persiste al cambiar de pestaña; solo cambia el contenido.
 
 const BAR_HEIGHT = 60;     // alto visible de la barra
 const BOTTOM_PAD = 8;      // respiro inferior (el root ya aplica el safe-area)
@@ -26,9 +31,7 @@ const BUTTON_SIZE = 58;
 const BUTTON_TOP = -30;    // cuánto sube el botón por encima de la barra
 
 // Espacio inferior que cada pantalla debe reservar (paddingBottom del scroll)
-// para que su contenido no quede tapado por la barra flotante. La barra va como
-// overlay: el contenido pasa por DETRÁS, así la cuna transparente deja ver el
-// contenido real y no una banda blanca del wrapper.
+// para que su contenido no quede tapado por la barra flotante.
 export const FOOTER_CLEARANCE = BAR_HEIGHT + BOTTOM_PAD + 24;
 
 function buildBarPath(w, h) {
@@ -126,45 +129,45 @@ function FloatingButton({ active, onPress }) {
   );
 }
 
-export default function FooterLayout({ children }) {
+export default function FooterBar() {
   const pathname = usePathname();
   const router = useRouter();
   const { width } = useWindowDimensions();
 
   const totalH = BAR_HEIGHT + BOTTOM_PAD;
 
-  const go = (route) => {
-    if (route !== pathname) router.replace(route);
+  const goTab = (route) => {
+    if (route !== pathname) router.navigate(route);
+  };
+
+  const goChat = () => {
+    if (pathname !== "/Chat") router.push("/Chat");
   };
 
   return (
-    <View className="flex-1 bg-background">
-      <View className="flex-1">{children}</View>
+    <View style={{ position: "absolute", left: 0, right: 0, bottom: 0 }} pointerEvents="box-none">
+      <View style={{ width, height: totalH }}>
+        <Svg width={width} height={totalH} style={{ position: "absolute", top: 0, left: 0 }}>
+          <Path
+            d={buildBarPath(width, totalH)}
+            fill={colors.primary}
+            stroke={colors.primaryAccent}
+            strokeWidth={1}
+          />
+        </Svg>
 
-      <View style={{ position: "absolute", left: 0, right: 0, bottom: 0 }} pointerEvents="box-none">
-        <View style={{ width, height: totalH }}>
-          <Svg width={width} height={totalH} style={{ position: "absolute", top: 0, left: 0 }}>
-            <Path
-              d={buildBarPath(width, totalH)}
-              fill={colors.primary}
-              stroke={colors.primaryAccent}
-              strokeWidth={1}
-            />
-          </Svg>
-
-          <View
-            className="flex-row items-end px-2"
-            style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, paddingBottom: BOTTOM_PAD }}
-          >
-            <SideItem icon={CasaIcon} label="Inicio" active={pathname === "/Home"} onPress={() => go("/Home")} />
-            <SideItem icon={TarjetaIcon} label="Cuentas" active={pathname === "/Cuentas"} onPress={() => go("/Cuentas")} />
-            <CenterSlot  active={pathname === "/Cambiar"} onPress={() => go("/Cambiar")} />
-            <SideItem icon={ChatIcon} label="Chat" active={pathname === "/Chat"} onPress={() => go("/Chat")} />
-            <SideItem icon={PuntosIcon} label="Puntos" active={pathname === "/TcPuntos"} onPress={() => go("/TcPuntos")} />
-          </View>
-
-          <FloatingButton active={pathname === "/Cambiar"} onPress={() => go("/Cambiar")} />
+        <View
+          className="flex-row items-end px-2"
+          style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, paddingBottom: BOTTOM_PAD }}
+        >
+          <SideItem icon={CasaIcon} label="Inicio" active={pathname === "/Home"} onPress={() => goTab("/Home")} />
+          <SideItem icon={TarjetaIcon} label="Cuentas" active={pathname === "/Cuentas"} onPress={() => goTab("/Cuentas")} />
+          <CenterSlot active={pathname === "/Cambiar"} onPress={() => goTab("/Cambiar")} />
+          <SideItem icon={ChatIcon} label="Chat" active={pathname === "/Chat"} onPress={goChat} />
+          <SideItem icon={PuntosIcon} label="Puntos" active={pathname === "/TcPuntos"} onPress={() => goTab("/TcPuntos")} />
         </View>
+
+        <FloatingButton active={pathname === "/Cambiar"} onPress={() => goTab("/Cambiar")} />
       </View>
     </View>
   );

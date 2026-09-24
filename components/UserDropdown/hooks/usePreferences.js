@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Alert, Linking } from "react-native";
+import { Linking } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
+import { useFeedback } from "../../Feedback/FeedbackContext";
 import {
   NOTIF_PREF_KEY,
   registerForPushNotifications,
@@ -9,6 +10,7 @@ import {
 } from "../../../utils/notifications";
 
 export function usePreferences() {
+  const feedback = useFeedback();
   const [notifications, setNotifications] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
 
@@ -26,14 +28,12 @@ export function usePreferences() {
       const token = await registerForPushNotifications();
       if (!token) {
         await AsyncStorage.setItem(NOTIF_PREF_KEY, "0");
-        Alert.alert(
-          "Notificaciones bloqueadas",
-          "Activa los permisos de notificaciones desde la configuración del sistema.",
-          [
-            { text: "Cancelar", style: "cancel" },
-            { text: "Abrir ajustes", onPress: () => Linking.openSettings() },
-          ]
-        );
+        const ok = await feedback.confirm({
+          title: "Notificaciones bloqueadas",
+          message: "Activa los permisos de notificaciones desde la configuración del sistema.",
+          confirmText: "Abrir ajustes",
+        });
+        if (ok) Linking.openSettings();
         return;
       }
       setNotifications(true);

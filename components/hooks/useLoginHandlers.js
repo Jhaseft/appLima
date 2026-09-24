@@ -1,9 +1,9 @@
-import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import * as AppleAuthentication from "expo-apple-authentication";
 import { useUser } from "../ContextUser/UserContext";
+import { useFeedback } from "../Feedback/FeedbackContext";
 import { registerForPushNotifications } from "../../utils/notifications";
 import { loginWithEmail, loginWithGoogle, loginWithApple } from "../services/authApi";
 import { routeForUser } from "../profileStatus";
@@ -11,6 +11,7 @@ import { routeForUser } from "../profileStatus";
 export function useLoginHandlers(email, password) {
   const router = useRouter();
   const { fetchUser } = useUser();
+  const feedback = useFeedback();
 
   // Apple (guía 5.1.1) no permite forzar "Completar perfil" al iniciar sesión.
   // Se entra siempre a Home; el perfil se exige al operar (ver Cotiza.jsx).
@@ -23,13 +24,13 @@ export function useLoginHandlers(email, password) {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Atención", "Completa todos los campos");
+      feedback.info("Completa todos los campos", { title: "Atención" });
       return;
     }
     try {
       await enter(await loginWithEmail(email, password));
     } catch (error) {
-      Alert.alert("Error", error.message);
+      feedback.error(error.message);
     }
   };
 
@@ -45,18 +46,18 @@ export function useLoginHandlers(email, password) {
       const response = await GoogleSignin.signIn();
       if (response.type !== "success") {
         if (response.type !== "cancelled") {
-          Alert.alert("Error", "No se pudo completar el inicio de sesión con Google");
+          feedback.error("No se pudo completar el inicio de sesión con Google");
         }
         return;
       }
       const { idToken } = response.data;
       if (!idToken) {
-        Alert.alert("Error", "No se recibió idToken de Google");
+        feedback.error("No se recibió idToken de Google");
         return;
       }
       await enter(await loginWithGoogle(idToken));
     } catch (error) {
-      Alert.alert("Error", error?.message || "Error al iniciar sesión con Google");
+      feedback.error(error?.message || "Error al iniciar sesión con Google");
     }
   };
 
@@ -70,7 +71,7 @@ export function useLoginHandlers(email, password) {
       });
       const { identityToken, fullName, email: appleEmail, user } = credential;
       if (!identityToken) {
-        Alert.alert("Error", "No se recibió el token de Apple");
+        feedback.error("No se recibió el token de Apple");
         return;
       }
       await enter(
@@ -84,7 +85,7 @@ export function useLoginHandlers(email, password) {
       );
     } catch (error) {
       if (error?.code === "ERR_REQUEST_CANCELED") return;
-      Alert.alert("Error", error?.message || "Error al iniciar sesión con Apple");
+      feedback.error(error?.message || "Error al iniciar sesión con Apple");
     }
   };
 

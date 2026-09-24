@@ -1,4 +1,4 @@
-import Transferencias from "../components/Tranferencia/Tranferencias";
+import Transferencias from "../../components/Tranferencia/Tranferencias";
 export default function Cambiar() {
 
   return (

@@ -1,13 +1,14 @@
 import { useRef, useState } from "react";
 import {
   Pressable,
-  Alert,
   View,
   Text,
   Image,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 import { colors } from "../../theme/colors";
+import { useFeedback } from "../Feedback/FeedbackContext";
 import miLogo from "../../assets/images/Logo_web_03.png";
 import { Stack, useRouter, usePathname } from "expo-router";
 
@@ -34,6 +35,7 @@ const RUTAS_SIN_TC_PUNTOS = [
 export default function HeaderUser({ title, subtitle, image }) {
   const { user, setUser, loading } = useUser();
   const { balance: tcBalance } = useTcPuntos();
+  const feedback = useFeedback();
 
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [origin, setOrigin] = useState(null);
@@ -42,6 +44,10 @@ export default function HeaderUser({ title, subtitle, image }) {
   const router = useRouter();
   const pathname = usePathname();
   const mostrarTcPuntos = !RUTAS_SIN_TC_PUNTOS.includes(pathname);
+
+  const { width } = useWindowDimensions();
+  const titleMaxWidth = Math.max(160, width - 120);
+  const logoWidth = Math.min(190, titleMaxWidth);
 
   const CY_DIVISOR = Platform.OS === "ios" ? 2 : 0.64;
 
@@ -74,7 +80,7 @@ export default function HeaderUser({ title, subtitle, image }) {
       router.replace("/"); // redirige al login
     } catch (err) {
       console.log("Error en logout:", err);
-      Alert.alert("Error", "No se pudo cerrar la sesión");
+      feedback.error("No se pudo cerrar la sesión");
     }
   };
 
@@ -83,20 +89,30 @@ export default function HeaderUser({ title, subtitle, image }) {
       <Stack.Screen
         options={{
           headerTitle: () => (
-            <View className="items-center justify-center">
+            <View className="items-center justify-center" style={{ maxWidth: titleMaxWidth }}>
               {image ? (
                 <Image
                   source={miLogo}
-                  style={{ width: 190, height: 50, resizeMode: "contain" }}
+                  style={{ width: logoWidth, height: 50, resizeMode: "contain" }}
                 />
               ) : (
                 <>
-                  <Text className="text-black text-2xl font-lm-bold">
+                  <Text
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.7}
+                    className="text-black text-2xl font-lm-bold text-center"
+                  >
                     {loading ? "Cargando..." : title}
                   </Text>
 
                   {!!subtitle && (
-                    <Text className="text-yellow-500 text-xs font-lm-medium">
+                    <Text
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                      minimumFontScale={0.8}
+                      className="text-yellow-500 text-xs font-lm-medium text-center"
+                    >
                       {subtitle}
                     </Text>
                   )}
@@ -106,9 +122,12 @@ export default function HeaderUser({ title, subtitle, image }) {
           ),
 
           headerTitleAlign: "center",
- 
+          headerTitleContainerStyle: { maxWidth: titleMaxWidth, alignItems: "center" },
+          headerLeftContainerStyle: { paddingLeft: 12 },
+          headerRightContainerStyle: { paddingRight: 12 },
+
           headerLeft: () => (
-            <Pressable onPress={openMenu} className="ml-[5px]" hitSlop={8}>
+            <Pressable className="ml-[4px]" onPress={openMenu} hitSlop={8}>
               <View
                 ref={iconRef}
                 collapsable={false}
@@ -123,10 +142,10 @@ export default function HeaderUser({ title, subtitle, image }) {
             ? () => (
                 <Pressable
                   onPress={() => router.push("/TcPuntos")}
-                  className=" flex-row items-center"
+                  className="flex-row items-center gap-1"
                   hitSlop={8}
                 >
-                  <TcPuntoIcon size={26} />
+                  <TcPuntoIcon size={24} />
                   {tcBalance !== null && (
                     <Text className="text-sm font-lm-bold text-yellow-500">
                       {tcBalance}

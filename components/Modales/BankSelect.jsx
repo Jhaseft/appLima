@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import { ChevronDown, Check } from "lucide-react-native";
+import { colors } from "../../theme/colors";
 
 const PAISES = [
   { key: "bolivia", label: "Bolivia", flag: "🇧🇴" },
@@ -19,77 +20,66 @@ export default function BankSelect({ options, value, onChange, placeholder = "Se
   const handlePaisChange = (pais) => {
     if (pais === paisSeleccionado) return;
     setPaisSeleccionado(pais);
-    onChange(null); // reset banco al cambiar país
+    onChange(null);
     setOpen(false);
   };
 
   return (
     <View className="w-full mb-2">
-
       {!defaultCountry && (
-      <View className="flex-row gap-2 mb-4">
-        {PAISES.map((p) => {
-          const activo = paisSeleccionado === p.key;
-          return (
-            <TouchableOpacity
-              key={p.key}
-              onPress={() => handlePaisChange(p.key)}
-              className={`flex-1 py-3 rounded-xl border items-center ${
-                activo ? "bg-black border-black" : "bg-white border-gray-200"
-              }`}
-            >
-              <Text className="text-lg mb-0.5">{p.flag}</Text>
-              <Text
-                className={`font-semibold text-sm ${
-                  activo ? "text-white" : "text-gray-600"
+        <View className="flex-row gap-2 mb-4">
+          {PAISES.map((p) => {
+            const activo = paisSeleccionado === p.key;
+            return (
+              <TouchableOpacity
+                key={p.key}
+                onPress={() => handlePaisChange(p.key)}
+                className={`flex-1 py-3 rounded-xl border items-center ${
+                  activo ? "bg-primary border-primary" : "bg-background border-border"
                 }`}
               >
-                {p.label}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+                <Text className="text-lg mb-0.5">{p.flag}</Text>
+                <Text className={`text-sm ${activo ? "font-lm-bold text-text" : "font-sans text-text-muted"}`}>
+                  {p.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       )}
 
-     
       {paisSeleccionado && (
         <View className="relative">
           <TouchableOpacity
             onPress={() => setOpen(!open)}
-            className="w-full flex-row items-center justify-between border rounded-xl px-4 py-3 bg-white shadow-sm"
+            className="w-full flex-row items-center justify-between border border-border rounded-xl px-4 py-3 bg-background shadow-sm"
           >
             {selected ? (
               <View className="flex-row items-center gap-3">
                 {selected.logo_url && (
-                  <Image
-                    source={{ uri: selected.logo_url }}
-                    className="w-6 h-6 object-contain"
-                  />
+                  <Image source={{ uri: selected.logo_url }} className="w-6 h-6 object-contain" />
                 )}
-                <Text className="text-gray-800 font-medium">{selected.name}</Text>
+                <Text className="text-text font-lm-medium">{selected.name}</Text>
               </View>
             ) : (
-              <Text className="text-gray-400">{placeholder}</Text>
+              <Text className="text-text-muted font-sans">{placeholder}</Text>
             )}
-            <ChevronDown size={20} color="#6b7280" />
+            <ChevronDown size={20} color={colors.textMuted} />
           </TouchableOpacity>
 
           {open && (
             <View
-              className="absolute w-full bg-white border rounded-xl shadow-lg max-h-60 z-50"
+              className="absolute w-full bg-background border border-border rounded-xl shadow-lg max-h-60 z-50"
               style={{ top: "105%" }}
             >
               <ScrollView nestedScrollEnabled={true}>
                 {loading ? (
                   <View className="px-4 py-3 items-center justify-center">
-                    <Text className="text-gray-500">Cargando bancos...</Text>
+                    <Text className="text-text-muted font-sans">Cargando bancos...</Text>
                   </View>
                 ) : bancosFiltrados.length === 0 ? (
                   <View className="px-4 py-3 items-center justify-center">
-                    <Text className="text-gray-400 text-sm">
-                      No hay bancos disponibles
-                    </Text>
+                    <Text className="text-text-muted font-sans text-sm">No hay bancos disponibles</Text>
                   </View>
                 ) : (
                   bancosFiltrados.map((opt) => (
@@ -100,21 +90,14 @@ export default function BankSelect({ options, value, onChange, placeholder = "Se
                         setOpen(false);
                       }}
                       className={`w-full flex-row items-center px-4 py-3 rounded-lg ${
-                        selected?.id === opt.id ? "bg-blue-50" : ""
+                        selected?.id === opt.id ? "bg-primary-light" : ""
                       }`}
                     >
                       {opt.logo_url && (
-                        <Image
-                          source={{ uri: opt.logo_url }}
-                          className="w-8 h-8 mr-3"
-                        />
+                        <Image source={{ uri: opt.logo_url }} className="w-8 h-8 mr-3" />
                       )}
-                      <Text className="text-gray-800 font-medium flex-1">
-                        {opt.name}
-                      </Text>
-                      {selected?.id === opt.id && (
-                        <Check size={18} color="#3b82f6" />
-                      )}
+                      <Text className="text-text font-lm-medium flex-1">{opt.name}</Text>
+                      {selected?.id === opt.id && <Check size={18} color={colors.primaryAccent} />}
                     </TouchableOpacity>
                   ))
                 )}

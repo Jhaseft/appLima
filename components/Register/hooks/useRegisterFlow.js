@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "../../ContextUser/UserContext";
+import { useFeedback } from "../../Feedback/FeedbackContext";
 import { registerForPushNotifications } from "../../../utils/notifications";
 import { sendRegister, verifyCode } from "../services/registerApi";
 
@@ -12,6 +12,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function useRegisterFlow() {
   const router = useRouter();
   const { fetchUser } = useUser();
+  const feedback = useFeedback();
   const [phase, setPhase] = useState("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,7 +40,7 @@ export function useRegisterFlow() {
       setCode("");
       setPhase("code");
     } catch (e) {
-      Alert.alert("Error", e.message);
+      feedback.error(e.message);
     }
   };
 
@@ -51,7 +52,7 @@ export function useRegisterFlow() {
       registerForPushNotifications();
       router.replace("/CompleteProfile");
     } catch (e) {
-      Alert.alert("Error", e.message);
+      feedback.error(e.message);
       setCode("");
     }
   };

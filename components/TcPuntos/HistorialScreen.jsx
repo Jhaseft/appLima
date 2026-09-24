@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { View, Text, ScrollView, ActivityIndicator, RefreshControl } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator, RefreshControl, Pressable } from "react-native";
+import { useRouter } from "expo-router";
+import { ArrowLeft } from "lucide-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import FooterLayout, { FOOTER_CLEARANCE } from "../FooterLayout/FooterLayout";
+import { colors } from "../../theme/colors";
 import HeaderUser from "../UserDropdown/HeaderUser";
 import API_BASE_URL from "../api";
 
@@ -45,6 +47,7 @@ function HistorialItem({ item }) {
 }
 
 export default function HistorialScreen() {
+  const router = useRouter();
   const [historial, setHistorial] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -69,7 +72,13 @@ export default function HistorialScreen() {
   const onRefresh = () => { setRefreshing(true); fetchHistorial(); };
 
   return (
-    <FooterLayout>
+    <View className="flex-1 bg-white">
+      <View className="flex-row items-center px-4 pt-2">
+        <Pressable onPress={() => router.back()} hitSlop={8} className="p-1">
+          <ArrowLeft size={24} color={colors.text} />
+        </Pressable>
+      </View>
+
       <HeaderUser title="Historial de puntos" subtitle="Tus movimientos de TC Puntos" />
 
       {loading ? (
@@ -79,7 +88,7 @@ export default function HistorialScreen() {
       ) : (
         <ScrollView
           className="flex-1 bg-white"
-          contentContainerStyle={{ paddingBottom: FOOTER_CLEARANCE }}
+          contentContainerStyle={{ paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#fdc834"]} tintColor="#fdc834" />
@@ -103,6 +112,6 @@ export default function HistorialScreen() {
           <View className="h-8" />
         </ScrollView>
       )}
-    </FooterLayout>
+    </View>
   );
 }

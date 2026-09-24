@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "../../ContextUser/UserContext";
+import { useFeedback } from "../../Feedback/FeedbackContext";
 import { completeProfile } from "../services/profileApi";
 
 const EMPTY = {
@@ -19,6 +19,7 @@ const EMPTY = {
 export function useCompleteProfile() {
   const router = useRouter();
   const { user, fetchUser } = useUser();
+  const feedback = useFeedback();
   const requirePassword = !user?.has_password;
 
   const subSteps = requirePassword
@@ -88,7 +89,7 @@ export function useCompleteProfile() {
       await fetchUser();
       router.replace("/Home");
     } catch (e) {
-      Alert.alert("Error", e.message);
+      feedback.error(e.message);
     }
   };
 

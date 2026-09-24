@@ -1,23 +1,11 @@
-import { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-  ScrollView,
-  Animated,
-  Easing,
-  Linking,
-  Modal,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Linking } from "react-native";
 import BankSelect from "./BankSelect";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import ToggleSwitch from "./ToggleSwitch";
+import BottomSheet from "../BottomSheet";
+import ActionOverlay from "../ActionOverlay";
+import { useFormBancaria } from "./hooks/useFormBancaria";
+import { colors } from "../../theme/colors";
 import API_BASE_URL from "../api";
-let bancosCache = null;
 
 export default function ModalCuentaBancaria({
   bancos: bancosProp,
@@ -28,228 +16,67 @@ export default function ModalCuentaBancaria({
   defaultCountry = null,
   onCuentaGuardada,
 }) {
-  const [banco, setBanco] = useState(null);
-  const [numeroCuenta, setNumeroCuenta] = useState("");
-  const [juramento, setJuramento] = useState(false);
-  const [terminos, setTerminos] = useState(false);
-  const [bancosDisponibles, setBancosDisponibles] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const [animJuramento] = useState(new Animated.Value(0));
-  const [animTerminos] = useState(new Animated.Value(0));
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const fetchBancos = async () => {
-      try {
-        let data = bancosCache || bancosProp;
-        if (!data || data.length === 0) {
-          const res = await fetch(`${API_BASE_URL}/operacion/listar-bancos`);
-          if (!res.ok) return;
-          data = await res.json();
-        }
-        bancosCache = data;
-        setBancosDisponibles(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchBancos();
-  }, [isOpen, bancosProp]);
-
-  const toggleSwitch = (type) => {
-    const anim = type === "juramento" ? animJuramento : animTerminos;
-    const setter = type === "juramento" ? setJuramento : setTerminos;
-    setter((prev) => !prev);
-    Animated.timing(anim, {
-      toValue: type === "juramento" ? !juramento ? 1 : 0 : !terminos ? 1 : 0,
-      duration: 250,
-      easing: Easing.out(Easing.circle),
-      useNativeDriver: false,
-    }).start();
-  };
-
-  const handleSave = async () => {
-    if (!(juramento && terminos && banco && numeroCuenta)) return;
-
-    setLoading(true);
-    try {
-      const token = await AsyncStorage.getItem("token");
-      const res = await fetch(`${API_BASE_URL}/api/operacion/guardar-cuenta`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          user_id: user.id,
-          bank_id: banco.id,
-          account_number: numeroCuenta,
-          account_type: accountType,
-        }),
-      });
-
-      const text = await res.text();
-      const data = JSON.parse(text);
-      if (!res.ok) throw new Error(data.message || "Error en el servidor");
-
-      // Fetch actualizado de cuentas
-      const cuentasRes = await fetch(`${API_BASE_URL}/api/listar-cuentas?user_id=${user.id}&type=bank`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const cuentasData = await cuentasRes.json();
-      if (!cuentasRes.ok || !Array.isArray(cuentasData)) {
-        throw new Error(cuentasData?.error || "No se pudo obtener la lista de cuentas");
-      }
-
-      // Asociamos banco completo
-      const cuentasConBanco = cuentasData.map(c => ({
-        ...c,
-        bank: bancosCache?.find(b => b.id === c.bank_id) || null,
-      }));
-
-      // Actualizamos AsyncStorage
-      await AsyncStorage.setItem("cuentasUsuario", JSON.stringify(cuentasConBanco));
-      await AsyncStorage.setItem("cuentasUsuario_lastFetch", Date.now().toString());
-
-      // Enviamos al padre la lista actualizada
-      onCuentaGuardada?.(cuentasConBanco);
-
-      Alert.alert("Éxito", "Cuenta guardada correctamente");
-
-      // Reset form
-      setBanco(null);
-      setNumeroCuenta("");
-      setJuramento(false);
-      setTerminos(false);
-      animJuramento.setValue(0);
-      animTerminos.setValue(0);
-      onClose();
-
-    } catch (err) {
-      console.error(err);
-      Alert.alert("Error", "Error al guardar cuenta: " + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-  const cuentaPlaceholder =
-    banco && ["yape", "plin"].includes(banco.name?.toLowerCase())
-      ? "Número de teléfono"
-      : "Número de cuenta";
-
-  const cuentaType =
-    banco && ["yape", "plin"].includes(banco.name?.toLowerCase())
-      ? "phone-pad"
-      : "number-pad";
-
-  const renderSwitch = (animatedValue) => {
-    const translateX = animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [2, 22],
-    });
-    const backgroundColor = animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: ["#e5e7eb", "#3b82f6"],
-    });
-    return (
-      <Animated.View
-        className="w-11 h-6 rounded-full p-1 justify-center"
-        style={{ backgroundColor }}
-      >
-        <Animated.View
-          className="w-5 h-5 rounded-full bg-white shadow"
-          style={{ transform: [{ translateX }] }}
-        />
-      </Animated.View>
-    );
-  };
-
-  const canSave = juramento && terminos && banco && numeroCuenta;
+  const f = useFormBancaria({ isOpen, bancosProp, user, accountType, onCuentaGuardada, onClose });
 
   return (
-    <Modal visible={isOpen} transparent animationType="slide" onRequestClose={onClose}>
-      <KeyboardAvoidingView
-        className="flex-1 justify-end bg-black/50"
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        {loading && (
-          <View className="absolute inset-0 justify-center items-center bg-black/60 z-50">
-            <ActivityIndicator size="large" color="white" />
-            <Text className="text-white mt-3 text-base font-medium">Guardando cuenta...</Text>
-          </View>
-        )}
+    <BottomSheet
+      visible={isOpen}
+      onClose={onClose}
+      overlay={<ActionOverlay visible={f.loading} mensaje="Guardando cuenta..." />}
+      contentContainerStyle={{ alignItems: "center", paddingHorizontal: 24, paddingBottom: 36 }}
+    >
+      <Text className="text-xl font-lm-bold text-text mb-1">Registrar cuenta</Text>
+      <Text className="text-sm font-sans text-text-muted mb-6">Cuenta de origen</Text>
 
-        <ScrollView
-          contentContainerStyle={{ alignItems: "center", paddingHorizontal: 24, paddingBottom: 36 }}
-          className="bg-white rounded-t-3xl max-h-[90%]"
-        >
-          <View className="w-10 h-1 bg-gray-300 rounded-full mt-4 mb-6" />
+      <Text className="text-xs font-lm-medium text-text-muted uppercase mb-2 w-full">
+        ¿Desde que cuenta enviaras el dinero ?
+      </Text>
 
-          <Text className="text-xl font-bold text-gray-900 mb-1">Registrar cuenta</Text>
-          <Text className="text-sm text-gray-400 mb-6">Cuenta de origen</Text>
+      <View className="w-full">
+        <BankSelect
+          options={f.bancos}
+          value={f.banco}
+          onChange={f.setBanco}
+          loading={f.bancos.length === 0}
+          defaultCountry={defaultCountry}
+        />
+      </View>
 
-          <Text className="text-xs font-semibold text-gray-400 uppercase mb-2">
-            ¿Desde que cuenta enviaras el dinero ?
+      <TextInput
+        className="border border-border rounded-xl p-4 mt-3 mb-5 text-base font-sans bg-surface w-full text-text"
+        placeholder={f.cuentaPlaceholder}
+        placeholderTextColor={colors.textMuted}
+        keyboardType={f.cuentaType}
+        value={f.numeroCuenta}
+        onChangeText={f.setNumeroCuenta}
+      />
+
+      <View className="mb-7 w-full gap-4">
+        <ToggleSwitch value={f.juramento} onToggle={() => f.setJuramento((v) => !v)}>
+          Declaro bajo juramento que soy el titular de la cuenta bancaria registrada.
+        </ToggleSwitch>
+
+        <ToggleSwitch value={f.terminos} onToggle={() => f.setTerminos((v) => !v)}>
+          Acepto los{" "}
+          <Text className="text-primary-dark font-lm-medium underline" onPress={() => Linking.openURL(`${API_BASE_URL}/politicas`)}>
+            Términos y Política de privacidad
           </Text>
+        </ToggleSwitch>
+      </View>
 
-          <View className="w-full">
-            <BankSelect
-              options={bancosDisponibles}
-              value={banco}
-              onChange={setBanco}
-              loading={bancosDisponibles.length === 0}
-              defaultCountry={defaultCountry}
-            />
-          </View>
-
-          <TextInput
-            className="border border-gray-200 rounded-xl p-4 mt-3 mb-5 text-base bg-gray-50 w-full"
-            placeholder={cuentaPlaceholder || "Número de cuenta"}
-            placeholderTextColor="#9ca3af"
-            keyboardType={cuentaType}
-            value={numeroCuenta}
-            onChangeText={setNumeroCuenta}
-          />
-
-          <View className="mb-7 w-full gap-4">
-            <TouchableOpacity onPress={() => toggleSwitch("juramento")} className="flex-row items-center gap-3">
-              {renderSwitch(animJuramento)}
-              <Text className="text-gray-600 text-sm flex-1">
-                Declaro bajo juramento que soy el titular de la cuenta bancaria registrada.
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => toggleSwitch("terminos")} className="flex-row items-center gap-3">
-              {renderSwitch(animTerminos)}
-              <Text className="text-gray-600 text-sm flex-1">
-                Acepto los{" "}
-                <Text className="text-blue-600 underline" onPress={() => Linking.openURL(`${API_BASE_URL}/politicas`)}>
-                  Términos y Política de privacidad
-                </Text>
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <View className="flex-row gap-3 w-full">
-            <TouchableOpacity
-              className="flex-1 border border-gray-200 py-3.5 rounded-2xl"
-              onPress={onClose}
-            >
-              <Text className="text-gray-700 font-semibold text-base text-center">Cancelar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className={`flex-1 py-3.5 rounded-2xl ${canSave ? "bg-blue-600" : "bg-blue-300"}`}
-              onPress={handleSave}
-              disabled={!canSave}
-            >
-              <Text className="text-white font-semibold text-base text-center">Guardar</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </Modal>
+      <View className="flex-row gap-3 w-full">
+        <TouchableOpacity className="flex-1 border border-border py-3.5 rounded-2xl" onPress={onClose}>
+          <Text className="text-text font-lm-medium text-base text-center">Cancelar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="flex-1 py-3.5 rounded-2xl bg-primary"
+          style={{ opacity: f.canSave ? 1 : 0.5 }}
+          onPress={f.submit}
+          disabled={!f.canSave}
+        >
+          <Text className="text-text font-lm-bold text-base text-center">Guardar</Text>
+        </TouchableOpacity>
+      </View>
+    </BottomSheet>
   );
 }

@@ -8,6 +8,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 
 import { UserProvider } from "../components/ContextUser/UserContext";
+import { FeedbackProvider } from "../components/Feedback/FeedbackContext";
 import { TcPuntosProvider } from "../components/TcPuntos/TcPuntosContext";
 import { ResumenProvider } from "../components/Home/ResumenContext";
 import AnimatedSplash from "../components/AnimatedSplash";
@@ -37,6 +38,7 @@ export default function Layout() {
 
   return (
     <UserProvider>
+      <FeedbackProvider>
       <View className="flex-1 bg-background" style={{ paddingBottom: insets.bottom }}>
         <StatusBar style="dark" />
         <NetworkGuard>
@@ -55,8 +57,15 @@ export default function Layout() {
                         // (evita salir de pantallas como Cambiar sin querer).
                         gestureEnabled: false,
                         fullScreenGestureEnabled: false,
+                        // Sombra nativa por elevación (native-stack ignora las
+                        // props de sombra custom del headerStyle; la sombra se
+                        // controla con headerShadowVisible).
+                        headerShadowVisible: true,
+                        headerStyle: { backgroundColor: "#FFFFFF" },
                       }}
-                    />
+                    >
+                      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                    </Stack>
                   </NotificationsGuard>
                 </ResumenProvider>
               </TcPuntosProvider>
@@ -66,6 +75,7 @@ export default function Layout() {
       </View>
       <LoadingOverlay />
       {!animationDone && <AnimatedSplash onFinish={() => setAnimationDone(true)} />}
+      </FeedbackProvider>
     </UserProvider>
   );
 }

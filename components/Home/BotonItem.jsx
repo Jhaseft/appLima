@@ -17,8 +17,9 @@ export default function BotonItem({ btn, onPress }) {
         onPressIn={pressIn}
         onPressOut={pressOut}
         className={`w-28 h-28 rounded-2xl items-center justify-center ${btn.bg}`}
-      >
-        <btn.Icon size={32} color={btn.color} />
+      > 
+        <btn.Icon width={40} height={40} color={btn.color} />
+        
         <Text className="mt-2 text-sm font-lm-medium text-text text-center">
           {btn.label1}
         </Text>

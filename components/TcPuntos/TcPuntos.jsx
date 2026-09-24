@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { View, Text, ScrollView, ActivityIndicator, RefreshControl, Alert } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator, RefreshControl } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import FooterLayout, { FOOTER_CLEARANCE } from "../FooterLayout/FooterLayout";
+import { FOOTER_CLEARANCE } from "../FooterLayout/FooterBar";
+import { useFeedback } from "../Feedback/FeedbackContext";
 import HeaderUser from "../UserDropdown/HeaderUser";
 import TcPuntoIcon from "./TcPuntoIcon";
 import BalanceCard from "./BalanceCard";
@@ -18,6 +19,7 @@ async function authHeaders() {
 
 export default function TcPuntos() {
   const { balance, valorPunto, refrescar, fijarBalance } = useTcPuntos();
+  const feedback = useFeedback();
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -59,17 +61,17 @@ export default function TcPuntos() {
       });
       const data = await res.json();
       if (!res.ok) {
-        Alert.alert("No se pudo canjear", data.message ?? "Intenta de nuevo");
+        feedback.error(data.message ?? "Intenta de nuevo", { title: "No se pudo canjear" });
         return;
       }
       fijarBalance(data.balance);
       setCanjeVisible(false);
-      Alert.alert(
-        "¡Canje exitoso!",
-        `Canjeaste "${data.producto}" por ${Number(productoSeleccionado.costo_puntos).toLocaleString()} TC Puntos. Recibiras un correo con mas información`
+      feedback.success(
+        `Canjeaste "${data.producto}" por ${Number(productoSeleccionado.costo_puntos).toLocaleString()} TC Puntos. Recibiras un correo con mas información`,
+        { title: "¡Canje exitoso!" }
       );
     } catch (_) {
-      Alert.alert("Error", "No se pudo completar el canje");
+      feedback.error("No se pudo completar el canje");
     } finally {
       setCanjeLoading(false);
     }
@@ -77,19 +79,19 @@ export default function TcPuntos() {
 
   if (loading) {
     return (
-      <FooterLayout>
+      <View className="flex-1 bg-white">
         <HeaderUser title="TC Puntos" subtitle="Programa de recompensas" />
         <View className="flex-1 items-center justify-center bg-white">
           <ActivityIndicator size="large" color="#fdc834" />
         </View>
-      </FooterLayout>
+      </View>
     );
   }
 
   const hayProductos = categorias.some((c) => c.productos?.length > 0);
 
   return (
-    <FooterLayout>
+    <View className="flex-1 bg-white">
       <HeaderUser title="TC Puntos" subtitle="Programa de recompensas" />
 
       <ScrollView
@@ -132,6 +134,6 @@ export default function TcPuntos() {
         onConfirm={confirmarCanje}
         loading={canjeLoading}
       />
-    </FooterLayout>
+    </View>
   );
 }

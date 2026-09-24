@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   ScrollView,
-  Alert,
   Linking,
   RefreshControl,
 } from "react-native";
@@ -16,6 +15,7 @@ import { useRouter } from "expo-router";
 import { RefreshCw } from "lucide-react-native";
 import API_BASE_URL from "../api";
 import { useUser } from "../ContextUser/UserContext";
+import { useFeedback } from "../Feedback/FeedbackContext";
 
 const KYC_DEEP_LINK = process.env.EXPO_PUBLIC_KYC_DEEP_LINK;
 
@@ -31,6 +31,7 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
   const [refreshing, setRefreshing] = useState(false);
   const [token, setToken] = useState(null);
   const { user } = useUser();
+  const feedback = useFeedback();
   const router = useRouter();
 
   // El perfil se considera incompleto si falta alguno de estos datos
@@ -166,21 +167,22 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
       await Linking.openURL(data.redirect_url);
     } catch (err) {
       console.error(" Error KYC:", err);
-      Alert.alert("Error", "Hubo un problema al iniciar la verificación KYC.");
+      feedback.error("Hubo un problema al iniciar la verificación KYC.");
     }
   };
 
   const handleNext = () => {
     // Si el perfil está incompleto, se exige completarlo antes de operar.
     if (perfilIncompleto) {
-      Alert.alert(
-        "Completa tu perfil",
-        "Para realizar una operación necesitamos unos datos adicionales.",
-        [
-          { text: "Completar", onPress: () => router.push("/CompleteProfile") },
-          { text: "Cancelar", style: "cancel" },
-        ]
-      );
+      feedback
+        .confirm({
+          title: "Completa tu perfil",
+          message: "Para realizar una operación necesitamos unos datos adicionales.",
+          confirmText: "Completar",
+        })
+        .then((ok) => {
+          if (ok) router.push("/CompleteProfile");
+        });
       return;
     }
 
@@ -218,14 +220,15 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
       (modo === "BOBtoPEN" && valor > limiteBOB);
 
     if (requiereKyc && user?.kyc_status !== "verified") {
-      Alert.alert(
-        "KYC Requerido",
-        `Para operar montos mayores a S/${limitePEN} o Bs ${limiteBOB} debes completar tu verificación KYC.`,
-        [
-          { text: "Ir a KYC", onPress: openKycInBrowser },
-          { text: "Cancelar", style: "cancel" },
-        ]
-      );
+      feedback
+        .confirm({
+          title: "KYC Requerido",
+          message: `Para operar montos mayores a S/${limitePEN} o Bs ${limiteBOB} debes completar tu verificación KYC.`,
+          confirmText: "Ir a KYC",
+        })
+        .then((ok) => {
+          if (ok) openKycInBrowser();
+        });
       return;
     }
     const data = {

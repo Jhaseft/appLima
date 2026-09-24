@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Alert, Linking } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Linking } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HeaderUser from "../UserDropdown/HeaderUser";
+import { useFeedback } from "../Feedback/FeedbackContext";
 import { useUser } from "../ContextUser/UserContext";
 import API_BASE_URL from "../api";
 import {
@@ -14,6 +15,8 @@ import {
   ShieldAlert,
   ExternalLink,
 } from "lucide-react-native";
+import { colors } from "../../theme/colors";
+
 
 const KYC_DEEP_LINK = process.env.EXPO_PUBLIC_KYC_DEEP_LINK;
 
@@ -47,6 +50,7 @@ function Section({ title, children }) {
 
 export default function MiCuenta() {
   const { user } = useUser();
+  const feedback = useFeedback();
   const [token, setToken] = useState(null);
 
   useEffect(() => {
@@ -71,7 +75,7 @@ export default function MiCuenta() {
       await Linking.openURL(data.redirect_url);
     } catch (err) {
       console.error("Error KYC:", err);
-      Alert.alert("Error", "Hubo un problema al iniciar la verificación KYC.");
+      feedback.error("Hubo un problema al iniciar la verificación KYC.");
     }
   };
 
@@ -107,7 +111,7 @@ export default function MiCuenta() {
           {user ? `${user.first_name} ${user.last_name}` : "—"}
         </Text>
 
-        {/* KYC badge bajo el nombre */}
+  
         <View
           className={`flex-row items-center mt-2 px-3 py-1 rounded-full gap-1 ${
             isVerified ? "bg-green-100" : "bg-red-100"
@@ -127,7 +131,6 @@ export default function MiCuenta() {
           </Text>
         </View>
 
-        {/* Botón de KYC si no está verificado */}
         {!isVerified && (
           <TouchableOpacity
             onPress={openKycInBrowser}

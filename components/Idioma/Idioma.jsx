@@ -1,12 +1,14 @@
-import { View, Text, Pressable, ScrollView, Alert } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { ChevronRight } from "lucide-react-native";
 import { colors } from "../../theme/colors";
 import HeaderUser from "../UserDropdown/HeaderUser";
+import { useFeedback } from "../Feedback/FeedbackContext";
 import { IDIOMAS } from "./data/idiomas";
 
 export default function Idioma() {
+  const feedback = useFeedback();
   const avisar = () =>
-    Alert.alert("Muy pronto", "TransferCash estará disponible en varios idiomas.");
+    feedback.info("TransferCash estará disponible en varios idiomas.", { title: "Muy pronto" });
 
   return (
     <ScrollView
