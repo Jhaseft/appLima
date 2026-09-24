@@ -156,7 +156,7 @@ El resto de módulos (aún no migrados) conservan su `loading` local como antes.
 | Home                 | ✅ hecho     |
 | Cuentas              | ✅ hecho     |
 | Transferencias       | ⬜ pendiente |
-| TcPuntos             | ⬜ pendiente |
+| TcPuntos             | ✅ hecho     |
 | MiCuenta             | ⬜ pendiente |
 | Chat                 | ⬜ pendiente |
 | Historial            | ⬜ pendiente |

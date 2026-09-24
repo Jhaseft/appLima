@@ -2,7 +2,9 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef } f
 import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "../ContextUser/UserContext";
-import API_BASE_URL from "../api";
+import { obtenerSaldo } from "./services/tcPuntosApi";
+import { invalidarCatalogo } from "./hooks/useCatalogo";
+import { invalidarHistorial } from "./hooks/useHistorial";
 
 const CACHE_KEY = "tc_puntos_saldo";
 const TcPuntosContext = createContext(null);
@@ -15,39 +17,44 @@ export function TcPuntosProvider({ children }) {
   const { user } = useUser();
   const [balance, setBalance] = useState(null);
   const [valorPunto, setValorPunto] = useState(null);
-  const valorRef = useRef(1);
+  const [moneda, setMoneda] = useState("S/");
+  const [umbral, setUmbral] = useState(1000);
   const usuarioPrevio = useRef(undefined);
 
-  const aplicar = useCallback((b, v) => {
+  const aplicar = useCallback((b, v, m, u) => {
     setBalance(b);
     setValorPunto(v);
-    valorRef.current = v;
-    AsyncStorage.setItem(CACHE_KEY, JSON.stringify({ balance: b, valor_punto: v }));
+    setMoneda(m);
+    setUmbral(u);
+    AsyncStorage.setItem(
+      CACHE_KEY,
+      JSON.stringify({ balance: b, valor_punto: v, moneda: m, umbral: u })
+    );
   }, []);
 
   const limpiar = useCallback(() => {
     setBalance(null);
     setValorPunto(null);
-    valorRef.current = 1;
+    setMoneda("S/");
+    setUmbral(1000);
     AsyncStorage.removeItem(CACHE_KEY);
+    invalidarCatalogo();
+    invalidarHistorial();
   }, []);
 
   const refrescar = useCallback(async () => {
     try {
       const token = await AsyncStorage.getItem("token");
       if (!token) return;
-      const res = await fetch(`${API_BASE_URL}/api/tc-puntos/saldo`, {
-        headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-      });
-      if (!res.ok) return;
-      const d = await res.json();
-      aplicar(d.balance ?? 0, d.valor_punto ?? 1);
+      const d = await obtenerSaldo();
+      aplicar(d.balance ?? 0, d.valor_punto ?? 1, d.moneda ?? "S/", d.umbral ?? 1000);
     } catch (_) {}
   }, [aplicar]);
 
   const fijarBalance = useCallback((b) => {
-    aplicar(b, valorRef.current);
-  }, [aplicar]);
+    setBalance(b);
+    AsyncStorage.mergeItem(CACHE_KEY, JSON.stringify({ balance: b }));
+  }, []);
 
   // Al montar: muestra el saldo cacheado al instante (sin pedir red todavia).
   useEffect(() => {
@@ -57,7 +64,8 @@ export function TcPuntosProvider({ children }) {
       const d = JSON.parse(cache);
       setBalance(d.balance ?? 0);
       setValorPunto(d.valor_punto ?? 1);
-      valorRef.current = d.valor_punto ?? 1;
+      setMoneda(d.moneda ?? "S/");
+      setUmbral(d.umbral ?? 1000);
     })();
   }, []);
 
@@ -66,7 +74,13 @@ export function TcPuntosProvider({ children }) {
   useEffect(() => {
     const id = user?.id ?? null;
     if (id) {
-      if (usuarioPrevio.current !== id) refrescar();
+      if (usuarioPrevio.current !== id) {
+        if (usuarioPrevio.current) {
+          invalidarCatalogo();
+          invalidarHistorial();
+        }
+        refrescar();
+      }
     } else if (usuarioPrevio.current) {
       limpiar();
     }
@@ -83,7 +97,7 @@ export function TcPuntosProvider({ children }) {
   }, [refrescar]);
 
   return (
-    <TcPuntosContext.Provider value={{ balance, valorPunto, refrescar, fijarBalance }}>
+    <TcPuntosContext.Provider value={{ balance, valorPunto, moneda, umbral, refrescar, fijarBalance }}>
       {children}
     </TcPuntosContext.Provider>
   );

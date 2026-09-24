@@ -31,25 +31,25 @@ export default function CategoriaSection({ categoria, balance, onCanjear }) {
               style={{ backgroundColor: "rgba(0,0,0,0.45)" }}
             >
               <View className="flex-1">
-                <Text className="text-white text-xl font-bold">{categoria.nombre}</Text>
+                <Text className="text-background text-xl font-lm-bold">{categoria.nombre}</Text>
                 {!!categoria.descripcion && (
-                  <Text className="text-white/80 text-xs mt-0.5">{categoria.descripcion}</Text>
+                  <Text className="text-background/80 text-xs mt-0.5">{categoria.descripcion}</Text>
                 )}
               </View>
-              <Text className="text-white text-2xl ml-2" style={{ lineHeight: 28 }}>
+              <Text className="text-background text-2xl ml-2" style={{ lineHeight: 28 }}>
                 {open ? "▾" : "▸"}
               </Text>
             </View>
           </View>
         ) : (
-          <View className="bg-yellow-400 px-5 py-5 rounded-2xl flex-row items-center justify-between">
+          <View className="bg-primary px-5 py-5 rounded-2xl flex-row items-center justify-between">
             <View className="flex-1">
-              <Text className="text-black text-xl font-bold">{categoria.nombre}</Text>
+              <Text className="text-text text-xl font-lm-bold">{categoria.nombre}</Text>
               {!!categoria.descripcion && (
-                <Text className="text-black/70 text-sm mt-0.5">{categoria.descripcion}</Text>
+                <Text className="text-text/70 text-sm mt-0.5">{categoria.descripcion}</Text>
               )}
             </View>
-            <Text className="text-black text-2xl ml-2" style={{ lineHeight: 28 }}>
+            <Text className="text-text text-2xl ml-2" style={{ lineHeight: 28 }}>
               {open ? "▾" : "▸"}
             </Text>
           </View>

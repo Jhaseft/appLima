@@ -7,7 +7,7 @@ export default function ProductoCard({ producto, balance, onCanjear }) {
   const disabled = sinSaldo || sinStock;
 
   return (
-    <View className="bg-white rounded-2xl overflow-hidden mb-3 mx-4 border border-gray-100">
+    <View className="bg-background rounded-2xl overflow-hidden mb-3 mx-4 border border-border">
       {producto.imagen_url ? (
         <Image
           source={{ uri: producto.imagen_url }}
@@ -15,36 +15,36 @@ export default function ProductoCard({ producto, balance, onCanjear }) {
           resizeMode="cover"
         />
       ) : (
-        <View className="bg-yellow-50 items-center justify-center" style={{ height: 180 }}>
+        <View className="bg-primary-light items-center justify-center" style={{ height: 180 }}>
           <TcPuntoIcon size={64} />
         </View>
       )}
 
       <View className="p-4">
-        <Text className="text-lg font-bold text-gray-900">{producto.nombre}</Text>
+        <Text className="text-lg font-lm-bold text-text">{producto.nombre}</Text>
         {!!producto.descripcion && (
-          <Text className="text-gray-500 text-sm mt-1 leading-5">{producto.descripcion}</Text>
+          <Text className="text-text-muted text-sm mt-1 leading-5">{producto.descripcion}</Text>
         )}
 
         <View className="flex-row items-center justify-between mt-4">
-          <View className="flex-row items-center gap-1.5 bg-yellow-50 border border-yellow-200 rounded-full px-3 py-1.5">
+          <View className="flex-row items-center gap-1.5 bg-primary-light border border-primary-accent rounded-full px-3 py-1.5">
             <TcPuntoIcon size={16} />
-            <Text className="text-yellow-700 font-bold text-sm">
+            <Text className="text-primary-dark font-lm-bold text-sm">
               {Number(producto.costo_puntos).toLocaleString()} pts
             </Text>
           </View>
 
           {sinStock ? (
-            <View className="bg-gray-100 rounded-xl px-5 py-2.5">
-              <Text className="text-gray-400 text-sm font-semibold">Sin stock</Text>
+            <View className="bg-surface rounded-xl px-5 py-2.5">
+              <Text className="text-text-muted text-sm font-lm-medium">Sin stock</Text>
             </View>
           ) : (
             <Pressable
               onPress={() => onCanjear(producto)}
               disabled={disabled}
-              className={`rounded-xl px-5 py-2.5 ${disabled ? "bg-gray-100" : "bg-yellow-400 active:bg-yellow-500"}`}
+              className={`rounded-xl px-5 py-2.5 ${disabled ? "bg-surface" : "bg-primary active:bg-primary-accent"}`}
             >
-              <Text className={`font-bold text-sm ${disabled ? "text-gray-400" : "text-black"}`}>
+              <Text className={`font-lm-bold text-sm ${disabled ? "text-text-muted" : "text-text"}`}>
                 {sinSaldo ? "Puntos insuficientes" : "Canjear"}
               </Text>
             </Pressable>
