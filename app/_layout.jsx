@@ -13,13 +13,16 @@ import { TcPuntosProvider } from "../components/TcPuntos/TcPuntosContext";
 import { ResumenProvider } from "../components/Home/ResumenContext";
 import AnimatedSplash from "../components/AnimatedSplash";
 import LoadingOverlay from "../components/LoadingOverlay";
+import RateLimitOverlay from "../components/RateLimitOverlay";
 import NetworkGuard from "../components/NetworkGuard/NetworkGuard";
 import VersionGuard from "../components/VersionGuard/VersionGuard";
 import AuthGuard from "../components/AuthGuard/AuthGuard";
 import NotificationsGuard from "../components/NotificationsGuard/NotificationsGuard";
 import { colors } from "../theme/colors";
+import { installHttpInterceptor } from "../components/services/httpInterceptor";
 
 SplashScreen.preventAutoHideAsync();
+installHttpInterceptor();
 
 export default function Layout() {
   const insets = useSafeAreaInsets();
@@ -75,6 +78,7 @@ export default function Layout() {
         </NetworkGuard>
       </View>
       <LoadingOverlay />
+      <RateLimitOverlay />
       {!animationDone && <AnimatedSplash onFinish={() => setAnimationDone(true)} />}
       </FeedbackProvider>
     </UserProvider>
