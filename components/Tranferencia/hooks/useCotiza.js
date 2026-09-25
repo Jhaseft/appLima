@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Linking } from "react-native";
 import { useRouter } from "expo-router";
 import { useUser } from "../../ContextUser/UserContext";
@@ -11,16 +11,15 @@ const KYC_DEEP_LINK = process.env.EXPO_PUBLIC_KYC_DEEP_LINK;
 
 // Orquestacion del paso Cotiza: tasa (cache 5 min), config de limites (cache),
 // monto/conversion/modo, validaciones (min/max/KYC) y salto al siguiente paso.
-export function useCotiza({ onNext, setOperacion }) {
+export function useCotiza({ onNext, operacion, setOperacion }) {
   const { user } = useUser();
   const feedback = useFeedback();
   const router = useRouter();
   const { tasa, loading, refreshing, refrescar } = useTasas();
   const { config, refrescar: refrescarConfig } = useTransferConfig();
 
-  const [monto, setMonto] = useState("");
-  const [conversion, setConversion] = useState("");
-  const [modo, setModo] = useState("PENtoBOB");
+  const [monto, setMonto] = useState(operacion?.monto ? String(operacion.monto) : "");
+  const [modo, setModo] = useState(operacion?.modo ?? "PENtoBOB");
   const [error, setError] = useState("");
 
   const perfilIncompleto =
@@ -34,31 +33,28 @@ export function useCotiza({ onNext, setOperacion }) {
       ? (valor * tasaCompra).toFixed(2)
       : (valor / tasaVenta).toFixed(2);
 
+  const conversion = useMemo(() => {
+    const valor = parseFloat(String(monto).replace(",", "."));
+    if (isNaN(valor) || valor < 0) return "";
+    return calcularConversion(valor, modo);
+  }, [monto, modo, tasaCompra, tasaVenta]);
+
   const handleCambio = (valorStr) => {
     const valorClean = valorStr.replace(",", ".");
     if (!/^[0-9]*\.?[0-9]*$/.test(valorClean)) return;
 
     const valor = parseFloat(valorClean);
-    if (!isNaN(valor) && valor >= 0) {
-      setMonto(valorClean);
-      setError("");
-      setConversion(calcularConversion(valor, modo));
-    } else if (valor < 0) {
+    if (valor < 0) {
       setMonto("");
-      setConversion("");
       setError("⚠️ El monto no puede ser negativo.");
-    } else {
-      setMonto(valorClean);
-      setConversion("");
+      return;
     }
+    setMonto(valorClean);
+    setError("");
   };
 
-  const toggleModo = () => {
-    const nuevoModo = modo === "BOBtoPEN" ? "PENtoBOB" : "BOBtoPEN";
-    setModo(nuevoModo);
-    const valor = parseFloat(monto.replace(",", "."));
-    if (!isNaN(valor)) setConversion(calcularConversion(valor, nuevoModo));
-  };
+  const toggleModo = () =>
+    setModo((m) => (m === "BOBtoPEN" ? "PENtoBOB" : "BOBtoPEN"));
 
   const openKyc = async () => {
     try {

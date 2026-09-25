@@ -17,6 +17,7 @@ import NetworkGuard from "../components/NetworkGuard/NetworkGuard";
 import VersionGuard from "../components/VersionGuard/VersionGuard";
 import AuthGuard from "../components/AuthGuard/AuthGuard";
 import NotificationsGuard from "../components/NotificationsGuard/NotificationsGuard";
+import { colors } from "../theme/colors";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -61,7 +62,7 @@ export default function Layout() {
                         // props de sombra custom del headerStyle; la sombra se
                         // controla con headerShadowVisible).
                         headerShadowVisible: true,
-                        headerStyle: { backgroundColor: "#FFFFFF" },
+                        headerStyle: { backgroundColor: colors.background },
                       }}
                     >
                       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

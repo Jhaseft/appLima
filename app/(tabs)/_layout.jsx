@@ -1,5 +1,6 @@
 import { Tabs } from "expo-router";
 import FooterBar from "../../components/FooterLayout/FooterBar";
+import { colors } from "../../theme/colors";
 
 export default function TabsLayout() {
   return (
@@ -9,14 +10,14 @@ export default function TabsLayout() {
         animation: "fade",
         headerShadowVisible: false,
         headerStyle: {
-          backgroundColor: "#FFFFFF",
-          shadowColor: "#000",
+          backgroundColor: colors.background,
+          shadowColor: colors.text,
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.1,
           shadowRadius: 8,
           elevation: 8,
         },
-        sceneStyle: { backgroundColor: "#FFFFFF" },
+        sceneStyle: { backgroundColor: colors.background },
       }}
     >
       <Tabs.Screen name="Home" />

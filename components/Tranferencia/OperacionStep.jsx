@@ -1,4 +1,5 @@
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { FOOTER_CLEARANCE } from "../FooterLayout/FooterBar";
 import { useOperacionStep } from "./hooks/useOperacionStep";
 import { useTasaActual, calcularConversion } from "./hooks/useTasaActual";
 import ResumenOperacion from "./ResumenOperacion";
@@ -35,7 +36,10 @@ export default function OperacionStep({ onNext, onBack, operacion, setOperacion 
   const conversionVigente = calcularConversion(operacion.monto, o.modo, { compra, venta });
 
   return (
-    <ScrollView className="flex-1 bg-background px-4 py-4">
+    <ScrollView
+      className="flex-1 bg-background px-4 py-4"
+      contentContainerStyle={{ paddingBottom: FOOTER_CLEARANCE }}
+    >
       <Text className="text-xl font-lm-bold text-text text-center mb-4">Registro de Operación</Text>
 
       <ResumenOperacion

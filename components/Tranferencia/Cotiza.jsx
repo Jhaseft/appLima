@@ -6,16 +6,18 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   RefreshControl,
+  Platform,
 } from "react-native";
 import { RefreshCw } from "lucide-react-native";
 import { colors } from "../../theme/colors";
+import { FOOTER_CLEARANCE } from "../FooterLayout/FooterBar";
 import { useCotiza } from "./hooks/useCotiza";
 import CotizaSkeleton from "./CotizaSkeleton";
 
 export default function Cotiza({ onNext, operacion, setOperacion }) {
   const c = useCotiza({ onNext, operacion, setOperacion });
 
-  if (c.loading) return <CotizaSkeleton />;
+  if (c.loading || c.refreshing) return <CotizaSkeleton />;
 
   if (!c.tasa) {
     return (
@@ -28,7 +30,10 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
   const montoValido = c.monto && parseFloat(c.monto.replace(",", ".")) > 0;
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -36,8 +41,10 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
           alignItems: "center",
           paddingHorizontal: 50,
           paddingVertical: 30,
+          paddingBottom: FOOTER_CLEARANCE + 30,
         }}
         keyboardShouldPersistTaps="handled"
+        alwaysBounceVertical
         refreshControl={
           <RefreshControl
             refreshing={c.refreshing}

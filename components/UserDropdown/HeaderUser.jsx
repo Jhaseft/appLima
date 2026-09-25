@@ -100,7 +100,7 @@ export default function HeaderUser({ title, subtitle, image }) {
                     numberOfLines={1}
                     adjustsFontSizeToFit
                     minimumFontScale={0.7}
-                    className="text-black text-2xl font-lm-bold text-center"
+                    className="text-text text-2xl font-lm-bold text-center"
                   >
                     {loading ? "Cargando..." : title}
                   </Text>
@@ -110,7 +110,7 @@ export default function HeaderUser({ title, subtitle, image }) {
                       numberOfLines={1}
                       adjustsFontSizeToFit
                       minimumFontScale={0.8}
-                      className="text-yellow-500 text-xs font-lm-medium text-center"
+                      className="text-primary-accent text-xs font-lm-medium text-center"
                     >
                       {subtitle}
                     </Text>
@@ -146,7 +146,7 @@ export default function HeaderUser({ title, subtitle, image }) {
                 >
                   <TcPuntoIcon size={24} />
                   {tcBalance !== null && (
-                    <Text className="text-sm font-lm-bold text-yellow-500">
+                    <Text className="text-sm font-lm-bold text-primary-accent">
                       {tcBalance}
                     </Text>
                   )}

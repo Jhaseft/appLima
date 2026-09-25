@@ -43,7 +43,7 @@ export default function CodeBoxes({ length = 6, value = "", onChange, autoFocus 
           autoFocus={autoFocus && i === 0}
           style={{ width: length > 4 ? 46 : 62, height: 60 }}
           className={`border-2 rounded-xl text-center text-2xl font-lm-bold text-text ${
-            d ? "border-primary" : "border-gray-300"
+            d ? "border-primary" : "border-border"
           }`}
         />
       ))}

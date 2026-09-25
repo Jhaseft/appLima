@@ -4,7 +4,7 @@ export default function SelectModal({ visible, onClose, items, onSelect }) {
   return (
     <Modal visible={visible} transparent animationType="fade">
       <View className="flex-1 justify-center items-center bg-black/50">
-        <View className="bg-white w-3/4 max-h-80 rounded-xl overflow-hidden">
+        <View className="bg-background w-3/4 max-h-80 rounded-xl overflow-hidden">
           <FlatList
             data={items}
             keyExtractor={(item) => item.value}
@@ -16,7 +16,7 @@ export default function SelectModal({ visible, onClose, items, onSelect }) {
                 {item.flag ? (
                   <Image
                     source={{ uri: item.flag }}
-                    className="w-6 h-4 mr-2 rounded border border-gray-200"
+                    className="w-6 h-4 mr-2 rounded border border-border"
                   />
                 ) : null}
                 <Text className="text-text font-sans">
@@ -27,7 +27,7 @@ export default function SelectModal({ visible, onClose, items, onSelect }) {
             )}
           />
           <TouchableOpacity
-            className="p-3 items-center border-t border-gray-200"
+            className="p-3 items-center border-t border-border"
             onPress={onClose}
           >
             <Text className="text-primary-dark font-lm-medium">Cerrar</Text>

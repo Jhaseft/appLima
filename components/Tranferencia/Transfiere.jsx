@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, ScrollView, Switch } from "react-n
 import { Copy } from "lucide-react-native";
 import * as Clipboard from "expo-clipboard";
 import { colors } from "../../theme/colors";
+import { FOOTER_CLEARANCE } from "../FooterLayout/FooterBar";
 import { useTransferMethods } from "../hooks/useTransferMethods";
 import { useTasaActual, calcularConversion } from "./hooks/useTasaActual";
 import Bone from "../Home/Bone";
@@ -31,7 +32,10 @@ export default function Transfiere({ onNext, onBack, operacion }) {
   const copyToClipboard = (text) => Clipboard.setStringAsync(text);
 
   return (
-    <ScrollView className="flex-1 bg-background px-4 py-4">
+    <ScrollView
+      className="flex-1 bg-background px-4 py-4"
+      contentContainerStyle={{ paddingBottom: FOOTER_CLEARANCE }}
+    >
       <Text className="text-xl font-lm-bold text-text text-center mb-4">
         {showOficinas ? "Pago en oficina" : "Realiza tu transferencia"}
       </Text>

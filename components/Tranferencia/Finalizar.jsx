@@ -1,16 +1,28 @@
 import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
 import { X } from "lucide-react-native";
 import { colors } from "../../theme/colors";
+import { FOOTER_CLEARANCE } from "../FooterLayout/FooterBar";
 import { useFinalizar } from "./hooks/useFinalizar";
+import ResumenOperacion from "./ResumenOperacion";
 
-export default function Finalizar({ onBack, operacion, setOperacion }) {
-  const f = useFinalizar({ operacion, setOperacion });
+export default function Finalizar({ onBack, operacion, setOperacion, verificar, onVolverACotizar }) {
+  const f = useFinalizar({ operacion, setOperacion, verificar, onVolverACotizar });
   const lleno = f.comprobantes.length >= f.maxComprobantes;
   const enviarDeshabilitado = !f.comprobanteOpcional && f.comprobantes.length === 0;
 
   return (
-    <ScrollView className="flex-1 bg-background px-6 py-4">
+    <ScrollView
+      className="flex-1 bg-background px-6 py-4"
+      contentContainerStyle={{ paddingBottom: FOOTER_CLEARANCE }}
+    >
       <Text className="text-xl font-lm-bold text-text text-center mb-6">Adjunta y Finaliza Operación</Text>
+
+      <ResumenOperacion
+        operacion={operacion}
+        isOriginBank={f.isOriginBank}
+        tasa={f.tasaVigente}
+        conversion={f.conversionVigente}
+      />
 
       {f.comprobanteOpcional ? (
         <View className="border border-primary-accent rounded-lg bg-primary-light p-4 mb-4">

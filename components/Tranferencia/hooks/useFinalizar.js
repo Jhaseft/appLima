@@ -5,12 +5,14 @@ import { useResumen } from "../../Home/ResumenContext";
 import { useFeedback } from "../../Feedback/FeedbackContext";
 import { crearTransferencia } from "../services/transferenciaApi";
 import { invalidarTransfers } from "../../TranfersHistory/useTransfers";
+import { useTasaActual, calcularConversion } from "./useTasaActual";
 
 const MAX_COMPROBANTES = 5;
 
-// Orquestacion del paso Finalizar: seleccion de comprobantes (hasta 5) y envio
-// de la operacion (mutacion) con el overlay global de carga (feedback.withLoading).
-export function useFinalizar({ operacion, setOperacion }) {
+// Orquestacion del paso Finalizar: resumen con tasa vigente, seleccion de
+// comprobantes (hasta 5) y envio de la operacion (mutacion) con el overlay global
+// de carga. Revalida la tasa al enviar (el backend cobra con la ultima).
+export function useFinalizar({ operacion, setOperacion, verificar, onVolverACotizar }) {
   const [comprobantes, setComprobantes] = useState([]);
   const [error, setError] = useState("");
   const router = useRouter();
@@ -20,6 +22,10 @@ export function useFinalizar({ operacion, setOperacion }) {
   const isBOBtoPEN = operacion.modo === "BOBtoPEN";
   const slug = operacion.nonBankMethod;
   const comprobanteOpcional = isBOBtoPEN && slug === "cash";
+
+  const { compra, venta } = useTasaActual();
+  const tasaVigente = isBOBtoPEN ? venta : compra;
+  const conversionVigente = calcularConversion(operacion.monto, operacion.modo, { compra, venta });
 
   const handlePick = async () => {
     try {
@@ -77,12 +83,37 @@ export function useFinalizar({ operacion, setOperacion }) {
     return formData;
   };
 
+  // Revalida la tasa con un fetch on-demand (verificar tambien actualiza el
+  // resumen y dispara el banner). Si cambio respecto a la que vio el usuario,
+  // confirma; si cancela, vuelve a la calculadora con el nuevo valor.
+  const revalidarTasa = async () => {
+    let lista = null;
+    try {
+      lista = await verificar?.();
+    } catch (_) {}
+
+    const ultima = lista?.length ? lista[lista.length - 1] : null;
+    const nueva = ultima ? parseFloat(isBOBtoPEN ? ultima.venta : ultima.compra) : null;
+    if (!nueva || !operacion.tasa) return true;
+    if (nueva.toFixed(2) === Number(operacion.tasa).toFixed(2)) return true;
+
+    const ok = await feedback.confirm({
+      title: "El tipo de cambio cambió",
+      message: `La tasa pasó de ${Number(operacion.tasa).toFixed(2)} a ${nueva.toFixed(2)}. Se aplicará la última. ¿Deseas continuar?`,
+      confirmText: "Continuar",
+      cancelText: "Volver a cotizar",
+    });
+    if (!ok) onVolverACotizar?.();
+    return ok;
+  };
+
   const handleEnviar = async () => {
     if (!comprobanteOpcional && comprobantes.length === 0) {
       setError("Por favor, sube al menos un comprobante.");
       return;
     }
     setError("");
+    if (!(await revalidarTasa())) return;
     try {
       const data = await feedback.withLoading("Enviando operación...", () =>
         crearTransferencia(construirFormData())
@@ -106,6 +137,9 @@ export function useFinalizar({ operacion, setOperacion }) {
     error,
     comprobanteOpcional,
     maxComprobantes: MAX_COMPROBANTES,
+    isOriginBank: !isBOBtoPEN,
+    tasaVigente,
+    conversionVigente,
     handlePick,
     handleRemove,
     handleEnviar,

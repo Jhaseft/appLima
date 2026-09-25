@@ -24,8 +24,8 @@ export default function PasswordInput({ value, onChangeText, inputRef }) {
         {Array.from({ length: LENGTH }).map((_, i) => (
           <View
             key={i}
-            className={`w-16 h-16 rounded-2xl border-2 items-center justify-center bg-white ${
-              digits.length === i ? "border-primary" : "border-gray-300"
+            className={`w-16 h-16 rounded-2xl border-2 items-center justify-center bg-background ${
+              digits.length === i ? "border-primary" : "border-border"
             }`}
           >
             <Text className="text-2xl font-lm-bold text-text">

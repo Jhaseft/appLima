@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useTipoCambio } from "../../components/Home/hooks/useTipoCambio";
 import { useBanners } from "../../components/Home/hooks/useBanners";
 import { useResumen } from "../../components/Home/ResumenContext";
+import { colors } from "../../theme/colors";
 export default function Home() {
   const { user } = useUser();
   const [refreshing, setRefreshing] = useState(false);
@@ -31,8 +32,8 @@ export default function Home() {
             await banners.reload();
             setRefreshing(false);
           }}
-          colors={["#fdc834"]}
-          tintColor="#fdc834"
+          colors={[colors.primary]}
+          tintColor={colors.primary}
         />
       }
     >

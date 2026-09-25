@@ -10,7 +10,7 @@ export default function StepEmail({ email, setEmail, valid, onContinue, onGoogle
       <Text className="text-3xl font-lm-bold text-text mb-8">Crear una cuenta</Text>
 
       <Text className="text-text font-lm-medium mb-2">Ingresa tu correo</Text>
-      <View className="flex-row items-center border-2 border-gray-300 rounded-2xl px-4 bg-white">
+      <View className="flex-row items-center border-2 border-border rounded-2xl px-4 bg-background">
         <Mail size={20} color={colors.textMuted} />
         <TextInput
           value={email}

@@ -60,9 +60,8 @@ export default function VersionGuard({ children }) {
   if (status === "outdated") {
     const storeUrl = Platform.OS === "ios" ? STORE_URL.ios : STORE_URL.android;
     return (
-      <View className="flex-1 bg-black items-center justify-center px-9">
-
-        <View className="w-24 h-24 rounded-3xl bg-white items-center justify-center mb-10 shadow-lg">
+      <View className="flex-1 bg-background items-center justify-center px-9">
+        <View className="w-24 h-24 rounded-3xl bg-surface border border-border items-center justify-center mb-10">
           <Image
             source={require("../../assets/images/logo.png")}
             className="w-20 h-20 rounded-2xl"
@@ -70,49 +69,43 @@ export default function VersionGuard({ children }) {
           />
         </View>
 
-        
-        <View className="bg-neutral-800 border border-neutral-700 rounded-full px-4 py-1.5 mb-6">
-          <Text className="text-neutral-400 text-xs font-semibold tracking-widest uppercase">
+        <View className="bg-primary-light border border-primary-accent rounded-full px-4 py-1.5 mb-6">
+          <Text className="text-primary-dark text-xs font-lm-bold tracking-widest uppercase">
             Actualización requerida
           </Text>
         </View>
 
-       
-        <Text className="text-white text-3xl font-bold text-center mb-4 leading-tight">
+        <Text className="text-text text-3xl font-lm-bold text-center mb-4 leading-tight">
           Nueva versión{"\n"}disponible
         </Text>
 
-       
-        <Text className="text-neutral-400 text-base text-center leading-relaxed mb-8">
+        <Text className="text-text-muted text-base font-sans text-center leading-relaxed mb-8">
           Para seguir usando Transfer Cash necesitas instalar la última versión de la app.
         </Text>
 
-       
-        <View className="flex-row items-center bg-neutral-900 border border-neutral-800 rounded-full px-5 py-2 mb-10">
-          <View className="w-2 h-2 rounded-full bg-neutral-500 mr-2" />
-          <Text className="text-neutral-500 text-xs font-mono">
+        <View className="flex-row items-center bg-surface border border-border rounded-full px-5 py-2 mb-10">
+          <View className="w-2 h-2 rounded-full bg-text-muted mr-2" />
+          <Text className="text-text-muted text-xs font-sans">
             v{Constants.expoConfig?.version}
           </Text>
-          <Text className="text-neutral-600 mx-2">→</Text>
-          <View className="w-2 h-2 rounded-full bg-white mr-2" />
-          <Text className="text-white text-xs font-mono font-semibold">
+          <Text className="text-text-muted mx-2">→</Text>
+          <View className="w-2 h-2 rounded-full bg-primary mr-2" />
+          <Text className="text-text text-xs font-lm-medium">
             Nueva versión
           </Text>
         </View>
 
-      
         <TouchableOpacity
-          className="bg-white w-full py-4 rounded-2xl items-center mb-4 active:opacity-80"
+          className="bg-primary w-full py-4 rounded-2xl items-center mb-4 active:opacity-80"
           onPress={() => Linking.openURL(storeUrl)}
           activeOpacity={0.85}
         >
-          <Text className="text-black font-bold text-base tracking-wide">
+          <Text className="text-text font-lm-bold text-base tracking-wide">
             Actualizar ahora
           </Text>
         </TouchableOpacity>
 
-      
-        <Text className="text-neutral-700 text-xs text-center mt-2">
+        <Text className="text-text-muted text-xs font-sans text-center mt-2">
           No puedes continuar sin actualizar
         </Text>
       </View>

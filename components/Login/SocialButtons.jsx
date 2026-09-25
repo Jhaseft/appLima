@@ -1,5 +1,6 @@
 import { View, Text, Image, TouchableOpacity, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { colors } from "../../theme/colors";
 
 const GOOGLE_LOGO = "https://developers.google.com/identity/images/g-logo.png";
 
@@ -7,7 +8,7 @@ function IconButton({ onPress, children }) {
   return (
     <TouchableOpacity
       onPress={onPress}
-      className="w-20 h-14 items-center justify-center border-2 border-gray-200 rounded-2xl bg-white active:opacity-80"
+      className="w-20 h-14 items-center justify-center border-2 border-border rounded-2xl bg-background active:opacity-80"
     >
       {children}
     </TouchableOpacity>
@@ -18,15 +19,15 @@ export default function SocialButtons({ onGoogle, onApple }) {
   return (
     <View>
       <View className="flex-row items-center my-4">
-        <View className="flex-1 h-px bg-gray-200" />
+        <View className="flex-1 h-px bg-border" />
         <Text className="mx-3 text-text-muted text-sm font-sans">o</Text>
-        <View className="flex-1 h-px bg-gray-200" />
+        <View className="flex-1 h-px bg-border" />
       </View>
 
       <View className="flex-row justify-center gap-4">
         {Platform.OS === "ios" && (
           <IconButton onPress={onApple}>
-            <Ionicons name="logo-apple" size={28} color="#000" />
+            <Ionicons name="logo-apple" size={28} color={colors.text} />
           </IconButton>
         )}
         <IconButton onPress={onGoogle}>

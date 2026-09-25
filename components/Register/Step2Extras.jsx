@@ -42,13 +42,13 @@ export default function Step2Extras({ data, setData, errors }) {
       <FieldWrapper label="Número de teléfono *" error={errors.phone}>
         <View className="flex-row space-x-2 items-center">
           <TouchableOpacity
-            className="flex-row items-center border border-gray-300 rounded-xl px-3 py-2"
+            className="flex-row items-center border border-border rounded-xl px-3 py-2"
             onPress={() => setShowPhone(true)}
           >
             {selectedFlag ? (
               <Image
                 source={{ uri: selectedFlag }}
-                className="w-6 h-4 mr-2 rounded border border-gray-200"
+                className="w-6 h-4 mr-2 rounded border border-border"
               />
             ) : null}
             <Text className="text-text font-sans">{phoneCode || "+---"}</Text>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import * as Network from "expo-network";
+import { colors } from "../../theme/colors";
 
 const LATENCY_WARNING_MS = 1500;
 
@@ -74,31 +75,31 @@ export default function NetworkGuard({ children }) {
 
   if (status === "checking") {
     return (
-      <View className="absolute inset-0 z-50 w-full h-full justify-center items-center bg-white">
-        <ActivityIndicator color="#000" size="large" />
-        <Text className="mt-4 text-gray-500">Verificando conexión...</Text>
+      <View className="absolute inset-0 z-50 w-full h-full justify-center items-center bg-background">
+        <ActivityIndicator color={colors.primary} size="large" />
+        <Text className="mt-4 text-text-muted font-sans">Verificando conexión...</Text>
       </View>
     );
   }
 
   if (status === "offline") {
     return (
-      <View className="absolute inset-0 z-50 w-full h-full justify-center items-center bg-white">
-        <View className="w-4/5 p-6 bg-white rounded-xl shadow-lg items-center">
-          <Text className="text-black text-xl font-bold text-center mb-2">
+      <View className="absolute inset-0 z-50 w-full h-full justify-center items-center bg-background px-8">
+        <View className="w-full p-6 bg-surface border border-border rounded-3xl items-center">
+          <Text className="text-text text-xl font-lm-bold text-center mb-2">
             Sin conexión a Internet
           </Text>
-          <Text className="text-gray-600 text-center mb-6">
+          <Text className="text-text-muted font-sans text-center mb-6">
             Necesitas estar conectado para usar Transfer Cash.
           </Text>
           {checking ? (
-            <ActivityIndicator color="#000" size="large" className="mt-4" />
+            <ActivityIndicator color={colors.primary} size="large" className="mt-4" />
           ) : (
             <TouchableOpacity
               onPress={checkConnection}
-              className="bg-blue-500 px-6 py-3 rounded-lg"
+              className="bg-primary px-6 py-3 rounded-xl"
             >
-              <Text className="text-white font-bold text-center">Reintentar</Text>
+              <Text className="text-text font-lm-bold text-center">Reintentar</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -110,8 +111,8 @@ export default function NetworkGuard({ children }) {
     return (
       <View style={{ flex: 1 }}>
         {children}
-        <View className="absolute bottom-0 left-0 right-0 bg-yellow-500 px-4 py-3">
-          <Text className="text-white text-center font-semibold text-sm">
+        <View className="absolute bottom-0 left-0 right-0 bg-primary px-4 py-3">
+          <Text className="text-text text-center font-lm-medium text-sm">
             Señal débil — las transferencias pueden fallar
           </Text>
         </View>
