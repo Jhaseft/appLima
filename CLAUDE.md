@@ -80,7 +80,7 @@ components/<Feature>/
 - **hooks/**: estado y orquestación; devuelven datos + handlers.
 - **services/**: acceso a datos (API base en `components/api.js`). Nada de React.
 - Cosas compartidas entre features viven en `components/` (raíz), `components/hooks/`
-  o `components/services/` (ej. `useLoginHandlers`, `authApi`, `GoogleBoton`).
+  o `components/services/` (ej. `useLoginHandlers`, `authApi`, `SocialButtons`).
 
 **Regla de oro — código corto siempre.** Odiamos el código largo. Si un `.jsx` se pasa de
 ~120 líneas o mezcla lógica de negocio + UI, **de una** se vuelve orquestador: la lógica
@@ -155,12 +155,12 @@ El resto de módulos (aún no migrados) conservan su `loading` local como antes.
 | Register             | ✅ hecho     |
 | Home                 | ✅ hecho     |
 | Cuentas              | ✅ hecho     |
-| Transferencias       | ⬜ pendiente |
+| Transferencias       | ✅ hecho     |
 | TcPuntos             | ✅ hecho     |
-| MiCuenta             | ⬜ pendiente |
-| Chat                 | ⬜ pendiente |
-| Historial            | ⬜ pendiente |
-| Políticas / FAQ      | ⬜ pendiente |
+| MiCuenta             | ✅ hecho     |
+| Chat                 | ✅ hecho     |
+| Historial            | ✅ hecho     |
+| Políticas / FAQ      | ✅ hecho     |
 
 Leyenda: ⬜ pendiente · 🟨 en progreso · ✅ hecho
 

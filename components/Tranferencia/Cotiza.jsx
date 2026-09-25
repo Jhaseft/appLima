@@ -1,252 +1,31 @@
-import { useEffect, useState } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  ActivityIndicator,
   KeyboardAvoidingView,
   ScrollView,
-  Linking,
   RefreshControl,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
 import { RefreshCw } from "lucide-react-native";
-import API_BASE_URL from "../api";
-import { useUser } from "../ContextUser/UserContext";
-import { useFeedback } from "../Feedback/FeedbackContext";
-
-const KYC_DEEP_LINK = process.env.EXPO_PUBLIC_KYC_DEEP_LINK;
+import { colors } from "../../theme/colors";
+import { useCotiza } from "./hooks/useCotiza";
+import CotizaSkeleton from "./CotizaSkeleton";
 
 export default function Cotiza({ onNext, operacion, setOperacion }) {
-  const [monto, setMonto] = useState("");
-  const [conversion, setConversion] = useState("");
-  const [modo, setModo] = useState("PENtoBOB");
-  const [error, setError] = useState("");
-  const [tasas, setTasas] = useState(null);
-  const [transferConfig, setTransferConfig] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [configReady, setConfigReady] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
-  const [token, setToken] = useState(null);
-  const { user } = useUser();
-  const feedback = useFeedback();
-  const router = useRouter();
+  const c = useCotiza({ onNext, operacion, setOperacion });
 
-  // El perfil se considera incompleto si falta alguno de estos datos
-  // (mismos campos que valida el backend: nationality, phone, document_number).
-  const perfilIncompleto =
-    !user?.nationality || !user?.phone || !user?.document_number;
+  if (c.loading) return <CotizaSkeleton />;
 
-  useEffect(() => {
-    (async () => {
-      const savedToken = await AsyncStorage.getItem("token");
-      setToken(savedToken);
-    })();
-  }, []);
-
-  // Carga configuración de límites desde el backend
-  const loadConfig = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/config/transfer`);
-      const json = await res.json();
-      setTransferConfig(json); 
-    } catch (err) {
-      console.error("Error cargando config:", err);
-      setTransferConfig({ min_pen: 20,max_bob: 1000000, max_pen: 1000000, min_bob: 60, kyc_limit_pen: 300, kyc_limit_bob: 1000 });
-    } finally {
-      setConfigReady(true);
-    }
-  };
-
-  // Carga y cacheo de tasas
-  const loadTasas = async (force = false) => {
-    try {
-      setLoading(true);
-      const cached = await AsyncStorage.getItem("ultimaTasa");
-      const lastUpdate = await AsyncStorage.getItem("ultimaTasaUpdate");
-      const now = Date.now();
-      const fiveMinutes = 5 * 60 * 1000;
-
-      if (!force && cached && lastUpdate && now - parseInt(lastUpdate) < fiveMinutes) {
-        setTasas(JSON.parse(cached));
-      } else {
-        const res = await fetch(`${API_BASE_URL}/api/tipo-cambio/historial`);
-        const json = await res.json();
-        const ultima = json[json.length - 1];
-        setTasas(ultima);
-
-        await AsyncStorage.setItem("ultimaTasa", JSON.stringify(ultima));
-        await AsyncStorage.setItem("ultimaTasaUpdate", now.toString());
-      }
-    } catch (err) {
-      console.error("Error cargando tasas:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadConfig();
-    loadTasas();
-  }, []);
-
-  if (loading || !configReady) {
+  if (!c.tasa) {
     return (
       <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#FACC15" />
-        <Text className="text-gray-700 mt-2">Cargando tasas...</Text>
+        <Text className="text-danger font-sans">No se pudo obtener la tasa.</Text>
       </View>
     );
   }
 
-  if (!tasas) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-red-500">No se pudo obtener la tasa.</Text>
-      </View>
-    );
-  }
-
-  const tasaCompra = parseFloat(tasas.compra);
-  const tasaVenta = parseFloat(tasas.venta);
-
-  const calcularConversion = (valor, tipo) => {
-    if (tipo === "PENtoBOB") return (valor * tasaCompra).toFixed(2);
-    return (valor / tasaVenta).toFixed(2);
-  };
-
-  // Manejo de cambios en el input permitiendo decimales
-  const handleCambio = (valorStr) => {
-    // Reemplaza comas por puntos
-    let valorClean = valorStr.replace(",", ".");
-
-    // Permite solo números y un punto
-    if (/^[0-9]*\.?[0-9]*$/.test(valorClean)) {
-      const valor = parseFloat(valorClean);
-
-      if (!isNaN(valor) && valor >= 0) {
-        setMonto(valorClean);
-        setError("");
-        setConversion(calcularConversion(valor, modo));
-      } else if (valor < 0) {
-        setMonto("");
-        setConversion("");
-        setError("⚠️ El monto no puede ser negativo.");
-      } else {
-        setMonto(valorClean); // permite que escriba mientras no sea inválido
-        setConversion("");
-      }
-    }
-  };
-
-  const toggleModo = () => {
-    const nuevoModo = modo === "BOBtoPEN" ? "PENtoBOB" : "BOBtoPEN";
-    setModo(nuevoModo);
-
-    const valor = parseFloat(monto.replace(",", "."));
-    if (!isNaN(valor)) {
-      setConversion(calcularConversion(valor, nuevoModo));
-    }
-  };
-
-  const openKycInBrowser = async () => {
-    if (!token) return;
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/kyc/session`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ next_url: KYC_DEEP_LINK }),
-      });
-      const data = await response.json();
-      if (!data.redirect_url) throw new Error("No se recibió redirect_url");
-      await Linking.openURL(data.redirect_url);
-    } catch (err) {
-      console.error(" Error KYC:", err);
-      feedback.error("Hubo un problema al iniciar la verificación KYC.");
-    }
-  };
-
-  const handleNext = () => {
-    // Si el perfil está incompleto, se exige completarlo antes de operar.
-    if (perfilIncompleto) {
-      feedback
-        .confirm({
-          title: "Completa tu perfil",
-          message: "Para realizar una operación necesitamos unos datos adicionales.",
-          confirmText: "Completar",
-        })
-        .then((ok) => {
-          if (ok) router.push("/CompleteProfile");
-        });
-      return;
-    }
-
-    const valor = parseFloat(monto.replace(",", "."));
-
-    const minPEN = transferConfig?.min_pen ?? 20;
-    const minBOB = transferConfig?.min_bob ?? 60;
-    const maxPEN = transferConfig?.max_pen ?? 100000;
-    const maxBOB = transferConfig?.max_bob ?? 100000;
-
-
-    if (modo === "PENtoBOB" && valor < minPEN) {
-      setError(` El monto mínimo es S/ ${minPEN}.`);
-      return;
-    }
-    if (modo === "BOBtoPEN" && valor < minBOB) {
-      setError(` El monto mínimo es Bs ${minBOB}.`);
-      return;
-    }
-
-    if (modo === "PENtoBOB" && valor > maxPEN) {
-      setError(` El monto maximo en S/ es ${maxPEN}.`);
-      return;
-    }
-    if (modo === "BOBtoPEN" && valor > maxBOB) {
-      setError(` El monto maximo en Bs es ${maxBOB}.`);
-      return;
-    }
-   
-
-    const limitePEN = transferConfig?.kyc_limit_pen ?? 0;
-    const limiteBOB = transferConfig?.kyc_limit_bob ?? 0;
-    const requiereKyc =
-      (modo === "PENtoBOB" && valor > limitePEN) ||
-      (modo === "BOBtoPEN" && valor > limiteBOB);
-
-    if (requiereKyc && user?.kyc_status !== "verified") {
-      feedback
-        .confirm({
-          title: "KYC Requerido",
-          message: `Para operar montos mayores a S/${limitePEN} o Bs ${limiteBOB} debes completar tu verificación KYC.`,
-          confirmText: "Ir a KYC",
-        })
-        .then((ok) => {
-          if (ok) openKycInBrowser();
-        });
-      return;
-    }
-    const data = {
-      monto: valor,
-      conversion,
-      modo,
-      tasa: modo === "PENtoBOB" ? tasaCompra : tasaVenta,
-    };
-
-    setOperacion((prev) => ({
-      ...prev,
-      ...data,
-      cuentaOrigen: null,
-      cuentaDestino: null,
-    }));
-
-    onNext();
-  };
+  const montoValido = c.monto && parseFloat(c.monto.replace(",", ".")) > 0;
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
@@ -261,79 +40,70 @@ export default function Cotiza({ onNext, operacion, setOperacion }) {
         keyboardShouldPersistTaps="handled"
         refreshControl={
           <RefreshControl
-            refreshing={refreshing}
-            onRefresh={async () => {
-              setRefreshing(true);
-              await loadTasas(true);
-              await loadConfig();
-              setRefreshing(false);
-            }}
-             colors={["#fdc834"]} 
-            tintColor="#fdc834"
+            refreshing={c.refreshing}
+            onRefresh={c.onRefresh}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
+            progressBackgroundColor={colors.background}
           />
         }
       >
-        <Text className="text-2xl font-bold text-black">TransferCash</Text>
-        <Text className="text-sm text-gray-600 text-center mb-4">
+        <Text className="text-2xl font-lm-bold text-text">TransferCash</Text>
+        <Text className="text-sm text-text-muted text-center mb-4">
           Cambio de divisas rápido, seguro y confiable
         </Text>
 
         <View className="flex-row justify-between w-full mb-4">
-          <Text className="text-black font-semibold">
-            COMPRA: <Text className="text-yellow-500">{tasaCompra.toFixed(2)}</Text>
+          <Text className="text-text font-lm-medium">
+            COMPRA: <Text className="text-primary-accent">{c.tasaCompra.toFixed(2)}</Text>
           </Text>
-          <Text className="text-black font-semibold">
-            VENTA: <Text className="text-yellow-500">{tasaVenta.toFixed(2)}</Text>
+          <Text className="text-text font-lm-medium">
+            VENTA: <Text className="text-primary-accent">{c.tasaVenta.toFixed(2)}</Text>
           </Text>
         </View>
 
-        <View className="w-full bg-white p-6 gap-3 rounded-xl border border-gray-200">
+        <View className="w-full bg-background p-6 gap-3 rounded-xl border border-border">
           <View>
-            <Text className="text-sm font-medium text-gray-700 text-center mb-1">
-              {modo === "BOBtoPEN" ? "TIENES BOLIVIANOS" : "TIENES SOLES"}
+            <Text className="text-sm font-lm-medium text-text-muted text-center mb-1">
+              {c.modo === "BOBtoPEN" ? "TIENES BOLIVIANOS" : "TIENES SOLES"}
             </Text>
             <TextInput
               keyboardType="numeric"
-              value={monto.toString()}
-              onChangeText={handleCambio}
+              value={c.monto.toString()}
+              onChangeText={c.handleCambio}
               placeholder="0.00"
-              className="border border-gray-400 rounded-lg px-3 py-2 text-center font-semibold text-black"
-              placeholderTextColor="#9CA3AF"
+              className="border border-border rounded-lg px-3 py-2 text-center font-lm-medium text-text"
+              placeholderTextColor={colors.textMuted}
             />
           </View>
 
           <View className="flex-row justify-center">
-            <TouchableOpacity
-              onPress={toggleModo}
-              className="p-2 bg-yellow-400 rounded-full shadow"
-            >
-              <RefreshCw size={22} color="black" />
+            <TouchableOpacity onPress={c.toggleModo} className="p-2 bg-primary rounded-full shadow">
+              <RefreshCw size={22} color={colors.text} />
             </TouchableOpacity>
           </View>
 
           <View>
-            <Text className="text-sm font-medium text-gray-700 text-center mb-1">
-              {modo === "BOBtoPEN" ? "RECIBES SOLES" : "RECIBES BOLIVIANOS"}
+            <Text className="text-sm font-lm-medium text-text-muted text-center mb-1">
+              {c.modo === "BOBtoPEN" ? "RECIBES SOLES" : "RECIBES BOLIVIANOS"}
             </Text>
             <TextInput
-              value={conversion.toString()}
+              value={c.conversion.toString()}
               editable={false}
-              className="border border-gray-400 rounded-lg px-3 py-2 text-center font-semibold bg-gray-50 text-black"
+              className="border border-border rounded-lg px-3 py-2 text-center font-lm-medium bg-surface text-text"
             />
           </View>
 
-          {error ? (
-            <Text className="text-red-500 text-sm text-center">{error}</Text>
+          {c.error ? (
+            <Text className="text-danger text-sm text-center">{c.error}</Text>
           ) : null}
 
           <TouchableOpacity
-            onPress={handleNext}
-            className={`py-3 rounded-lg mt-2 shadow ${monto ? "bg-yellow-400" : "bg-gray-300"}`}
-            disabled={!monto || parseFloat(monto.replace(",", ".")) <= 0}
+            onPress={c.handleNext}
+            className={`py-3 rounded-lg mt-2 shadow ${montoValido ? "bg-primary" : "bg-border"}`}
+            disabled={!montoValido}
           >
-            <Text className="text-black font-bold text-center">
-              Iniciar Operación
-            </Text>
+            <Text className="text-text font-lm-bold text-center">Iniciar Operación</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

@@ -1,49 +1,36 @@
 import { View, Text } from "react-native";
 import { Check } from "lucide-react-native";
+import { colors } from "../../theme/colors";
+
+const STEPS = ["Cotiza", "Operación", "Transfiere", "Adjunta y finaliza"];
 
 export default function ProgressBar({ step }) {
-  const steps = [
-    "Cotiza",
-    "Operación",
-    "Transfiere",
-    "Adjunta y finaliza",
-  ];
-
   return (
     <View className="w-full mt-5">
-     
       <View className="flex-row items-center justify-between w-full px-3">
-        {steps.map((_, index) => {
+        {STEPS.map((_, index) => {
           const current = index + 1;
           const isCompleted = step > current;
           const isActive = step === current;
 
           return (
             <View key={index} className="flex-1 items-center">
-              {/* Círculo */}
               <View
-                className={`w-7 h-7 rounded-full border-2 flex items-center justify-center z-10
-                ${isCompleted || isActive ? "bg-yellow-500 border-yellow-100" : "bg-gray-200 border-gray-300"}`}
+                className={`w-7 h-7 rounded-full border-2 flex items-center justify-center z-10 ${
+                  isCompleted || isActive ? "bg-primary-accent border-primary-light" : "bg-border border-border"
+                }`}
               >
                 {isCompleted ? (
-                  <Check size={18} color="white" strokeWidth={3} />
+                  <Check size={18} color={colors.background} strokeWidth={3} />
                 ) : (
-                  <Text
-                    className={`${
-                      isActive ? "text-white" : "text-gray-500"
-                    } font-bold text-sm`}
-                  >
-                    
+                  <Text className={`${isActive ? "text-background" : "text-text-muted"} font-lm-bold text-sm`}>
+                    {current}
                   </Text>
                 )}
               </View>
 
-               
-              {index < steps.length - 1 && (
-                <View
-                  className={`absolute top-1/2 left-1/2 h-1 w-full -z-10
-                  ${step > current ? "bg-yellow-500" : "bg-gray-300"}`}
-                />
+              {index < STEPS.length - 1 && (
+                <View className={`absolute top-1/2 left-1/2 h-1 w-full -z-10 ${step > current ? "bg-primary-accent" : "bg-border"}`} />
               )}
             </View>
           );
@@ -51,9 +38,9 @@ export default function ProgressBar({ step }) {
       </View>
 
       <View className="flex-row justify-between mt-2 px-2">
-        {steps.map((label, index) => (
+        {STEPS.map((label, index) => (
           <View key={index} className="flex-1 items-center px-1">
-            <Text className="text-xs text-center">{label}</Text>
+            <Text className="text-xs text-center text-text font-sans">{label}</Text>
           </View>
         ))}
       </View>

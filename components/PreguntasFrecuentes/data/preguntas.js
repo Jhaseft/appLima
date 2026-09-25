@@ -1,11 +1,4 @@
-import { useState } from "react";
-import { View, Text, Pressable, ScrollView } from "react-native";
-import { Stack } from "expo-router";
-import { ChevronDown, ChevronUp } from "lucide-react-native";
-import HeaderUser from "../UserDropdown/HeaderUser";
-import { HORARIOS_TEXTO } from "../api";
-
-const PREGUNTAS = (horariosTxt) => [
+export const PREGUNTAS = (horariosTxt) => [
   {
     pregunta: "¿Cómo subo mi QR?",
     respuesta:
@@ -87,60 +80,3 @@ const PREGUNTAS = (horariosTxt) => [
       "La verificación de identidad (KYC) se activa cuando el monto de tu operación supera los siguientes límites:\n• Envíos Perú → Bolivia: a partir de S/ 3,000\n• Envíos Bolivia → Perú: a partir de Bs 10,000\n\nSi tu operación está por debajo de esos montos, no necesitas completar el KYC.",
   },
 ];
-
-function FAQ({ item }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <View className="mb-3 border border-gray-200 rounded-2xl overflow-hidden">
-      
-      <Pressable
-        onPress={() => setOpen((v) => !v)}
-        className={`flex-row items-center justify-between px-4 py-4 ${
-          open ? "bg-yellow-400" : "bg-white"
-        }`}
-      >
-        <Text
-          className="text-black font-semibold text-sm flex-1 pr-2"
-          style={{ flexShrink: 1 }}
-        >
-          {item.pregunta}
-        </Text>
-        {open ? (
-          <ChevronUp size={18} color="#000" />
-        ) : (
-          <ChevronDown size={18} color="#374151" />
-        )}
-      </Pressable>
-
-      {open && (
-        <View className="px-4 py-4 bg-gray-50 border-t border-gray-200">
-          <Text className="text-gray-700 text-sm leading-6">{item.respuesta}</Text>
-        </View>
-      )}
-    </View>
-  );
-}
-
-export default function PreguntasFrecuentes() {
-  return (
-    <>
-
-
-      <ScrollView
-        className="flex-1 bg-white"
-        contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <HeaderUser title="Preguntas Frecuentes" subtitle="Respuestas a las preguntas más comunes" />
-        <Text className="text-gray-500 text-sm mb-6">
-          Toca una pregunta para ver la respuesta
-        </Text>
-
-        {PREGUNTAS(HORARIOS_TEXTO).map((item, i) => (
-          <FAQ key={i} item={item} />
-        ))}
-      </ScrollView>
-    </>
-  );
-}

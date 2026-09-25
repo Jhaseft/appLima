@@ -1,8 +1,4 @@
-import { View, Text, ScrollView } from "react-native";
-import { Stack } from "expo-router";
-import HeaderUser from "../UserDropdown/HeaderUser";
-
-const SECCIONES = [
+export const SECCIONES = [
   {
     titulo: "Objeto",
     contenido:
@@ -54,29 +50,3 @@ const SECCIONES = [
       "El uso de la plataforma www.transfercash.click implica la aceptación total de los presentes términos y condiciones.",
   },
 ];
-
-export default function Politicas() {
-  return (
-    <>
-      <ScrollView
-        className="flex-1 bg-white"
-        contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
-        showsVerticalScrollIndicator={false}
-      >
-         <HeaderUser title="Politicas" subtitle="Cuentas y Billeteras - Transfer Cash" />
-        <Text className="text-gray-500 text-sm mb-6">
-          Última actualización: enero 2025
-        </Text>
-
-        {SECCIONES.map((sec, i) => (
-          <View key={i} className="mb-6">
-            <Text className="text-black text-base font-bold mb-2">
-              {sec.titulo}
-            </Text>
-            <Text className="text-gray-700 text-sm leading-6">{sec.contenido}</Text>
-          </View>
-        ))}
-      </ScrollView>
-    </>
-  );
-}

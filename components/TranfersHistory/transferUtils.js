@@ -1,10 +1,15 @@
+import { colors } from "../../theme/colors";
+
+// Color por estado usando tokens (nada de nombres de color sueltos):
+// pending → amarillo (en curso), verified → texto (confirmado), completed →
+// success, rejected → danger, otro → text-muted.
 export const getStatusColor = (status) => {
   switch (status) {
-    case "pending":   return "orange";
-    case "verified":  return "blue";
-    case "completed": return "green";
-    case "rejected":  return "red";
-    default:          return "gray";
+    case "pending":   return colors.primaryDark;
+    case "verified":  return colors.text;
+    case "completed": return colors.success;
+    case "rejected":  return colors.danger;
+    default:          return colors.textMuted;
   }
 };
 
