@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { View, Text, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useUser } from "../components/ContextUser/UserContext";
+import { colors } from "../theme/colors";
 
 export default function KycResultado() {
   const { status } = useLocalSearchParams();
@@ -16,9 +17,9 @@ export default function KycResultado() {
   }, []);
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#fff" }}>
-      <ActivityIndicator size="large" color="#000" />
-      <Text style={{ marginTop: 16, fontSize: 16, color: "#000" }}>
+    <View className="flex-1 items-center justify-center bg-background px-8">
+      <ActivityIndicator size="large" color={colors.primary} />
+      <Text className="text-text text-base font-lm-medium text-center mt-4">
         {status === "approved" ? "KYC verificado. Redirigiendo..." : "Verificando KYC..."}
       </Text>
     </View>

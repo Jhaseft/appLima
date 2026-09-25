@@ -15,7 +15,7 @@ export const NAV_ITEMS = [
 ];
 
 export const INFO_ITEMS = [
-  { label: "Políticas", icon: FileText, route: "/Politicas" },
+  { label: "Políticas", icon: FileText, url: "https://transfercash.click/politicas" },
   { label: "Preguntas frecuentes", icon: HelpCircle, route: "/PreguntasFrecuentes" },
 ];
 

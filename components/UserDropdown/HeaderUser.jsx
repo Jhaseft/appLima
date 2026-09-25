@@ -27,7 +27,6 @@ const RUTAS_SIN_TC_PUNTOS = [
   "/MiCuenta",
   "/Cuentas",
   "/TransfersHistory",
-  "/Politicas",
   "/PreguntasFrecuentes",
   "/Idioma",
 ];

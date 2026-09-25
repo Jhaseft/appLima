@@ -139,10 +139,10 @@ export default function DrawerMenu({ visible, onClose, user, onLogout, router, o
             <SectionTitle title="Información y ayuda" />
             {INFO_ITEMS.map((item) => (
               <MenuRow
-                key={item.route}
+                key={item.url ?? item.route}
                 label={item.label}
                 icon={item.icon}
-                onPress={() => navigate(item.route)}
+                onPress={() => (item.url ? runClose(() => Linking.openURL(item.url)) : navigate(item.route))}
               />
             ))}
 
