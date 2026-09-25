@@ -15,8 +15,16 @@ export default function ProgressBar({ step }) {
 
           return (
             <View key={index} className="flex-1 items-center">
+              {index < STEPS.length - 1 && (
+                <View
+                  className={`absolute top-1/2 left-1/2 w-full h-1 rounded-full ${
+                    step > current ? "bg-primary-accent" : "bg-border"
+                  }`}
+                />
+              )}
+
               <View
-                className={`w-7 h-7 rounded-full border-2 flex items-center justify-center z-10 ${
+                className={`w-7 h-7 rounded-full border-2 items-center justify-center z-10 ${
                   isCompleted || isActive ? "bg-primary-accent border-primary-light" : "bg-border border-border"
                 }`}
               >
@@ -28,10 +36,6 @@ export default function ProgressBar({ step }) {
                   </Text>
                 )}
               </View>
-
-              {index < STEPS.length - 1 && (
-                <View className={`absolute top-1/2 left-1/2 h-1 w-full -z-10 ${step > current ? "bg-primary-accent" : "bg-border"}`} />
-              )}
             </View>
           );
         })}
