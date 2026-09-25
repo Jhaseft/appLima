@@ -1,5 +1,6 @@
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Linking } from "react-native";
 import { FOOTER_CLEARANCE } from "../FooterLayout/FooterBar";
+import API_BASE_URL from "../api";
 import { useOperacionStep } from "./hooks/useOperacionStep";
 import { useTasaActual, calcularConversion } from "./hooks/useTasaActual";
 import ResumenOperacion from "./ResumenOperacion";
@@ -110,7 +111,10 @@ export default function OperacionStep({ onNext, onBack, operacion, setOperacion 
           Declaro bajo juramento que la información registrada es veraz y exacta.
         </Checkbox>
         <Checkbox checked={o.terminos} onPress={() => o.setTerminos(!o.terminos)}>
-          Acepto los Términos y condiciones y la Política de privacidad.
+          Acepto los{" "}
+          <Text className="text-primary-dark font-lm-medium underline" onPress={() => Linking.openURL(`${API_BASE_URL}/politicas`)}>
+            Términos y Política de privacidad
+          </Text>
         </Checkbox>
       </View>
 

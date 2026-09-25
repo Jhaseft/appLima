@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useBancos } from "./useBancos";
 import { useGuardarCuenta } from "./useGuardarCuenta";
+import { soloDigitos, soloLetras, soloTelefono } from "../../../utils/sanitize";
 
 const BILLETERAS = ["yape", "plin"];
 
@@ -30,8 +31,15 @@ export function useFormDestino({ isOpen, bancosProp, user, onCuentaGuardada, onC
   }, [isOpen]);
 
   const esBilletera = BILLETERAS.includes(banco?.name?.toLowerCase());
+  const minDigitos = esBilletera ? 8 : 6;
   const canSave =
-    juramento && terminos && banco && numeroCuenta && nombre && documento && contacto;
+    juramento &&
+    terminos &&
+    banco &&
+    numeroCuenta.length >= minDigitos &&
+    nombre.trim().length >= 3 &&
+    documento.length >= 5 &&
+    contacto.length >= 7;
 
   const submit = () => {
     if (!canSave) return;
@@ -50,13 +58,13 @@ export function useFormDestino({ isOpen, bancosProp, user, onCuentaGuardada, onC
     banco,
     setBanco,
     numeroCuenta,
-    setNumeroCuenta,
+    setNumeroCuenta: (v) => setNumeroCuenta(soloDigitos(v)),
     nombre,
-    setNombre,
+    setNombre: (v) => setNombre(soloLetras(v)),
     documento,
-    setDocumento,
+    setDocumento: (v) => setDocumento(soloDigitos(v)),
     contacto,
-    setContacto,
+    setContacto: (v) => setContacto(soloTelefono(v)),
     juramento,
     setJuramento,
     terminos,

@@ -60,6 +60,7 @@ export default function Step2Extras({ data, setData, errors }) {
             placeholder="76543210"
             placeholderTextColor={colors.textMuted}
             keyboardType="numeric"
+            maxLength={15}
             className="flex-1 text-text font-sans px-2 py-2"
           />
         </View>
@@ -80,6 +81,7 @@ export default function Step2Extras({ data, setData, errors }) {
           placeholder="1234567"
           placeholderTextColor={colors.textMuted}
           keyboardType="numeric"
+          maxLength={15}
           className="text-text font-sans py-1"
         />
       </FieldWrapper>

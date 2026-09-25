@@ -2,17 +2,18 @@ import { View, Text, TouchableOpacity, Image } from "react-native";
 import BottomSheet from "../BottomSheet";
 import ActionOverlay from "../ActionOverlay";
 import { useGuardarQR } from "./hooks/useGuardarQR";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ModalCuentaQR({ isOpen, onClose, user, qrCountry, onQRGuardado }) {
   const q = useGuardarQR({ user, qrCountry, onQRGuardado, onClose });
   const paisLabel = qrCountry === "PE" ? "Perú (Soles)" : "Bolivia (Bolivianos)";
-
+  const inets = useSafeAreaInsets();
   return (
     <BottomSheet
       visible={isOpen}
       onClose={q.cerrar}
       overlay={<ActionOverlay visible={q.loading} mensaje="Subiendo QR..." />}
-      contentContainerStyle={{ alignItems: "center", paddingHorizontal: 24, paddingBottom: 36 }}
+      contentContainerStyle={{ alignItems: "center", paddingHorizontal: 24, paddingBottom: inets.bottom + 10 }}
     >
       <Text className="text-xl font-lm-bold text-text mb-1">QR de cobro</Text>
       <Text className="text-sm font-sans text-text-muted mb-6">Para recibir en {paisLabel}</Text>

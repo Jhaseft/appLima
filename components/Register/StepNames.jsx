@@ -1,8 +1,7 @@
 import { View, TextInput } from "react-native";
 import FieldWrapper from "./FieldWrapper";
 import { colors } from "../../theme/colors";
-
-const onlyLetters = (v) => v.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'’-]/g, "");
+import { soloLetras } from "../../utils/sanitize";
 
 export default function StepNames({ data, setData, errors }) {
   return (

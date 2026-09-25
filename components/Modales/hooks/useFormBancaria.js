@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useBancos } from "./useBancos";
 import { useGuardarCuenta } from "./useGuardarCuenta";
+import { soloDigitos } from "../../../utils/sanitize";
 
 const BILLETERAS = ["yape", "plin"];
 
@@ -24,7 +25,9 @@ export function useFormBancaria({ isOpen, bancosProp, user, accountType, onCuent
   }, [isOpen]);
 
   const esBilletera = BILLETERAS.includes(banco?.name?.toLowerCase());
-  const canSave = juramento && terminos && banco && numeroCuenta;
+  const minDigitos = esBilletera ? 8 : 6;
+  const canSave =
+    juramento && terminos && banco && numeroCuenta.length >= minDigitos;
 
   const submit = () => {
     if (canSave) guardar({ bank_id: banco.id, account_number: numeroCuenta, account_type: accountType });
@@ -35,7 +38,7 @@ export function useFormBancaria({ isOpen, bancosProp, user, accountType, onCuent
     banco,
     setBanco,
     numeroCuenta,
-    setNumeroCuenta,
+    setNumeroCuenta: (v) => setNumeroCuenta(soloDigitos(v)),
     juramento,
     setJuramento,
     terminos,

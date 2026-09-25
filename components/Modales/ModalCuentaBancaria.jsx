@@ -6,6 +6,7 @@ import ActionOverlay from "../ActionOverlay";
 import { useFormBancaria } from "./hooks/useFormBancaria";
 import { colors } from "../../theme/colors";
 import API_BASE_URL from "../api";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ModalCuentaBancaria({
   bancos: bancosProp,
@@ -17,13 +18,13 @@ export default function ModalCuentaBancaria({
   onCuentaGuardada,
 }) {
   const f = useFormBancaria({ isOpen, bancosProp, user, accountType, onCuentaGuardada, onClose });
-
+  const inets = useSafeAreaInsets();
   return (
     <BottomSheet
       visible={isOpen}
       onClose={onClose}
       overlay={<ActionOverlay visible={f.loading} mensaje="Guardando cuenta..." />}
-      contentContainerStyle={{ alignItems: "center", paddingHorizontal: 24, paddingBottom: 36 }}
+      contentContainerStyle={{ alignItems: "center", paddingHorizontal: 24, paddingBottom: inets.bottom +10 }}
     >
       <Text className="text-xl font-lm-bold text-text mb-1">Registrar cuenta</Text>
       <Text className="text-sm font-sans text-text-muted mb-6">Cuenta de origen</Text>
@@ -47,6 +48,7 @@ export default function ModalCuentaBancaria({
         placeholder={f.cuentaPlaceholder}
         placeholderTextColor={colors.textMuted}
         keyboardType={f.cuentaType}
+        maxLength={20}
         value={f.numeroCuenta}
         onChangeText={f.setNumeroCuenta}
       />
