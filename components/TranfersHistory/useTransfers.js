@@ -31,6 +31,7 @@ export function useTransfers() {
   const [transfers, setTransfers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -107,5 +108,11 @@ export function useTransfers() {
     fetchPage(page + 1, searchRef.current, false);
   }, [fetchPage, loadingMore, hasMore, page]);
 
-  return { transfers, loading, loadingMore, hasMore, search, onSearch, triggerSearch, loadMore };
+  const refrescar = useCallback(async () => {
+    setRefreshing(true);
+    await fetchPage(1, searchRef.current, true, true);
+    setRefreshing(false);
+  }, [fetchPage]);
+
+  return { transfers, loading, loadingMore, hasMore, refreshing, refrescar, search, onSearch, triggerSearch, loadMore };
 }

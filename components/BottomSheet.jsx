@@ -6,7 +6,7 @@ import {
   ScrollView,
   Animated,
   PanResponder,
-  KeyboardAvoidingView,
+  Keyboard,
   Platform,
   useWindowDimensions,
 } from "react-native";
@@ -22,6 +22,18 @@ export default function BottomSheet({ visible, onClose, children, overlay, conte
   const { height } = useWindowDimensions();
   const translateY = useRef(new Animated.Value(height)).current;
   const [render, setRender] = useState(visible);
+  const [keyboard, setKeyboard] = useState(0);
+
+  useEffect(() => {
+    const showEvt = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvt = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+    const show = Keyboard.addListener(showEvt, (e) => setKeyboard(e.endCoordinates.height));
+    const hide = Keyboard.addListener(hideEvt, () => setKeyboard(0));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (visible) {
@@ -58,14 +70,15 @@ export default function BottomSheet({ visible, onClose, children, overlay, conte
 
   return (
     <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
+      <View style={{ flex: 1 }}>
         <Pressable style={{ flex: 1 }} onPress={onClose} />
 
         <Animated.View
-          style={{ transform: [{ translateY }], maxHeight: height * 0.9 }}
+          style={{
+            transform: [{ translateY }],
+            maxHeight: height * 0.9 - keyboard,
+            marginBottom: keyboard,
+          }}
           className="bg-background rounded-t-3xl"
         >
           <View {...pan.panHandlers} className="items-center pt-4 pb-3">
@@ -83,7 +96,7 @@ export default function BottomSheet({ visible, onClose, children, overlay, conte
         </Animated.View>
 
         {overlay}
-      </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 }

@@ -44,17 +44,15 @@ export default function Finalizar({ onBack, operacion, setOperacion, verificar, 
             </Text>
           </TouchableOpacity>
 
+          <Text className="text-text-muted text-xs mt-2 text-center">
+            Solo se aceptan imágenes (JPG, PNG). No se permiten archivos PDF.
+          </Text>
+
           {f.comprobantes.length > 0 && (
             <View className="mt-4 flex-row flex-wrap justify-center gap-3">
               {f.comprobantes.map((c, idx) => (
                 <View key={idx} className="relative">
-                  {c.mimeType?.startsWith("image/") || c.uri?.match(/\.(jpg|jpeg|png)$/i) ? (
-                    <Image source={{ uri: c.uri }} className="w-28 h-28 rounded-lg" />
-                  ) : (
-                    <View className="w-28 h-28 rounded-lg bg-surface items-center justify-center px-1">
-                      <Text className="text-text text-xs text-center" numberOfLines={3}>📄 {c.name}</Text>
-                    </View>
-                  )}
+                  <Image source={{ uri: c.uri }} className="w-28 h-28 rounded-lg" />
                   <TouchableOpacity
                     onPress={() => f.handleRemove(idx)}
                     className="absolute -top-2 -right-2 bg-danger rounded-full w-6 h-6 items-center justify-center"

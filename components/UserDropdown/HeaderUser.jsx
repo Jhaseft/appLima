@@ -16,6 +16,7 @@ import { Menu,User,UserRoundCog   } from "lucide-react-native";
 import { apiFetch } from "../services/apiFetch";
 import { useUser } from "../ContextUser/UserContext";
 import { useTcPuntos } from "../TcPuntos/TcPuntosContext";
+import { invalidarTransfers } from "../TranfersHistory/useTransfers";
 import DrawerMenu from "../UserDropdown/DrawerMenu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TcPuntoIcon from "../TcPuntos/TcPuntoIcon";
@@ -72,8 +73,11 @@ export default function HeaderUser({ title, subtitle, image }) {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      //  Limpiar todo el AsyncStorage
+      //  Limpiar todo el AsyncStorage + los cachés en memoria (singletons).
+      //  Los contextos (resumen, tc-puntos) se limpian solos al pasar user a null;
+      //  el historial vive en un singleton de módulo, así que se libera aquí.
       await AsyncStorage.clear();
+      invalidarTransfers();
       setUser(null);
 
       router.replace("/"); // redirige al login

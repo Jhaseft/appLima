@@ -29,7 +29,14 @@ export async function guardarCuenta(body) {
   try {
     data = JSON.parse(text);
   } catch {}
-  if (!res.ok) throw new Error(data.message || "Error al guardar la cuenta");
+  if (!res.ok) {
+    const primerError = data.errors && Object.values(data.errors)?.[0]?.[0];
+    const msg =
+      (typeof data.message === "string" && data.message) ||
+      (typeof primerError === "string" && primerError) ||
+      "No se pudo guardar la cuenta";
+    throw new Error(msg);
+  }
   return data;
 }
 

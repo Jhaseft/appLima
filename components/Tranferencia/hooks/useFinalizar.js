@@ -6,6 +6,7 @@ import { useFeedback } from "../../Feedback/FeedbackContext";
 import { crearTransferencia } from "../services/transferenciaApi";
 import { invalidarTransfers } from "../../TranfersHistory/useTransfers";
 import { useTasaActual, calcularConversion } from "./useTasaActual";
+import { useAppRating } from "../../hooks/useAppRating";
 
 const MAX_COMPROBANTES = 5;
 
@@ -18,6 +19,7 @@ export function useFinalizar({ operacion, setOperacion, verificar, onVolverACoti
   const router = useRouter();
   const { refrescar: refrescarResumen } = useResumen();
   const feedback = useFeedback();
+  const { pedirCalificacionSiCorresponde } = useAppRating();
 
   const isBOBtoPEN = operacion.modo === "BOBtoPEN";
   const slug = operacion.nonBankMethod;
@@ -34,19 +36,30 @@ export function useFinalizar({ operacion, setOperacion, verificar, onVolverACoti
         return;
       }
       const res = await DocumentPicker.getDocumentAsync({
-        type: ["image/*", "application/pdf"],
+        type: ["image/*"],
         copyToCacheDirectory: true,
         multiple: true,
       });
       if (res.canceled) return;
 
       const picked = res.assets || (res.uri ? [res] : []);
+      const soloImagenes = picked.filter(
+        (c) => c.mimeType?.startsWith("image/") || c.uri?.match(/\.(jpg|jpeg|png|webp|heic)$/i)
+      );
+      if (soloImagenes.length === 0) {
+        setError("Solo se permiten imágenes (JPG, PNG). No se aceptan PDF ni otros archivos.");
+        return;
+      }
       const disponibles = MAX_COMPROBANTES - comprobantes.length;
-      const aAgregar = picked.slice(0, disponibles);
+      const aAgregar = soloImagenes.slice(0, disponibles);
       const nuevos = [...comprobantes, ...aAgregar];
       setComprobantes(nuevos);
       setOperacion((prev) => ({ ...prev, comprobantes: nuevos }));
-      setError(picked.length > disponibles ? `Solo se agregaron ${disponibles}. Máximo ${MAX_COMPROBANTES}.` : "");
+      if (soloImagenes.length < picked.length) {
+        setError("Solo se permiten imágenes (JPG, PNG). Se descartaron los archivos que no son imagen.");
+      } else {
+        setError(picked.length > disponibles ? `Solo se agregaron ${disponibles}. Máximo ${MAX_COMPROBANTES}.` : "");
+      }
     } catch (err) {
       setError(`No se pudo seleccionar el comprobante: ${err.message}`);
     }
@@ -124,6 +137,7 @@ export function useFinalizar({ operacion, setOperacion, verificar, onVolverACoti
         `Tu operación fue registrada correctamente.\nN° de operación: ${data.transfer_number}`,
         { title: "Operación Registrada" }
       );
+      await pedirCalificacionSiCorresponde();
       router.replace("/TransfersHistory");
     } catch (_) {
       feedback.error(

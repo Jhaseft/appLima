@@ -3,6 +3,8 @@ import { BackHandler } from "react-native";
 import { useRouter, usePathname, useRootNavigationState } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFeedback } from "../Feedback/FeedbackContext";
+import { useUser } from "../ContextUser/UserContext";
+import { subscribe as subscribeSession, resetSession } from "../services/sessionStore";
 
 const PUBLIC_ROUTES = [
   "/",
@@ -16,7 +18,23 @@ export default function AuthGuard({ children }) {
   const pathname = usePathname();
   const navState = useRootNavigationState();
   const feedback = useFeedback();
+  const { setUser } = useUser();
   const isRedirectingRef = useRef(false);
+
+  // Sesión expirada (401): limpia el usuario en memoria y vuelve a la raíz. Depende
+  // de navState: si el evento llegó antes de que la navegación estuviera lista, al
+  // re-suscribirse (cuando navState cambia) el store vuelve a avisar y ahí redirige.
+  useEffect(
+    () =>
+      subscribeSession(() => {
+        setUser?.(null);
+        if (!navState?.key) return;
+        isRedirectingRef.current = true;
+        router.replace("/");
+        resetSession();
+      }),
+    [navState?.key]
+  );
 
   // Redirige al inicio si la ruta es protegida y no hay token
   useEffect(() => {

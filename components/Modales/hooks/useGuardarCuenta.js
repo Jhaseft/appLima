@@ -18,12 +18,14 @@ export function useGuardarCuenta({ user, onCuentaGuardada, onClose }) {
       const cuentas = await listarCuentasConBanco(user.id, getBancos());
       await AsyncStorage.setItem("cuentasUsuario", JSON.stringify(cuentas));
       onCuentaGuardada?.(cuentas);
-      feedback.success("Cuenta guardada correctamente");
-      onClose?.();
-    } catch (err) {
-      feedback.error("Error al guardar cuenta: " + err.message);
-    } finally {
       setLoading(false);
+      onClose?.();
+      feedback.success("Cuenta guardada correctamente");
+    } catch (err) {
+      setLoading(false);
+      onClose?.();
+      if (!err?.isRateLimit && !err?.isBlocked)
+        feedback.error(err.message || "No se pudo guardar la cuenta");
     }
   };
 
