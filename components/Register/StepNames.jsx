@@ -9,7 +9,7 @@ export default function StepNames({ data, setData, errors }) {
       <FieldWrapper label="Nombre *" error={errors.first_name}>
         <TextInput
           value={data.first_name}
-          onChangeText={(v) => setData("first_name", onlyLetters(v))}
+          onChangeText={(v) => setData("first_name", soloLetras(v))}
           placeholder="Nombre"
           placeholderTextColor={colors.textMuted}
           autoCapitalize="words"
@@ -21,7 +21,7 @@ export default function StepNames({ data, setData, errors }) {
       <FieldWrapper label="Apellido *" error={errors.last_name}>
         <TextInput
           value={data.last_name}
-          onChangeText={(v) => setData("last_name", onlyLetters(v))}
+          onChangeText={(v) => setData("last_name", soloLetras(v))}
           placeholder="Apellido"
           placeholderTextColor={colors.textMuted}
           autoCapitalize="words"
