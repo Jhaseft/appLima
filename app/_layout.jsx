@@ -28,7 +28,6 @@ export default function Layout() {
   const insets = useSafeAreaInsets();
   const [animationDone, setAnimationDone] = useState(false);
   const [fontsLoaded] = useFonts({
-    "LemonMilkPro-Light": require("../assets/fonts/lemon-milk-pro-ftr-ultralight.otf"),
     LemonMilkPro: require("../assets/fonts/lemon-milk-pro-ftr-regular.otf"),
     "LemonMilkPro-Medium": require("../assets/fonts/lemon-milk-pro-ftr-medium.otf"),
     "LemonMilkPro-Bold": require("../assets/fonts/lemon-milk-pro-ftr-bold.otf"),

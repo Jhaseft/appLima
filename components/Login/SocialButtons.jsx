@@ -1,5 +1,5 @@
 import { View, Text, Image, TouchableOpacity, Platform } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Apple } from "lucide-react-native";
 import { colors } from "../../theme/colors";
 
 const GOOGLE_LOGO = "https://developers.google.com/identity/images/g-logo.png";
@@ -27,7 +27,7 @@ export default function SocialButtons({ onGoogle, onApple }) {
       <View className="flex-row justify-center gap-4">
         {Platform.OS === "ios" && (
           <IconButton onPress={onApple}>
-            <Ionicons name="logo-apple" size={28} color={colors.text} />
+            <Apple size={28} color={colors.text} fill={colors.text} />
           </IconButton>
         )}
         <IconButton onPress={onGoogle}>

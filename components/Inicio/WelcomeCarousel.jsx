@@ -22,7 +22,7 @@ function Slide({ item, width }) {
       <Text className="text-2xl font-lm-bold text-text text-center mt-6">
         {title}
       </Text>
-      <Text className="text-base font-lm-light text-text-muted text-center mt-3">
+      <Text className="text-base font-sans text-text-muted text-center mt-3">
         {text}
       </Text>
     </View>

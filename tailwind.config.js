@@ -17,7 +17,6 @@ module.exports = {
       fontFamily: {
         // Lemon Milk Pro — un archivo por peso.
         sans: ["LemonMilkPro"], // Regular (por defecto)
-        "lm-light": ["LemonMilkPro-Light"], // UltraLight
         "lm-medium": ["LemonMilkPro-Medium"],
         "lm-bold": ["LemonMilkPro-Bold"],
       },

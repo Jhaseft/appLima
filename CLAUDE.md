@@ -51,13 +51,12 @@ import { colors } from "../../theme/colors";
 
 ## 3. Tipografía — Lemon Milk Pro
 
-Archivo en `assets/fonts/`: `lemon-milk-pro-ftr-{ultralight,regular,medium,bold}.otf`.
+Archivo en `assets/fonts/`: `lemon-milk-pro-ftr-{regular,medium,bold}.otf`.
 Se cargan una sola vez en `app/_layout.jsx` con `useFonts` (splash hasta cargar).
 
 Clases (mapeadas en `tailwind.config.js`, con prefijo `lm-` para no chocar con los pesos de Tailwind):
 
 - `font-sans` → Regular (cuerpo, por defecto)
-- `font-lm-light` → UltraLight (subtítulos finos)
 - `font-lm-medium` → Medium (énfasis)
 - `font-lm-bold` → Bold (títulos, botones)
 

@@ -1,4 +1,5 @@
-import { ClipboardList, FileText, HelpCircle } from "lucide-react-native";
+import { ClipboardList, FileText, HelpCircle, Instagram, Facebook } from "lucide-react-native";
+import TikTokIcon from "../TikTokIcon";
 import CasaIcon from "../../../assets/navicons/casa.svg";
 import TarjetaIcon from "../../../assets/navicons/tarjeta.svg";
 import CambioIcon from "../../../assets/navicons/cambio.svg";
@@ -20,7 +21,7 @@ export const INFO_ITEMS = [
 ];
 
 export const REDES = [
-  { icon: "instagram", color: "#E1306C", url: "https://www.instagram.com/transfercash.pe/" },
-  { icon: "facebook", color: "#1877F2", url: "https://www.facebook.com/people/TransferCash/61577711887086/" },
-  { icon: "tiktok", color: "#010101", url: "https://www.tiktok.com/@transfercash.pe?_r=1&_t=ZS-94y1kvv5wzU" },
+  { key: "instagram", icon: Instagram, color: "#E1306C", url: "https://www.instagram.com/transfercash.pe/" },
+  { key: "facebook", icon: Facebook, color: "#1877F2", url: "https://www.facebook.com/people/TransferCash/61577711887086/" },
+  { key: "tiktok", icon: TikTokIcon, color: "#010101", url: "https://www.tiktok.com/@transfercash.pe?_r=1&_t=ZS-94y1kvv5wzU" },
 ];

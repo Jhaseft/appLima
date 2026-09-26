@@ -11,7 +11,6 @@ import Constants from "expo-constants";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePathname } from "expo-router";
 import { ArrowLeft, UserCircle, LogOut, Smartphone, UserRoundCog, Bell, Moon, Languages } from "lucide-react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
 import { colors } from "../../theme/colors";
 import { NAV_ITEMS, INFO_ITEMS, REDES } from "./data/menuItems";
 import MenuRow from "./MenuRow";
@@ -176,12 +175,12 @@ export default function DrawerMenu({ visible, onClose, user, onLogout, router, o
             <View className="flex-row justify-center gap-5 py-7">
               {REDES.map((red) => (
                 <Pressable
-                  key={red.icon}
+                  key={red.key}
                   onPress={() => Linking.openURL(red.url)}
                   className="w-12 h-12 rounded-full items-center justify-center"
                   style={{ backgroundColor: red.color + "18" }}
                 >
-                  <FontAwesome5 name={red.icon} size={20} color={red.color} />
+                  <red.icon size={20} color={red.color} />
                 </Pressable>
               ))}
             </View>
