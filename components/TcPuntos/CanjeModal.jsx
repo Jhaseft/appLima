@@ -12,10 +12,13 @@ function Row({ label, value, bold, color = "text-text" }) {
   );
 }
 
+const fmtPts = (n) =>
+  Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 });
+
 export default function CanjeModal({ producto, balance, visible, onClose, onConfirm, loading }) {
   const insets = useSafeAreaInsets();
   if (!producto) return null;
-  const nuevoBalance = balance - producto.costo_puntos;
+  const nuevoBalance = Math.round((balance - producto.costo_puntos) * 100) / 100;
 
   return (
     <Modal transparent visible={visible} animationType="slide" onRequestClose={onClose}>
@@ -40,10 +43,10 @@ export default function CanjeModal({ producto, balance, visible, onClose, onConf
             )}
 
             <View className="bg-surface rounded-2xl p-4 mb-5 mt-2">
-              <Row label="Costo" value={`${Number(producto.costo_puntos).toLocaleString()} pts`} />
-              <Row label="Tu saldo" value={`${balance} pts`} />
+              <Row label="Costo" value={`${fmtPts(producto.costo_puntos)} pts`} />
+              <Row label="Tu saldo" value={`${fmtPts(balance)} pts`} />
               <View className="h-px bg-border my-2" />
-              <Row label="Saldo tras canje" value={`${nuevoBalance} pts`} bold color="text-primary-dark" />
+              <Row label="Saldo tras canje" value={`${fmtPts(nuevoBalance)} pts`} bold color="text-primary-dark" />
             </View>
 
             <View className="bg-primary-light border border-primary-accent rounded-2xl px-4 py-3 mb-4 gap-1.5">

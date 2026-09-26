@@ -46,7 +46,7 @@ export default function BalanceCard({ balance, valorPunto, moneda = "S/", onInfo
       <View className="flex-row gap-4 mb-2">
         <TcPuntoIcon size={72} />
         <Text className="text-5xl font-lm-bold text-text mt-4">
-          {balance !== null ? balance : "0"} pts
+          {balance !== null ? Number(balance).toLocaleString(undefined, { maximumFractionDigits: 2 }) : "0"} pts
         </Text>
       </View>
 
