@@ -4,28 +4,25 @@
 assets/
   fonts/    → tipografía Lemon Milk Pro (ver fonts/README.md)
   images/   → imágenes EN USO
-  unused/   → imágenes sin referencias (candidatas a borrar)
 ```
 
 ## images/ — en uso
 
-| Archivo                          | Dónde se usa                                                                 |
-| -------------------------------- | --------------------------------------------------------------------------- |
-| `Logo_web_03.png`                | Inicio (`WelcomeHero`), `Login`, `Register`, `UserDropdown/HeaderUser`       |
-| `logo.png`                       | `VersionGuard`                                                               |
-| `logopro2.png`                   | Ícono de la app (`app.json`) y avatar del bot en `Chat`                      |
-| `logopro2nobg.png`               | Splash y favicon web (`app.json`)                                            |
-| `notificationiconnobgorig.png`   | Ícono de notificaciones (`app.json`, plugin expo-notifications)              |
+| Archivo                          | Formato | Dónde se usa                                                        |
+| -------------------------------- | ------- | ------------------------------------------------------------------ |
+| `Logo_web_03.webp`               | WebP    | `Login/LoginHeader`, `UserDropdown/HeaderUser`                     |
+| `logo.webp`                      | WebP    | `VersionGuard`                                                      |
+| `logopro2.webp`                  | WebP    | Avatar del bot en `Chat`                                           |
+| `logopro2nobg.webp`              | WebP    | `AnimatedSplash` (splash animado en runtime)                      |
+| `logopro2.png`                   | PNG     | Ícono de la app (`app.json`) — las stores exigen PNG 1024²         |
+| `logopro2nobg.png`               | PNG     | Splash nativo y favicon web (`app.json`) — Expo exige PNG          |
+| `notificationiconnobgorig.png`   | PNG     | Ícono de notificaciones (`app.json`, plugin expo-notifications)    |
 
-## unused/ — sin referencias
+## Reglas
 
-`Logo_Web_02.png`, `Logo_Web_cjmgei.png`, `Portada_Web_dojpcy.png`, `TCpunto.svg`
-(el ícono TC se dibuja inline en `TcPuntoIcon.jsx`), `Texto_logo_2.png`,
-`cuadrado.png`, `logo-splash.png`, `logopro.png`, `notificationiconnobg.png`.
-
-Se pueden borrar cuando confirmes que no las necesitas.
-
-## Regla
-
-Toda imagen nueva va en `images/` y se referencia como `assets/images/<archivo>`.
-Si deja de usarse, se mueve a `unused/`.
+- Toda imagen **de UI** (usada con `require()`/`import` dentro de componentes) va en
+  WebP. Solo se usan PNG donde Expo lo exige: `icon`, `splash.image` y el ícono de
+  notificaciones en `app.json`.
+- Toda imagen nueva va en `images/` y se referencia como `assets/images/<archivo>`.
+- Para optimizar/convertir imágenes hay un script: `node scripts/optimize-assets.mjs`
+  (usa `sharp`, devDependency). Ajusta anchos/calidad ahí si agregas assets.

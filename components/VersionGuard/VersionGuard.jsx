@@ -63,7 +63,7 @@ export default function VersionGuard({ children }) {
       <View className="flex-1 bg-background items-center justify-center px-9">
         <View className="w-24 h-24 rounded-3xl bg-surface border border-border items-center justify-center mb-10">
           <Image
-            source={require("../../assets/images/logo.png")}
+            source={require("../../assets/images/logo.webp")}
             className="w-20 h-20 rounded-2xl"
             resizeMode="contain"
           />

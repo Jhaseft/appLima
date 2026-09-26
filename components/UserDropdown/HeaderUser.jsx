@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { colors } from "../../theme/colors";
 import { useFeedback } from "../Feedback/FeedbackContext";
-import miLogo from "../../assets/images/Logo_web_03.png";
+import miLogo from "../../assets/images/Logo_web_03.webp";
 import { Stack, useRouter, usePathname } from "expo-router";
 
 import { Menu,User,UserRoundCog   } from "lucide-react-native";

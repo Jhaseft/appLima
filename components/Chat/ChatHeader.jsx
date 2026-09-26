@@ -17,7 +17,7 @@ export default function ChatHeader() {
 
         <View className="w-10 h-10 rounded-full overflow-hidden bg-primary border-2 border-primary">
           <Image
-            source={require("../../assets/images/logopro2.png")}
+            source={require("../../assets/images/logopro2.webp")}
             style={{ width: "100%", height: "100%" }}
             resizeMode="cover"
           />

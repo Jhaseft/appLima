@@ -4,7 +4,7 @@ export default function LoginHeader() {
   return (
     <View className="items-center mb-8">
       <Image
-        source={require("../../assets/images/Logo_web_03.png")}
+        source={require("../../assets/images/Logo_web_03.webp")}
         className="w-96 h-28 mb-6"
         resizeMode="contain"
       />

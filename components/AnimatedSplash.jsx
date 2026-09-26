@@ -36,7 +36,7 @@ export default function AnimatedSplash({ onFinish }) {
   return (
     <Animated.View style={[StyleSheet.absoluteFill, styles.container, { opacity: fade }]}>
       <Animated.Image
-        source={require("../assets/images/logopro2nobg.png")}
+        source={require("../assets/images/logopro2nobg.webp")}
         resizeMode="contain"
         style={[styles.logo, { opacity: logoOpacity, transform: [{ translateY }] }]}
       />
